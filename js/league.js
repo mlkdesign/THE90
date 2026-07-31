@@ -10,7 +10,6 @@
   var send = document.querySelector('[data-league-chat-send]');
   var footer = document.querySelector('[data-shell-footer]');
   var join = document.querySelector('[data-league-join]');
-  var invite = document.querySelector('[data-league-invite]');
   if (!screen || !list || !scroll || !form || !input || !send || !footer) return;
 
   var STORAGE_KEY = 'the90.leagueChat.v1';
@@ -166,11 +165,130 @@
     });
   }
 
-  if (invite) {
-    invite.addEventListener('click', function () {
-      var shareData = { title: 'DIAMOND CUP', text: 'Join my DIAMOND CUP league on THE90.' };
-      if (navigator.share) navigator.share(shareData).catch(function () { /* share sheet dismissed */ });
-      else invite.textContent = 'Invite link copied';
+  /* -------------------------------------------------------
+     Full participant list — collapsed shows the top three plus
+     your pinned card, expanded drops your card into place at #15.
+     ------------------------------------------------------- */
+
+  var allButton = document.querySelector('[data-league-all]');
+  var allLabel = document.querySelector('[data-league-all-label]');
+  var topBlock = document.querySelector('[data-league-top]');
+  var fullBlock = document.querySelector('[data-league-full]');
+  var sectionTitle = document.querySelector('[data-league-participants-title]');
+  var yourScoreCell = document.querySelector('[data-league-your-score]');
+  var leagueScroll = document.querySelector('[data-league-scroll]');
+
+  var PARTICIPANT_COUNT = 40;
+  var YOUR_RANK = 15;
+  var leagueTop = [
+    { name: 'Zara Volkov', handle: '@zarav', avatar: 'assets/league/zara.png', score: 6671 },
+    { name: 'Kai Tanaka', handle: '@kait', avatar: 'assets/league/kai.png', score: 6231 },
+    { name: 'Nina Okafor', handle: '@ninao', avatar: 'assets/league/nina.png', score: 5125 }
+  ];
+  var leagueNames = [
+    'Sam Moreau', 'Juno Park', 'Ravi Patel', 'Liam Becker', 'Elif Yilmaz', 'Marc Dubois',
+    'Ana Costa', 'Theo Novak', 'Maya Silva', 'Omar Haddad', 'Lena Fischer', 'Hugo Santos',
+    'Iris Kowalski', 'Dan Petrov', 'Nora Mensah', 'Felix Muller', 'Amara Okoye', 'Jonas Nielsen',
+    'Clara Rossi', 'Viktor Popescu', 'Mila Johansson', 'Adam Ibrahim', 'Rosa Martinez',
+    'Ilya Sokolov', 'Tara Bennett', 'Noel Garcia', 'Sara Kim', 'Bruno Alves', 'Lea Dumont',
+    'Kofi Mensah', 'Ines Ferreira', 'Milan Horvat', 'Ada Nowak', 'Yuki Sato', 'Pablo Nunez',
+    'Freya Larsen', 'Nadia Rahman'
+  ];
+  var leagueAvatars = [
+    'assets/league/chat-alex.png',
+    'assets/league/chat-leo.png',
+    'assets/league/nina.png',
+    'assets/league/kai.png',
+    'assets/league/zara.png'
+  ];
+
+  function formatScore(value) {
+    return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  }
+
+  function participantAt(rank) {
+    if (rank <= leagueTop.length) return leagueTop[rank - 1];
+    if (rank === YOUR_RANK) {
+      return {
+        name: 'Your Name',
+        handle: '@yournickname',
+        avatar: 'assets/league/your-avatar.png',
+        score: 5125 - (rank - leagueTop.length) * 118,
+        isYou: true
+      };
+    }
+    var index = rank - leagueTop.length - 1;
+    var name = leagueNames[index % leagueNames.length];
+    return {
+      name: name,
+      handle: '@' + name.toLowerCase().replace(/[^a-z]/g, '').slice(0, 8),
+      avatar: leagueAvatars[index % leagueAvatars.length],
+      score: 5125 - (rank - leagueTop.length) * 118
+    };
+  }
+
+  function createMember(rank) {
+    var person = participantAt(rank);
+    var row = document.createElement('article');
+    row.className = 'league-member' + (person.isYou ? ' league-member--you' : '');
+
+    var position = document.createElement('span');
+    position.className = 'league-member__rank';
+    position.textContent = rank;
+
+    var avatar = document.createElement('img');
+    avatar.src = person.avatar;
+    avatar.alt = person.name;
+
+    var copy = document.createElement('span');
+    copy.className = 'league-member__copy';
+    var name = document.createElement('strong');
+    name.textContent = person.name;
+    var handle = document.createElement('small');
+    handle.textContent = person.handle;
+    copy.appendChild(name);
+    copy.appendChild(handle);
+
+    var score = document.createElement('span');
+    score.className = 'league-member__score';
+    score.textContent = formatScore(person.score) + ' ';
+    var coin = document.createElement('img');
+    coin.src = 'assets/league/coin.svg';
+    coin.alt = 'Coins';
+    score.appendChild(coin);
+
+    row.appendChild(position);
+    row.appendChild(avatar);
+    row.appendChild(copy);
+    row.appendChild(score);
+    return row;
+  }
+
+  if (allButton && topBlock && fullBlock) {
+    var fragment = document.createDocumentFragment();
+    for (var rank = 1; rank <= PARTICIPANT_COUNT; rank += 1) fragment.appendChild(createMember(rank));
+    fullBlock.replaceChildren(fragment);
+
+    // Keep the pinned card in sync with the score it has inside the full list.
+    if (yourScoreCell) {
+      yourScoreCell.textContent = formatScore(participantAt(YOUR_RANK).score) + ' ';
+      var pinnedCoin = document.createElement('img');
+      pinnedCoin.src = 'assets/league/coin.svg';
+      pinnedCoin.alt = 'Coins';
+      yourScoreCell.appendChild(pinnedCoin);
+    }
+
+    var expanded = false;
+    allButton.addEventListener('click', function () {
+      expanded = !expanded;
+      topBlock.hidden = expanded;
+      fullBlock.hidden = !expanded;
+      allButton.setAttribute('aria-expanded', String(expanded));
+      if (allLabel) allLabel.textContent = expanded ? 'Hide participants' : 'All participants';
+      if (sectionTitle) sectionTitle.textContent = expanded ? 'All Participants' : 'Top Participants';
+      if (!expanded && leagueScroll) {
+        allButton.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }
     });
   }
 

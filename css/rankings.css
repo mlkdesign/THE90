@@ -21,6 +21,8 @@
   overflow: hidden;
   background: linear-gradient(180deg, rgba(36, 255, 0, .2) 0%, rgba(22, 153, 0, 0) 100%);
 }
+/* Dims the podium from below so the steps melt into the list instead of
+   being cut off — fully opaque a little before the hero ends. */
 .rankings-hero::after {
   content: '';
   position: absolute;
@@ -28,8 +30,13 @@
   left: 0;
   right: 0;
   bottom: 0;
-  height: 108px;
-  background: linear-gradient(180deg, rgba(14, 14, 14, 0), var(--bg-primary));
+  height: 120px;
+  background: linear-gradient(180deg,
+    rgba(14, 14, 14, 0) 0%,
+    rgba(14, 14, 14, .22) 42%,
+    rgba(14, 14, 14, .72) 72%,
+    var(--bg-primary) 90%,
+    var(--bg-primary) 100%);
   pointer-events: none;
 }
 
@@ -186,6 +193,22 @@
 .rankings-podium__step--third { left: 265px; height: 98px; border-color: #de943d; background: rgba(222, 148, 61, .08); }
 .rankings-podium__step--third b { background: linear-gradient(90deg, #de943d, #b87333 50%, #cc8033); }
 
+/* Steps and winners rise from below every time Rankings is opened. */
+@keyframes rankings-rise {
+  from { opacity: 0; transform: translateY(48px); }
+  to   { opacity: 1; transform: none; }
+}
+.rankings-podium.is-entering .rankings-podium__step,
+.rankings-podium.is-entering .rankings-podium__user {
+  animation: rankings-rise .5s cubic-bezier(.2, .8, .3, 1) backwards;
+}
+.rankings-podium.is-entering .rankings-podium__step--third,
+.rankings-podium.is-entering .rankings-podium__user--third { animation-delay: 0s; }
+.rankings-podium.is-entering .rankings-podium__step--second,
+.rankings-podium.is-entering .rankings-podium__user--second { animation-delay: .09s; }
+.rankings-podium.is-entering .rankings-podium__step--first,
+.rankings-podium.is-entering .rankings-podium__user--first { animation-delay: .18s; }
+
 .rankings-list {
   position: relative;
   z-index: 4;
@@ -273,7 +296,7 @@
 }
 .rankings-league-card__copy strong i { color: rgba(255, 255, 255, .5); font-size: 9px; font-style: normal; }
 .rankings-league-card__copy small { font-size: 12px; line-height: 14px; }
-.rankings-league-card__copy b { color: var(--brand-primary); font-size: 10px; font-weight: 400; line-height: 20px; white-space: nowrap; }
+.rankings-league-card__copy b { display: flex; align-items: center; gap: 5px; color: var(--brand-primary); font-size: 10px; font-weight: 400; line-height: 20px; white-space: nowrap; }
 .rankings-league-card__place {
   width: 60px;
   height: 68px;
@@ -299,6 +322,7 @@
   width: 358px;
   height: 40px;
   flex: 0 0 40px;
+  padding: 0 16px;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -313,10 +337,14 @@
   background: #101a15;
   box-shadow: inset 0 0 30px rgba(36, 255, 0, .2);
 }
-.rankings-row__rank {
-  width: 32px;
-  flex: 0 0 32px;
+/* Fixed column so every position from 1 to 100 fits and the digits stay
+   in one straight line, highlighted row included. */
+.rankings-row__rank,
+.rankings-pin__rank {
+  width: 34px;
+  flex: 0 0 34px;
   font-size: 16px;
+  font-variant-numeric: tabular-nums;
   line-height: 20px;
   text-align: center;
   white-space: nowrap;
@@ -384,7 +412,6 @@
   color: #fff;
   transition: opacity .18s ease, transform .18s ease;
 }
-.rankings-pin__rank { width: 32px; flex: 0 0 32px; font-size: 16px; line-height: 20px; text-align: center; }
 .rankings-pin .rankings-score { height: 32px; flex: none; }
 .shell-footer.is-rankings .pickbar { display: none !important; }
 .shell-footer.is-rankings .rankings-pin { display: flex; }
@@ -393,4 +420,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .rankings-pin { transition: none; }
+  .rankings-podium.is-entering .rankings-podium__step,
+  .rankings-podium.is-entering .rankings-podium__user { animation: none; }
 }

@@ -6,6 +6,7 @@
   var scroll = document.querySelector('[data-rankings-scroll]');
   var pin = document.querySelector('[data-rankings-pin]');
   var screen = document.querySelector('[data-screen="rankings"]');
+  var podium = document.querySelector('.rankings-podium');
   var scopeButtons = Array.prototype.slice.call(document.querySelectorAll('[data-ranking-scope]'));
   if (!list || !scroll || !pin || !screen) return;
 
@@ -156,10 +157,21 @@
     requestAnimationFrame(updatePin);
   }
 
+  // Replays the podium slide-up from the bottom on every visit to Rankings.
+  function playPodium() {
+    if (!podium) return;
+    podium.classList.remove('is-entering');
+    void podium.offsetWidth;
+    podium.classList.add('is-entering');
+  }
+
   scroll.addEventListener('scroll', schedulePinUpdate, { passive: true });
   window.addEventListener('resize', schedulePinUpdate);
   window.addEventListener('the90:screen', function (event) {
-    if (event.detail === 'rankings') schedulePinUpdate();
+    if (event.detail !== 'rankings') return;
+    schedulePinUpdate();
+    playPodium();
   });
   schedulePinUpdate();
+  if (screen.classList.contains('is-active')) playPodium();
 })();

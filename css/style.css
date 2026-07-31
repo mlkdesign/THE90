@@ -386,8 +386,9 @@ img    { display: block; }
   left: 0;
   right: 0;
   bottom: 0;
-  height: 120px;
-  background: linear-gradient(180deg, rgba(14,14,14,0), rgba(14,14,14,.2) 30%, rgba(14,14,14,.8) 72%, var(--bg-primary));
+  height: 152px;
+  /* fully opaque behind both CTAs so the scrolling grid never shows between them */
+  background: linear-gradient(180deg, rgba(14,14,14,0), rgba(14,14,14,.55) 22%, var(--bg-primary) 46%);
   pointer-events: none;
 }
 .setup-back {
@@ -487,7 +488,7 @@ img    { display: block; }
   max-height: none;
   min-height: 0;
   flex: 1 1 auto;
-  padding-bottom: 132px;
+  padding-bottom: 164px;
 }
 .club-grid::-webkit-scrollbar { display: none; }
 .club-option {

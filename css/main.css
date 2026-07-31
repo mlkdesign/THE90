@@ -271,6 +271,11 @@
   position: relative;
   height: 127px;
   overflow: hidden;
+  /* the blurred flags are composited on their own layer; without this the card's
+     rounded clip is resolved separately for them and the scrim, which left a
+     couple of undarkened pixels along the top edge */
+  isolation: isolate;
+  border-radius: 23px 23px 0 0;
 }
 .mcard__flag {
   position: absolute;
@@ -284,11 +289,12 @@
 .mcard__flag--l { left: 0; }
 .mcard__flag--r { left: 179px; }
 
-/* seam between the two club washes */
+/* seam between the two club washes — bleeds past every edge so the wash is
+   never left undarkened at the boundary */
 .mcard__head::before {
   content: '';
   position: absolute;
-  inset: 0;
+  inset: -6px;
   z-index: 1;
   background:
     linear-gradient(90deg, rgba(21, 21, 21, .35) 0%, rgba(21, 21, 21, .75) 46%,
@@ -566,6 +572,7 @@
   border-radius: 24px;
   background: rgba(255, 255, 255, .03);
   overflow: hidden;
+  isolation: isolate;   /* see .mcard__head — keeps the wash and its scrim on one layer */
   text-align: left;
   transition: background .2s ease;
 }
@@ -575,7 +582,7 @@
 .ccard::before {
   content: '';
   position: absolute;
-  inset: 0;
+  inset: -6px;
   background: linear-gradient(90deg, rgba(14, 14, 14, .35) 0%, rgba(14, 14, 14, .72) 40%,
                                      rgba(14, 14, 14, .72) 60%, rgba(14, 14, 14, .35) 100%);
 }
@@ -1007,6 +1014,12 @@
   line-height: 18px;
   opacity: .5;
   color: var(--text-primary);
+}
+.modal__text b {
+  color: var(--brand-primary);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 24px;
 }
 .modal__cta {
   position: absolute;

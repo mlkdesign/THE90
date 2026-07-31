@@ -50,10 +50,12 @@
   }
   deleteChecks.forEach(function (input) { input.addEventListener('change', refreshDelete); });
   if (deleteConfirm) {
+    // data-go="welcome" drops the user back to the very start of the app;
+    // clear the form so returning later starts from a clean slate.
     deleteConfirm.addEventListener('click', function () {
       if (deleteConfirm.disabled) return;
-      deleteConfirm.textContent = 'Deletion request confirmed';
-      deleteConfirm.disabled = true;
+      deleteChecks.forEach(function (input) { input.checked = false; });
+      refreshDelete();
     });
   }
 
@@ -115,6 +117,92 @@
     languageSearch.addEventListener('input', function () {
       languageQuery = languageSearch.value.trim().toLowerCase();
       renderLanguages();
+    });
+  }
+
+  /* Favourite teams sheet — mirrors the picker from registration */
+  var TEAMS = [
+    ['arsenal', 'Arsenal'], ['real-madrid', 'Real Madrid'], ['barcelona', 'FC Barcelona'],
+    ['man-united', 'Man United'], ['bayern', 'Bayern Munich'], ['liverpool', 'Liverpool'],
+    ['chelsea', 'Chelsea'], ['dortmund', 'Dortmund'], [null, 'PSG'],
+    [null, 'Manchester City'], [null, 'Tottenham'], [null, 'AC Milan'],
+    [null, 'Inter Milan'], [null, 'Juventus'], [null, 'Napoli'],
+    [null, 'Ajax'], [null, 'PSV Eindhoven'], [null, 'Atlético Madrid'],
+    [null, 'Benfica'], [null, 'Marseille']
+  ];
+  var teamGrid = $('[data-team-grid]');
+  var teamSearch = $('[data-team-search]');
+  var teamQuery = '';
+  var favouriteTeams = ['Real Madrid', 'FC Barcelona', 'Arsenal'];
+
+  function teamInitials(name) {
+    return name.split(/\s+/).map(function (part) { return part[0]; }).join('').slice(0, 3).toUpperCase();
+  }
+
+  function renderTeams() {
+    if (!teamGrid) return;
+    var matches = TEAMS.filter(function (team) {
+      return team[1].toLowerCase().indexOf(teamQuery) !== -1;
+    });
+    if (!matches.length) {
+      teamGrid.innerHTML = '<p class="settings-teams__empty">No clubs match that search.</p>';
+      return;
+    }
+    teamGrid.innerHTML = matches.map(function (team) {
+      var visual = team[0]
+        ? '<img class="club-option__logo" src="assets/clubs/' + team[0] + '.png" alt="">'
+        : '<span class="club-option__logo">' + teamInitials(team[1]) + '</span>';
+      var selected = favouriteTeams.indexOf(team[1]) !== -1;
+      return '<button class="club-option' + (selected ? ' is-selected' : '') +
+        '" type="button" aria-pressed="' + selected + '" data-team="' + team[1] + '">' + visual +
+        '<span class="club-option__name">' + team[1] + '</span></button>';
+    }).join('');
+  }
+
+  // Crests exported for the profile screen; the rest fall back to the shared set.
+  var MY_ZONE_LOGOS = ['arsenal', 'barcelona', 'bayern', 'chelsea', 'dortmund', 'real-madrid'];
+
+  /* Keeps the My Zone strip and the Settings summary row in step with the picker. */
+  function syncFavourites() {
+    var showcase = $('.mz-favorites .mz-showcase');
+    if (showcase) {
+      showcase.innerHTML = favouriteTeams.map(function (name) {
+        var team = TEAMS.filter(function (item) { return item[1] === name; })[0];
+        var slug = team && team[0];
+        var folder = slug && MY_ZONE_LOGOS.indexOf(slug) !== -1 ? 'my-zone' : 'clubs';
+        var visual = slug
+          ? '<img src="assets/' + folder + '/' + slug + '.png" alt="' + name + '">'
+          : '<span class="mz-club__badge">' + teamInitials(name) + '</span>';
+        return '<div class="mz-showcase__item mz-club">' + visual + '<span>' + name + '</span></div>';
+      }).join('');
+    }
+    var summary = $('[data-favourite-teams]');
+    if (summary) {
+      summary.textContent = favouriteTeams.length
+        ? favouriteTeams.slice(0, 2).join(', ') +
+          (favouriteTeams.length > 2 ? ', +' + (favouriteTeams.length - 2) : '')
+        : 'Not selected';
+    }
+  }
+
+  if (teamGrid) {
+    renderTeams();
+    syncFavourites();
+    teamGrid.addEventListener('click', function (event) {
+      var option = event.target.closest('[data-team]');
+      if (!option) return;
+      var name = option.dataset.team;
+      var index = favouriteTeams.indexOf(name);
+      if (index === -1) favouriteTeams.push(name);
+      else favouriteTeams.splice(index, 1);
+      renderTeams();
+      syncFavourites();
+    });
+  }
+  if (teamSearch) {
+    teamSearch.addEventListener('input', function () {
+      teamQuery = teamSearch.value.trim().toLowerCase();
+      renderTeams();
     });
   }
 
