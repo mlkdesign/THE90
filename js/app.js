@@ -408,10 +408,9 @@
       renderProfileClubs();
     });
     $('[data-clubs-toggle]').addEventListener('click', function (e) {
-      clubsExpanded = !clubsExpanded;
-      e.currentTarget.classList.toggle('is-open', clubsExpanded);
-      e.currentTarget.closest('.content--teams').classList.toggle('is-expanded', clubsExpanded);
-      e.currentTarget.firstChild.nodeValue = clubsExpanded ? 'Popular Clubs ' : 'All Clubs ';
+      clubsExpanded = true;
+      e.currentTarget.closest('.content--teams').classList.add('is-expanded');
+      e.currentTarget.hidden = true;
       renderProfileClubs();
     });
     $('[data-team-continue]').addEventListener('click', function () { showScreen('main'); });

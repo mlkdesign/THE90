@@ -108,6 +108,12 @@ img    { display: block; }
   transition: width .2s ease;
 }
 
+.stage__logo:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 6px;
+  border-radius: 4px;
+}
+
 /* reserves the *scaled* footprint so the device always stays centred */
 .device-wrap {
   flex: none;
@@ -380,8 +386,8 @@ img    { display: block; }
   left: 0;
   right: 0;
   bottom: 0;
-  height: 148px;
-  background: linear-gradient(180deg, rgba(14,14,14,0), var(--bg-primary) 48%);
+  height: 120px;
+  background: linear-gradient(180deg, rgba(14,14,14,0), rgba(14,14,14,.2) 30%, rgba(14,14,14,.8) 72%, var(--bg-primary));
   pointer-events: none;
 }
 .setup-back {
@@ -447,6 +453,7 @@ img    { display: block; }
   text-decoration: underline;
 }
 .club-search {
+  flex: 0 0 52px;
   height: 52px;
   padding: 0 16px;
   display: flex;
@@ -478,6 +485,7 @@ img    { display: block; }
 }
 .content--teams.is-expanded .club-grid {
   max-height: none;
+  min-height: 0;
   flex: 1 1 auto;
   padding-bottom: 132px;
 }
@@ -520,16 +528,13 @@ img    { display: block; }
   font-size: 13px;
   text-decoration: underline;
 }
-.content--teams.is-expanded .clubs-toggle { margin-bottom: 122px; }
-.clubs-toggle span { display: inline-block; transition: transform .2s ease; }
-.clubs-toggle.is-open span { transform: rotate(180deg); }
-.team-continue {
+.btn.team-continue {
   position: absolute;
   z-index: 3;
   left: 24px;
-  right: auto;
+  right: 24px;
   bottom: 48px;
-  width: 342px;
+  width: auto;
 }
 .team-skip {
   position: absolute;
