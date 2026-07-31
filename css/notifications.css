@@ -1,0 +1,195 @@
+/* =========================================================
+   THE90 — My Zone / Notifications
+   Figma frame: My Zone – Notifications (515:12366)
+   ========================================================= */
+
+.screen--notifications {
+  overflow: hidden;
+  background: var(--bg-primary);
+}
+
+.notifications-head {
+  position: absolute;
+  z-index: 10;
+  top: 62px;
+  left: 0;
+  width: 390px;
+  height: 40px;
+  padding: 10px 16px;
+  display: grid;
+  grid-template-columns: 20px 1fr 20px;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, .1);
+  background: var(--bg-primary);
+}
+
+.notifications-head button,
+.notifications-head > span {
+  width: 20px;
+  height: 20px;
+}
+
+.notifications-head button {
+  display: grid;
+  place-items: center;
+}
+
+.notifications-head button img {
+  width: 20px;
+  height: 20px;
+  transform: rotate(90deg);
+}
+
+.notifications-head h1 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.notifications-scroll {
+  position: absolute;
+  inset: 102px 0 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.notifications-scroll::-webkit-scrollbar { display: none; }
+
+.notifications-list {
+  width: 390px;
+  min-height: 100%;
+  padding: 16px 16px 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.notification-card {
+  position: relative;
+  width: 358px;
+  min-height: 60px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border-radius: 16px;
+}
+
+.notification-card.is-new {
+  animation: notification-card-in .42s cubic-bezier(.2, .8, .3, 1) both;
+}
+
+@keyframes notification-card-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.notification-card__visual {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+}
+
+.notification-card__visual--achievement {
+  border: 1px solid #cca13b;
+  border-radius: 50%;
+  box-shadow: 0 4px 16px rgba(255, 141, 40, .4);
+}
+
+.notification-card__visual--achievement > img:first-child {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
+}
+
+.notification-card__crown {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  bottom: -7px;
+  width: 16px;
+  height: 16px;
+  transform: translateX(-50%);
+}
+
+.notification-card__visual--info,
+.notification-card__visual--ranking {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(36, 255, 0, .1);
+}
+
+.notification-card__visual--info img,
+.notification-card__visual--ranking img {
+  width: 20px;
+  height: 20px;
+}
+
+.notification-card__content {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.notification-card__content strong {
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.notification-card__content p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 18px;
+  color: rgba(255, 255, 255, .5);
+}
+
+.notification-card__meta {
+  flex: none;
+  min-height: 16px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  line-height: 16px;
+  color: rgba(255, 255, 255, .5);
+  white-space: nowrap;
+}
+
+.notification-card__unread {
+  width: 4px;
+  height: 4px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--input-border-error);
+}
+
+[data-notification-badge][hidden] { display: none; }
+
+[data-notification-badge].is-updated {
+  animation: notification-badge-in .42s cubic-bezier(.2, .8, .3, 1);
+}
+
+@keyframes notification-badge-in {
+  0% { transform: scale(.6); opacity: .25; }
+  55% { transform: scale(1.18); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notification-card.is-new,
+  [data-notification-badge].is-updated { animation: none; }
+}
