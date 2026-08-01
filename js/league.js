@@ -279,16 +279,27 @@
     }
 
     var expanded = false;
-    allButton.addEventListener('click', function () {
-      expanded = !expanded;
+    function setExpanded(value) {
+      expanded = value;
       topBlock.hidden = expanded;
       fullBlock.hidden = !expanded;
       allButton.setAttribute('aria-expanded', String(expanded));
       if (allLabel) allLabel.textContent = expanded ? 'Hide participants' : 'All participants';
       if (sectionTitle) sectionTitle.textContent = expanded ? 'All Participants' : 'Top Participants';
+    }
+
+    allButton.addEventListener('click', function () {
+      setExpanded(!expanded);
       if (!expanded && leagueScroll) {
         allButton.scrollIntoView({ block: 'center', behavior: 'smooth' });
       }
+    });
+
+    // The league always opens on the short list, however it was left last time.
+    window.addEventListener('the90:screen', function (event) {
+      if (event.detail !== 'league' || !expanded) return;
+      setExpanded(false);
+      if (leagueScroll) leagueScroll.scrollTop = 0;
     });
   }
 
