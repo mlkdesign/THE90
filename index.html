@@ -9,12 +9,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="css/style.css?v=3">
-<link rel="stylesheet" href="css/main.css?v=3">
-<link rel="stylesheet" href="css/rankings.css?v=4">
-<link rel="stylesheet" href="css/arena.css?v=5">
-<link rel="stylesheet" href="css/league.css?v=2">
-<link rel="stylesheet" href="css/my-zone.css?v=3">
+<link rel="stylesheet" href="css/style.css?v=4">
+<link rel="stylesheet" href="css/main.css?v=7">
+<link rel="stylesheet" href="css/rankings.css?v=9">
+<link rel="stylesheet" href="css/arena.css?v=6">
+<link rel="stylesheet" href="css/live.css?v=4">
+<link rel="stylesheet" href="css/league.css?v=5">
+<link rel="stylesheet" href="css/my-zone.css?v=6">
+<link rel="stylesheet" href="css/ranks.css?v=1">
 <link rel="stylesheet" href="css/notifications.css">
 <link rel="stylesheet" href="css/community.css?v=8">
 <link rel="stylesheet" href="css/settings.css?v=2">
@@ -255,6 +257,11 @@
               <input type="file" accept="image/*" data-avatar-input>
               <span class="avatar-pick__preview" data-avatar-preview>+</span>
             </label>
+
+            <section class="avatar-presets" aria-label="Preset avatars">
+              <p class="avatar-presets__title">Or pick one of ours</p>
+              <div class="avatar-presets__grid" data-avatar-presets></div>
+            </section>
             <div class="field profile-field" data-field data-validate="username">
               <label class="field__label" for="profile-username">Username</label>
               <div class="field__box">
@@ -296,32 +303,19 @@
           <div class="mainscroll" data-scroll>
             <div class="mainscroll__inner">
 
-              <!-- LIVE -->
-              <div class="live" data-live>
-                <div class="badge">
-                  <span class="badge__dot"></span>
-                  <span class="badge__label">LIVE</span>
-                  <span class="badge__minute" data-live-minute>67’</span>
-                </div>
-                <div class="live__row">
-                  <div class="live__team">
-                    <img class="live__logo" data-live-home-logo alt="">
-                    <span class="live__short" data-live-home-short></span>
-                  </div>
-                  <div class="live__score">
-                    <span data-live-home-score></span><i>–</i><span data-live-away-score></span>
-                  </div>
-                  <div class="live__team">
-                    <img class="live__logo" data-live-away-logo alt="">
-                    <span class="live__short" data-live-away-short></span>
-                  </div>
-                </div>
+              <!-- LIVE — one slide per match in play -->
+              <div class="livewrap" data-live>
+                <div class="live-track" data-live-track></div>
               </div>
 
               <!-- Daily picks -->
               <div class="section-head">
                 <span>Daily picks</span>
                 <span class="section-head__dot" data-picks-dot></span>
+                <span class="picks-deadline">
+                  <img src="assets/icons/timer.svg" alt="" width="16" height="16">
+                  <b data-picks-deadline>Closes in 12:15:38</b>
+                </span>
               </div>
 
               <div class="picks" data-picks></div>
@@ -364,15 +358,23 @@
             <div class="topbar__scrim"></div>
             <div class="topbar__row">
               <div class="wordmark wordmark--sm">THE<span>90</span></div>
-              <div class="topbar__actions">
+              <div class="topbar__actions status-header">
                 <button class="iconbtn" type="button" aria-label="Notifications, 3 unread" data-go="notifications" data-notification-button>
                   <img src="assets/icons/bell.svg" alt="" width="12" height="13">
                   <span class="iconbtn__badge" data-notification-badge>3</span>
                 </button>
                 <button class="balance" type="button" data-go="my-zone" aria-label="Open My Zone profile">
-                  <span class="balance__avatar"><img src="assets/img/avatar.png" alt=""></span>
-                  <img class="balance__coin" src="assets/icons/coin.svg" alt="" width="16" height="16">
-                  <span class="balance__value" data-balance>10 000</span>
+                  <span class="balance__avatar">
+                    <img src="assets/img/avatar.png" alt="">
+                    <img class="balance__rank-icon" src="assets/icons/rank-badge.svg" alt="" width="16" height="16">
+                  </span>
+                  <span class="balance__copy">
+                    <span class="balance__row">
+                      <img class="balance__coin" src="assets/icons/soccer-ball.svg" alt="" width="16" height="16">
+                      <span class="balance__value" data-balance>10 000</span>
+                    </span>
+                    <small class="balance__rank" data-rank-label>Diamond</small>
+                  </span>
                 </button>
               </div>
             </div>
@@ -384,69 +386,33 @@
         <section class="screen screen--rankings" data-screen="rankings">
           <div class="rankings-scroll" data-rankings-scroll>
             <div class="rankings-hero">
+              <img class="rankings-hero__bg" src="assets/rankings/podium-bg.jpg" alt="">
               <header class="rankings-heading">
                 <h1>Top Leaders</h1>
                 <p>Season 2026/27</p>
-                <div class="rankings-tabs" role="tablist" aria-label="Ranking scope">
-                  <button class="is-active" type="button" role="tab" aria-selected="true" data-ranking-scope="global">Global</button>
-                  <button type="button" role="tab" aria-selected="false" data-ranking-scope="leagues">My Leagues</button>
-                </div>
               </header>
 
               <div class="rankings-podium" aria-label="Top three leaders">
                 <article class="rankings-podium__user rankings-podium__user--second">
                   <img src="assets/invite/avatar-zara.png" alt="Alex Rivera">
                   <strong>Alex Rivera</strong>
-                  <span>92 <img src="assets/notifications/crown.svg" alt="" width="14" height="12"></span>
+                  <span>2 454 <img src="assets/notifications/crown.svg" alt="" width="14" height="12"></span>
                 </article>
                 <article class="rankings-podium__user rankings-podium__user--first">
                   <img src="assets/invite/avatar-kai.png" alt="Mika Chen">
                   <strong>Mika Chen</strong>
-                  <span>93 <img src="assets/notifications/crown.svg" alt="" width="14" height="12"></span>
+                  <span>2 480 <img src="assets/notifications/crown.svg" alt="" width="14" height="12"></span>
                 </article>
                 <article class="rankings-podium__user rankings-podium__user--third">
                   <img src="assets/support/banner-person.png" alt="Leo Hart">
                   <strong>Leo Hart</strong>
-                  <span>90 <img src="assets/notifications/crown.svg" alt="" width="14" height="12"></span>
+                  <span>2 428 <img src="assets/notifications/crown.svg" alt="" width="14" height="12"></span>
                 </article>
 
-                <div class="rankings-podium__step rankings-podium__step--second"><b>2</b></div>
-                <div class="rankings-podium__step rankings-podium__step--first"><b>1</b></div>
-                <div class="rankings-podium__step rankings-podium__step--third"><b>3</b></div>
+                <img class="rankings-podium__stand rankings-podium__stand--second" src="assets/rankings/podium-2.png" alt="">
+                <img class="rankings-podium__stand rankings-podium__stand--first" src="assets/rankings/podium-1.png" alt="">
+                <img class="rankings-podium__stand rankings-podium__stand--third" src="assets/rankings/podium-3.png" alt="">
               </div>
-            </div>
-
-            <div class="rankings-leagues" data-rankings-leagues>
-              <h2>Pinned active leagues</h2>
-              <button class="rankings-league-card rankings-league-card--green" type="button" data-go="league">
-                <img class="rankings-league-card__bg" src="assets/clubs/bg-arsenal.jpg" alt="">
-                <img class="rankings-league-card__art" src="assets/my-zone/badge-legend.png" alt="">
-                <span class="rankings-league-card__copy"><strong>Office League <i>◆</i></strong><small>Branded prizes from the sponsor</small><b><img class="arena-chat-icon" src="assets/ChatCenteredDots.svg" alt="" width="16" height="16"> 34 new messages</b></span>
-                <span class="rankings-league-card__place"><strong>#14</strong><small>/ 128</small></span>
-                <span class="rankings-league-card__arrow">›</span>
-              </button>
-              <button class="rankings-league-card rankings-league-card--olive" type="button" data-go="league">
-                <img class="rankings-league-card__bg" src="assets/clubs/bg-arsenal.jpg" alt="">
-                <img class="rankings-league-card__art rankings-league-card__art--person" src="assets/invite/screen-person.png" alt="">
-                <span class="rankings-league-card__copy"><strong>Arsenal Fans <i>◆</i></strong><small>Branded prizes from the sponsor</small><b><img class="arena-chat-icon" src="assets/ChatCenteredDots.svg" alt="" width="16" height="16"> 34 new messages</b></span>
-                <span class="rankings-league-card__place"><strong>#1</strong><small>/ 128</small></span>
-                <span class="rankings-league-card__arrow">›</span>
-              </button>
-              <h2>Other leagues</h2>
-              <button class="rankings-league-card rankings-league-card--red" type="button" data-go="league">
-                <img class="rankings-league-card__bg" src="assets/clubs/bg-barcelona.jpg" alt="">
-                <img class="rankings-league-card__art" src="assets/my-zone/badge-legend.png" alt="">
-                <span class="rankings-league-card__copy"><strong>Office League <i>◆</i></strong><small>Branded prizes from the sponsor</small><b><img class="arena-chat-icon" src="assets/ChatCenteredDots.svg" alt="" width="16" height="16"> 34 new messages</b></span>
-                <span class="rankings-league-card__place"><strong>#14</strong><small>/ 128</small></span>
-                <span class="rankings-league-card__arrow">›</span>
-              </button>
-              <button class="rankings-league-card rankings-league-card--gray" type="button" data-go="league">
-                <img class="rankings-league-card__bg" src="assets/clubs/bg-chelsea.jpg" alt="">
-                <img class="rankings-league-card__art rankings-league-card__art--person" src="assets/invite/screen-person.png" alt="">
-                <span class="rankings-league-card__copy"><strong>Arsenal Fans <i>◆</i></strong><small>Branded prizes from the sponsor</small><b><img class="arena-chat-icon" src="assets/ChatCenteredDots.svg" alt="" width="16" height="16"> 34 new messages</b></span>
-                <span class="rankings-league-card__place"><strong>#1</strong><small>/ 128</small></span>
-                <span class="rankings-league-card__arrow">›</span>
-              </button>
             </div>
 
             <div class="rankings-list" aria-label="Global leaderboard" data-rankings-list></div>
@@ -457,84 +423,73 @@
         <section class="screen screen--arena" data-screen="arena">
           <div class="arena-scroll" data-arena-scroll>
             <div class="arena-content">
-              <p class="arena-section-label">Pinned leagues</p>
-
-              <article class="arena-event">
-                <div class="arena-event__surface" aria-hidden="true"></div>
-                <div class="arena-event__copy">
-                  <div class="arena-event__meta">
-                    <span class="arena-live"><i></i>LIVE</span>
-                    <span class="arena-players">
-                      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 8.25A3.125 3.125 0 1 0 8 2a3.125 3.125 0 0 0 0 6.25Zm5 5.25c0-2.07-2.24-3.75-5-3.75s-5 1.68-5 3.75v.5h10v-.5Z" fill="currentColor"/></svg>
-                      128
-                    </span>
-                  </div>
-                  <h1>DIAMOND CUP</h1>
-                  <p>Exclusive VIP tournament · 5 rounds of top matches · branded prizes from the sponsor</p>
-                </div>
-                <div class="arena-event__prize" aria-hidden="true">
-                  <img src="assets/arena/trophy.png" alt="">
-                </div>
-                <button class="arena-event__button" type="button" data-go="league">Open Event</button>
-              </article>
-
-              <div class="arena-swipe-row is-pinned" data-arena-swipe>
-                <div class="arena-swipe-actions" aria-label="League actions">
-                  <button class="arena-action arena-action--pin" type="button" data-arena-pin aria-label="Unpin league"><img src="assets/arena/pin.svg" alt=""></button>
-                  <button class="arena-action arena-action--exit" type="button" data-arena-exit aria-label="Exit league"><img src="assets/arena/exit.svg" alt=""></button>
-                </div>
-                <article class="arena-league arena-league--office" data-arena-card data-go="league">
-                  <span class="arena-league__art"><img src="assets/arena/trophy.png" alt=""></span>
-                  <span class="arena-league__copy">
-                    <strong>Office League <img class="arena-league__pin" src="assets/arena/pin.svg" alt=""></strong>
-                    <small>Branded prizes from the sponsor</small>
-                    <b><img class="arena-chat-icon" src="assets/ChatCenteredDots.svg" alt="" width="16" height="16"> 34 new messages</b>
+          <div class="arena-leagues" data-arena-leagues>
+            <h2>Active leagues</h2>
+            <article class="arena-event">
+              <div class="arena-event__surface" aria-hidden="true"></div>
+              <div class="arena-event__copy">
+                <div class="arena-event__meta">
+                  <span class="arena-live"><i></i>LIVE</span>
+                  <span class="arena-players">
+                    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 8.25A3.125 3.125 0 1 0 8 2a3.125 3.125 0 0 0 0 6.25Zm5 5.25c0-2.07-2.24-3.75-5-3.75s-5 1.68-5 3.75v.5h10v-.5Z" fill="currentColor"/></svg>
+                    128
                   </span>
-                  <span class="arena-league__place"><strong>#14</strong><small>/ 128</small></span>
-                  <img class="arena-league__chevron" src="assets/icons/chevron-down.svg" alt="">
-                </article>
-              </div>
-
-              <p class="arena-section-label">All leagues</p>
-
-              <div class="arena-swipe-row" data-arena-swipe>
-                <div class="arena-swipe-actions" aria-label="League actions">
-                  <button class="arena-action arena-action--pin" type="button" data-arena-pin aria-label="Pin league"><img src="assets/arena/pin.svg" alt=""></button>
-                  <button class="arena-action arena-action--exit" type="button" data-arena-exit aria-label="Exit league"><img src="assets/arena/exit.svg" alt=""></button>
                 </div>
-                <article class="arena-league arena-league--fans" data-arena-card data-go="league">
-                  <span class="arena-league__art arena-league__art--person"><img src="assets/arena/arena-host.png" alt=""></span>
-                  <span class="arena-league__copy"><strong>Arsenal Fans</strong><small>Branded prizes from the sponsor</small><b><img class="arena-chat-icon" src="assets/ChatCenteredDots.svg" alt="" width="16" height="16"> 34 new messages</b></span>
-                  <span class="arena-league__place"><strong>#1</strong><small>/ 128</small></span>
-                  <img class="arena-league__chevron" src="assets/icons/chevron-down.svg" alt="">
-                </article>
+                <h1>DIAMOND CUP</h1>
+                <p>Exclusive VIP tournament · 5 rounds of top matches · branded prizes from the sponsor</p>
               </div>
+              <div class="arena-event__prize" aria-hidden="true">
+                <img src="assets/arena/trophy.png" alt="">
+              </div>
+              <button class="arena-event__button" type="button" data-go="league" data-league-joined="false">Open Event</button>
+            </article>
+            <button data-league-joined="true" class="rankings-league-card rankings-league-card--green" type="button" data-go="league">
+              <img class="rankings-league-card__bg" src="assets/clubs/bg-arsenal.jpg" alt="">
+              <img class="rankings-league-card__art" src="assets/my-zone/badge-legend.png" alt="">
+              <span class="rankings-league-card__copy"><strong>Office League</strong><small>Branded prizes from the sponsor</small><b>Round 3 of 5 · 2 days left</b></span>
+              <span class="rankings-league-card__place"><strong>#14</strong><small>/ 128</small></span>
+              <span class="rankings-league-card__arrow">›</span>
+            </button>
+            <button data-league-joined="true" class="rankings-league-card rankings-league-card--olive" type="button" data-go="league">
+              <img class="rankings-league-card__bg" src="assets/clubs/bg-arsenal.jpg" alt="">
+              <img class="rankings-league-card__art rankings-league-card__art--person" src="assets/invite/screen-person.png" alt="">
+              <span class="rankings-league-card__copy"><strong>Arsenal Fans</strong><small>Branded prizes from the sponsor</small><b>Round 3 of 5 · 2 days left</b></span>
+              <span class="rankings-league-card__place"><strong>#1</strong><small>/ 128</small></span>
+              <span class="rankings-league-card__arrow">›</span>
+            </button>
+            <h2>Other leagues</h2>
+            <button data-league-joined="false" class="rankings-league-card rankings-league-card--red" type="button" data-go="league">
+              <img class="rankings-league-card__bg" src="assets/clubs/bg-barcelona.jpg" alt="">
+              <img class="rankings-league-card__art" src="assets/my-zone/badge-legend.png" alt="">
+              <span class="rankings-league-card__copy"><strong>Office League</strong><small>Branded prizes from the sponsor</small><b>Round 3 of 5 · 2 days left</b></span>
+              <span class="rankings-league-card__place"><strong>#14</strong><small>/ 128</small></span>
+              <span class="rankings-league-card__arrow">›</span>
+            </button>
+            <button data-league-joined="false" class="rankings-league-card rankings-league-card--gray" type="button" data-go="league">
+              <img class="rankings-league-card__bg" src="assets/clubs/bg-chelsea.jpg" alt="">
+              <img class="rankings-league-card__art rankings-league-card__art--person" src="assets/invite/screen-person.png" alt="">
+              <span class="rankings-league-card__copy"><strong>Arsenal Fans</strong><small>Branded prizes from the sponsor</small><b>Round 3 of 5 · 2 days left</b></span>
+              <span class="rankings-league-card__place"><strong>#1</strong><small>/ 128</small></span>
+              <span class="rankings-league-card__arrow">›</span>
+            </button>
 
-              <div class="arena-swipe-row" data-arena-swipe>
-                <div class="arena-swipe-actions" aria-label="League actions">
-                  <button class="arena-action arena-action--pin" type="button" data-arena-pin aria-label="Pin league"><img src="assets/arena/pin.svg" alt=""></button>
-                  <button class="arena-action arena-action--exit" type="button" data-arena-exit aria-label="Exit league"><img src="assets/arena/exit.svg" alt=""></button>
-                </div>
-                <article class="arena-league arena-league--office" data-arena-card data-go="league">
-                  <span class="arena-league__art"><img src="assets/arena/trophy.png" alt=""></span>
-                  <span class="arena-league__copy"><strong>Office League</strong><small>Branded prizes from the sponsor</small><b><img class="arena-chat-icon" src="assets/ChatCenteredDots.svg" alt="" width="16" height="16"> 34 new messages</b></span>
-                  <span class="arena-league__place"><strong>#14</strong><small>/ 128</small></span>
-                  <img class="arena-league__chevron" src="assets/icons/chevron-down.svg" alt="">
-                </article>
-              </div>
+            <h2>My own leagues</h2>
 
-              <div class="arena-swipe-row" data-arena-swipe>
-                <div class="arena-swipe-actions" aria-label="League actions">
-                  <button class="arena-action arena-action--pin" type="button" data-arena-pin aria-label="Pin league"><img src="assets/arena/pin.svg" alt=""></button>
-                  <button class="arena-action arena-action--exit" type="button" data-arena-exit aria-label="Exit league"><img src="assets/arena/exit.svg" alt=""></button>
-                </div>
-                <article class="arena-league arena-league--fans" data-arena-card data-go="league">
-                  <span class="arena-league__art arena-league__art--person"><img src="assets/arena/arena-host.png" alt=""></span>
-                  <span class="arena-league__copy"><strong>Arsenal Fans</strong><small>Branded prizes from the sponsor</small><b><img class="arena-chat-icon" src="assets/ChatCenteredDots.svg" alt="" width="16" height="16"> 34 new messages</b></span>
-                  <span class="arena-league__place"><strong>#1</strong><small>/ 128</small></span>
-                  <img class="arena-league__chevron" src="assets/icons/chevron-down.svg" alt="">
-                </article>
-              </div>
+            <div class="own-leagues" data-own-leagues></div>
+
+            <div class="leagues-empty" data-own-empty>
+              <span class="leagues-empty__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M10 11a4 4 0 100-8 4 4 0 000 8zm0 1.6c-3.4 0-6.4 1.9-6.4 4.4v2.4h12.8V17c0-2.5-3-4.4-6.4-4.4zM19 8h2v2h-2v2h-2v-2h-2V8h2V6h2z" fill="currentColor"/></svg>
+              </span>
+              <strong>No leagues of your own yet</strong>
+              <p>Gather your colleagues or friends into a private league — your own leaderboard, chat and prizes.</p>
+              <button class="btn btn--primary leagues-empty__cta" type="button" data-go="league-create">Create your league</button>
+            </div>
+
+            <button class="leagues-add" type="button" data-go="league-create" data-own-add hidden>
+              <i aria-hidden="true">+</i> Create one more league
+            </button>
+          </div>
             </div>
           </div>
 
@@ -542,15 +497,23 @@
             <div class="topbar__scrim"></div>
             <div class="topbar__row">
               <div class="wordmark wordmark--sm">THE<span>ARENA</span></div>
-              <div class="topbar__actions">
+              <div class="topbar__actions status-header">
                 <button class="iconbtn" type="button" aria-label="Notifications, 3 unread" data-go="notifications" data-notification-button>
                   <img src="assets/icons/bell.svg" alt="" width="12" height="13">
                   <span class="iconbtn__badge" data-notification-badge>3</span>
                 </button>
                 <button class="balance" type="button" data-go="my-zone" aria-label="Open My Zone profile">
-                  <span class="balance__avatar"><img src="assets/img/avatar.png" alt=""></span>
-                  <img class="balance__coin" src="assets/icons/coin.svg" alt="" width="16" height="16">
-                  <span class="balance__value">10 000</span>
+                  <span class="balance__avatar">
+                    <img src="assets/img/avatar.png" alt="">
+                    <img class="balance__rank-icon" src="assets/icons/rank-badge.svg" alt="" width="16" height="16">
+                  </span>
+                  <span class="balance__copy">
+                    <span class="balance__row">
+                      <img class="balance__coin" src="assets/icons/soccer-ball.svg" alt="" width="16" height="16">
+                      <span class="balance__value">10 000</span>
+                    </span>
+                    <small class="balance__rank" data-rank-label>Diamond</small>
+                  </span>
                 </button>
               </div>
             </div>
@@ -572,19 +535,31 @@
             <main class="league-content">
               <header class="league-summary">
                 <h1>DIAMOND CUP</h1>
-                <p>Закрытый VIP-турнир · 5 туров топ-матчей · брендированные призы от спонсора</p>
+                <p>Invite-only VIP tournament · 5 rounds of top matches · branded prizes from the sponsor</p>
               </header>
 
               <div class="league-stats" aria-label="League statistics">
                 <div><strong>40</strong><span>Participants</span></div>
-                <div><strong>145</strong><span>Messages</span></div>
+                <div><strong>5</strong><span>Rounds</span></div>
                 <div><strong>2</strong><span>Best streak</span></div>
               </div>
 
               <div class="league-actions">
-                <button class="league-actions__chat" type="button" data-go="league-chat">Open Chat</button>
+                <button class="league-actions__chat" type="button" data-go="league-chat" data-league-chat-entry hidden>Open Chat</button>
                 <button class="league-actions__invite" type="button" data-go="invite-friends" data-invite-origin="league">Invite friend</button>
               </div>
+
+              <!-- the round's picks — only once you are in the league -->
+              <section class="league-picks" data-league-picks hidden aria-label="Daily picks">
+                <div class="section-head">
+                  <span>Daily picks</span>
+                  <span class="picks-deadline">
+                    <img src="assets/icons/timer.svg" alt="" width="16" height="16">
+                    <b data-league-deadline>Closes in 12:15:38</b>
+                  </span>
+                </div>
+                <div class="picks-track" data-league-picks-track></div>
+              </section>
 
               <section class="league-participants" aria-labelledby="league-participants-title">
                 <h2 id="league-participants-title" data-league-participants-title>Top Participants</h2>
@@ -617,14 +592,186 @@
                 </button>
               </section>
 
-              <section class="league-prizes" aria-labelledby="league-prizes-title">
-                <h2 id="league-prizes-title">Winnrs’s prize</h2>
-                <p>🥇 1st Place – Official match ball signed by the team + VIP tickets to the next home game. You earned it, legend. ⚽🔥</p>
-                <p>🥈 2nd Place – Club jersey of your choice (any season) + exclusive merch pack. Solid run, respect. 👕💪</p>
-                <p>🥉 3rd Place – $50 fan shop gift card + bragging rights for the rest of the season. Still on the podium, still a winner. 🎉🏆</p>
+              <section class="league-rules" aria-labelledby="league-rules-title">
+                <p class="section-label" id="league-rules-title"><i aria-hidden="true">◆</i> Rules</p>
+                <div class="rules-card">
+                  <div class="rule">
+                    <span class="rule__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm1-13h-2v6l5 3 1-1.7-4-2.3z" fill="currentColor"/></svg>
+                    </span>
+                    <span class="rule__copy">
+                      <strong>Format · 5 rounds of top matches</strong>
+                      <small>Each round — call the outcome, or go for the exact score. Fixed points, no odds.</small>
+                    </span>
+                  </div>
+
+                  <div class="rule">
+                    <span class="rule__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zm2 2v12h12V6zm3 3h6v6H9z" fill="currentColor"/></svg>
+                    </span>
+                    <span class="rule__copy">
+                      <strong>Scoring</strong>
+                      <small>Outcome only · Exact score. A card pays once — nothing stacks.</small>
+                    </span>
+                    <span class="rule__points" data-league-points>
+                      <b>+10</b><b>+30</b>
+                    </span>
+                  </div>
+
+                  <div class="rule">
+                    <span class="rule__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><path d="M17 9h-1V7a4 4 0 10-8 0v2H7a1.6 1.6 0 00-1.6 1.6v8.8A1.6 1.6 0 007 21h10a1.6 1.6 0 001.6-1.6v-8.8A1.6 1.6 0 0017 9zm-7-2a2 2 0 114 0v2h-4z" fill="currentColor"/></svg>
+                    </span>
+                    <span class="rule__copy">
+                      <strong>Entry</strong>
+                      <small>Invite only (VIP) · 100 Coins entry. Points from this tournament don’t count towards Global.</small>
+                    </span>
+                  </div>
+
+                  <button class="rules-video" type="button">
+                    <span class="rules-video__tag">Video breakdown · Aura</span>
+                    <span class="rules-video__play" aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><path d="M8 5l12 7-12 7z" fill="currentColor"/></svg>
+                    </span>
+                    <span class="rules-video__label">How points are counted · 0:40</span>
+                  </button>
+                </div>
               </section>
+
+              <section class="league-prizes" aria-labelledby="league-prizes-title">
+                <div class="league-prizes__head">
+                  <p class="section-label" id="league-prizes-title"><i aria-hidden="true">◆</i> Prizes</p>
+                  <span class="pill-tag">From Aura</span>
+                </div>
+
+                <article class="prize prize--first">
+                  <span class="prize__ghost" aria-hidden="true">1</span>
+                  <span class="prize__badge"><b>1</b><small>Place</small></span>
+                  <span class="prize__body">
+                    <span class="prize__label">Main prize</span>
+                    <span class="prize__chips">
+                      <span class="prize-chip">3 months subscription</span>
+                      <span class="prize-chip">Sticker pack</span>
+                      <span class="prize-chip">T-shirt</span>
+                      <span class="prize-chip">5,000 Coins</span>
+                    </span>
+                  </span>
+                </article>
+
+                <article class="prize">
+                  <span class="prize__ghost" aria-hidden="true">2</span>
+                  <span class="prize__badge"><b>2</b><small>Place</small></span>
+                  <span class="prize__body">
+                    <span class="prize__label">Second place</span>
+                    <span class="prize__chips">
+                      <span class="prize-chip">Sticker pack</span>
+                      <span class="prize-chip">Promo code –50%</span>
+                      <span class="prize-chip">2,500 Coins</span>
+                    </span>
+                  </span>
+                </article>
+
+                <article class="prize">
+                  <span class="prize__ghost" aria-hidden="true">3</span>
+                  <span class="prize__badge"><b>3</b><small>Place</small></span>
+                  <span class="prize__body">
+                    <span class="prize__label">Third place</span>
+                    <span class="prize__chips">
+                      <span class="prize-chip">Promo code –30%</span>
+                      <span class="prize-chip">1,000 Coins</span>
+                    </span>
+                  </span>
+                </article>
+              </section>
+
+              <!-- only shown inside a league you own -->
+              <article class="premium-card" data-premium-card hidden>
+                <p class="premium-card__eyebrow">
+                  <img src="assets/settings/star.svg" alt="" width="14" height="14">
+                  Superleague
+                </p>
+                <h3>Make your league Premium</h3>
+                <p class="premium-card__lead">Paid customization: background, colors and league stickers — a signature look only for your group.</p>
+                <p class="premium-card__features">
+                  <span>Background · Theme</span>
+                  <span>Colors · Accents</span>
+                  <span>Custom <b>stickers</b></span>
+                </p>
+                <p class="premium-card__split">
+                  <img src="assets/settings/users.svg" alt="" width="20" height="13">
+                  <span>Monthly payment <b>is split</b> across all members — everyone pays their share</span>
+                </p>
+                <div class="premium-card__foot">
+                  <span class="premium-card__price">from <b>99</b> Coins/mo ÷ 12</span>
+                  <button class="btn btn--primary premium-card__cta" type="button" data-settings-sheet="premium">Activate Premium</button>
+                </div>
+              </article>
+
+              <button class="premium-active" type="button" data-settings-sheet="premium" data-premium-manage hidden>
+                <span>Premium is active</span>
+                <i aria-hidden="true">Manage</i>
+              </button>
             </main>
           </div>
+        </section>
+
+        <!-- ============ SCREEN: CREATE LEAGUE ============ -->
+        <section class="screen screen--form" data-screen="league-create">
+          <form class="content content--create" novalidate data-league-create-form>
+            <button class="setup-back" type="button" data-go="rankings" aria-label="Back">
+              <img src="assets/icons/chevron-down.svg" alt="" width="20" height="20">
+            </button>
+
+            <div class="offer">
+              <h1 class="offer__title">Create your league</h1>
+              <p class="offer__sub">Set it up once — invite whoever you want.</p>
+            </div>
+
+            <label class="league-cover">
+              <input type="file" accept="image/*" data-league-cover-input>
+              <span class="league-cover__preview" data-league-cover-preview>+</span>
+              <span class="league-cover__copy"><strong>Cover image</strong><small>Optional</small></span>
+            </label>
+
+            <div class="field" data-field>
+              <label class="field__label" for="league-name">League name</label>
+              <div class="field__box">
+                <input class="field__input" id="league-name" type="text" name="league-name"
+                       placeholder="e.g. Office League" autocomplete="off" data-league-name>
+              </div>
+              <p class="field__msg" data-msg></p>
+            </div>
+
+            <div class="create-row">
+              <span class="create-row__label">Privacy</span>
+              <div class="seg" data-league-privacy>
+                <button class="seg__btn is-on" type="button" data-val="invite"><span>Invite only</span></button>
+                <button class="seg__btn" type="button" data-val="private"><span>Private</span></button>
+                <button class="seg__btn" type="button" data-val="public"><span>Public</span></button>
+              </div>
+            </div>
+
+            <div class="create-row">
+              <span class="create-row__label">Entry fee, Coins</span>
+              <div class="seg" data-league-fee>
+                <button class="seg__btn is-on" type="button" data-val="0"><span>Free</span></button>
+                <button class="seg__btn" type="button" data-val="50"><span>50</span></button>
+                <button class="seg__btn" type="button" data-val="100"><span>100</span></button>
+                <button class="seg__btn" type="button" data-val="500"><span>500</span></button>
+              </div>
+            </div>
+
+            <div class="create-row">
+              <span class="create-row__label">Length</span>
+              <div class="seg" data-league-length>
+                <button class="seg__btn" type="button" data-val="1 round"><span>1 round</span></button>
+                <button class="seg__btn is-on" type="button" data-val="5 rounds"><span>5 rounds</span></button>
+                <button class="seg__btn" type="button" data-val="Full season"><span>Full season</span></button>
+              </div>
+            </div>
+
+            <button class="btn btn--primary create-submit" type="submit" data-league-create-submit>Create league</button>
+          </form>
         </section>
 
         <!-- ============ SCREEN: LEAGUE CHAT ============ -->
@@ -663,15 +810,11 @@
               <section class="mz-profile" aria-label="Profile summary">
                 <div class="mz-avatar">
                   <img class="mz-avatar__photo" src="assets/my-zone/avatar.png" alt="Your profile photo">
-                  <img class="mz-avatar__crown" src="assets/my-zone/crown.svg" alt="" width="28" height="23">
+                  <img class="mz-avatar__rank" src="assets/icons/rank-badge.svg" alt="" width="36" height="36">
                 </div>
                 <div class="mz-identity">
                   <strong>Your Name</strong>
                   <span>@yournickname</span>
-                </div>
-                <div class="mz-balance" aria-label="Balance: 10 000 points">
-                  <img src="assets/icons/coin.svg" alt="" width="24" height="24">
-                  <strong>10 000</strong>
                 </div>
                 <div class="mz-stats">
                   <div><strong>147</strong><span>Picks</span></div>
@@ -679,6 +822,27 @@
                   <div><strong>2</strong><span>Best streak</span></div>
                 </div>
               </section>
+
+              <button class="mz-level" type="button" data-go="ranks" data-rank-plate>
+                <span class="mz-level__badge"><img src="assets/my-zone/level-badge.png" alt=""></span>
+                <span class="mz-level__body">
+                  <span class="mz-level__head">
+                    <span class="mz-level__points">
+                      <img src="assets/icons/soccer-ball.svg" alt="" width="16" height="16">
+                      <b data-level-points>1 520</b>
+                      <small data-level-goal>/2 000</small>
+                    </span>
+                    <span class="mz-level__all">All levels
+                      <img src="assets/icons/chevron-down.svg" alt="" width="10" height="10">
+                    </span>
+                  </span>
+                  <span class="mz-level__meter"><i data-level-bar></i></span>
+                  <span class="mz-level__foot">
+                    <b data-rank-label>Diamond</b>
+                    <span>Next level: <b data-level-next>Master</b></span>
+                  </span>
+                </span>
+              </button>
 
               <section class="mz-achievements" aria-labelledby="mz-achievements-title">
                 <div class="mz-heading">
@@ -737,13 +901,8 @@
               <section class="mz-history" aria-labelledby="mz-history-title">
                 <div class="mz-heading mz-heading--single"><h2 id="mz-history-title">Pick history</h2></div>
                 <div class="mz-history__list">
-                  <div class="mz-live">
-                    <div class="mz-live__badge"><i></i><strong>LIVE</strong><span>67’</span></div>
-                    <div class="mz-live__match">
-                      <span class="mz-live__team"><img src="assets/my-zone/arsenal.png" alt="" width="24" height="24">ARS</span>
-                      <strong>2 <i>–</i> 2</strong>
-                      <span class="mz-live__team"><img src="assets/my-zone/chelsea.png" alt="" width="24" height="24">CHE</span>
-                    </div>
+                  <div class="livewrap">
+                    <div class="live-track" data-live-track></div>
                   </div>
 
                   <div class="mz-result">
@@ -754,7 +913,7 @@
                       </div>
                       <div class="mz-result__names"><strong>Chelsea</strong><i>–</i><strong>Arsenal</strong></div>
                     </div>
-                    <div class="mz-result__points"><strong>+150</strong><img src="assets/icons/coin.svg" alt="points" width="16" height="16"></div>
+                    <div class="mz-result__points"><strong>+30</strong><img src="assets/icons/coin.svg" alt="points" width="16" height="16"></div>
                   </div>
 
                   <div class="mz-result">
@@ -765,7 +924,7 @@
                       </div>
                       <div class="mz-result__names"><strong>Bayern Munich</strong><i>–</i><strong>Borussia Dortmund</strong></div>
                     </div>
-                    <div class="mz-result__points"><strong>+40</strong><img src="assets/icons/coin.svg" alt="points" width="16" height="16"></div>
+                    <div class="mz-result__points"><strong>+10</strong><img src="assets/icons/coin.svg" alt="points" width="16" height="16"></div>
                   </div>
                 </div>
                 <button class="mz-history__more" type="button">Full history <img src="assets/icons/chevron-down.svg" alt="" width="16" height="16"></button>
@@ -804,6 +963,85 @@
             </div>
           </div>
 
+        </section>
+
+        <!-- ============ SCREEN: LIVE MATCH ============ -->
+        <section class="screen screen--live" data-screen="live-match">
+          <header class="live-head">
+            <button type="button" data-go="main" aria-label="Back">
+              <img src="assets/icons/chevron-down.svg" alt="" width="20" height="20">
+            </button>
+            <h1 data-live-title>El Clásico · Live</h1>
+            <span aria-hidden="true"></span>
+          </header>
+
+          <div class="live-scroll" data-live-scroll>
+            <div class="live-board">
+              <div class="live-board__meta">
+                <span class="live-board__status"><i></i>Live <b data-live-minute>67’</b></span>
+                <span class="live-board__where" data-live-where>La Liga · Bernabéu</span>
+              </div>
+              <div class="live-board__teams">
+                <span class="live-board__team">
+                  <img data-live-home-logo alt="">
+                  <small data-live-home-name></small>
+                </span>
+                <strong class="live-board__score">
+                  <span data-live-home-score>2</span><i>–</i><span data-live-away-score>1</span>
+                </strong>
+                <span class="live-board__team">
+                  <img data-live-away-logo alt="">
+                  <small data-live-away-name></small>
+                </span>
+              </div>
+            </div>
+
+            <div class="live-content">
+              <section class="live-window" data-live-window aria-live="polite">
+                <div class="live-window__head">
+                  <span class="live-window__tag">Live window</span>
+                  <span class="live-window__timer" data-window-timer>
+                    <svg viewBox="0 0 56 56" aria-hidden="true">
+                      <circle class="live-window__track" cx="28" cy="28" r="24"></circle>
+                      <circle class="live-window__fill" cx="28" cy="28" r="24" data-window-ring></circle>
+                    </svg>
+                    <b data-window-seconds>15</b>
+                  </span>
+                </div>
+                <h2 data-window-question>Who scores next?</h2>
+                <div class="live-window__options" data-window-options></div>
+                <p class="live-window__locked" data-window-locked hidden></p>
+              </section>
+
+              <section class="live-events" aria-labelledby="live-events-title">
+                <div class="live-events__head">
+                  <p class="section-label" id="live-events-title"><i aria-hidden="true">◆</i> Match events</p>
+                  <button class="pill-tag" type="button" data-events-order aria-pressed="true">Newest first</button>
+                </div>
+                <div class="live-events__list" data-events-list></div>
+              </section>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ SCREEN: RANKS ============ -->
+        <section class="screen screen--ranks" data-screen="ranks">
+          <header class="ranks-head">
+            <button type="button" data-go="my-zone" aria-label="Back to My Zone">
+              <img src="assets/icons/chevron-down.svg" alt="" width="20" height="20">
+            </button>
+            <h1>My rank</h1>
+            <span aria-hidden="true"></span>
+          </header>
+          <div class="ranks-scroll">
+            <div class="ranks-content">
+              <div class="ranks-heading">
+                <p class="section-label"><i aria-hidden="true">◆</i> Rank ladder</p>
+                <span class="pill-tag">Season</span>
+              </div>
+              <div class="ranks-list" data-ranks-list></div>
+            </div>
+          </div>
         </section>
 
         <!-- ============ SCREEN: NOTIFICATIONS ============ -->
@@ -1171,6 +1409,35 @@
             <div class="settings-language-search"><img src="assets/search.svg" alt="" width="18" height="18"><input type="search" placeholder="Search club..." data-team-search></div>
             <div class="club-grid settings-teams__grid" data-team-grid></div>
           </section>
+          <section class="settings-sheet__panel settings-sheet__panel--unlock" data-settings-panel="avatar-unlock" hidden>
+            <i class="settings-sheet__handle"></i>
+            <div class="settings-sheet__content avatar-unlock">
+              <h2>Unlock avatar</h2>
+              <img class="avatar-unlock__preview" src="" alt="" data-unlock-preview>
+              <p class="avatar-unlock__price" data-unlock-price></p>
+              <button class="btn btn--primary" type="button" data-unlock-confirm>Unlock</button>
+              <button class="settings-cancel" type="button" data-sheet-close>Maybe later</button>
+            </div>
+          </section>
+          <section class="settings-sheet__panel settings-sheet__panel--premium" data-settings-panel="premium" hidden>
+            <i class="settings-sheet__handle"></i>
+            <div class="settings-sheet__content premium-sheet">
+              <h2>Activate Premium</h2>
+              <ul class="premium-sheet__list">
+                <li><img src="assets/icons/check.svg" alt="" width="16" height="16">Your own league background</li>
+                <li><img src="assets/icons/check.svg" alt="" width="16" height="16">Custom theme: accent and card colors</li>
+                <li><img src="assets/icons/check.svg" alt="" width="16" height="16">League sticker pack</li>
+                <li><img src="assets/icons/check.svg" alt="" width="16" height="16">2 paid avatars included, free</li>
+                <li><img src="assets/icons/check.svg" alt="" width="16" height="16">Extended member limit</li>
+              </ul>
+              <div class="premium-sheet__price">
+                <span>99 Coins / month</span>
+                <span>÷ 12 members</span>
+                <strong>9 Coins per member</strong>
+              </div>
+              <button class="btn btn--primary" type="button" data-premium-confirm>Activate for 9 Coins/mo</button>
+            </div>
+          </section>
           <section class="settings-sheet__panel settings-sheet__panel--logout" data-settings-panel="logout" hidden>
             <i class="settings-sheet__handle"></i>
             <div class="settings-sheet__content settings-logout">
@@ -1186,7 +1453,7 @@
         <div class="footerbar shell-footer" data-shell-footer>
           <div class="pickbar" data-pickbar hidden>
             <div class="pickbar__info">
-              <span class="pickbar__label">Estimated win:</span>
+              <span class="pickbar__label">Points at stake:</span>
               <span class="pickbar__value">
                 <b data-est>+0</b>
                 <img src="assets/icons/coin.svg" alt="" width="16" height="16">
@@ -1203,7 +1470,7 @@
             <span class="rankings-pin__copy"><strong>Your Name</strong><small>@yournickname</small></span>
             <span class="rankings-score">2 <img src="assets/notifications/crown.svg" alt="" width="14" height="12"></span>
           </div>
-          <button class="league-join" type="button" data-league-join>Participace league</button>
+          <button class="league-join" type="button" data-league-join>Join league</button>
           <form class="league-chat-input" data-league-chat-form>
             <label><img src="assets/league/chat-attachment.svg" alt="" width="16" height="16"><textarea rows="1" placeholder="Type a message..." autocomplete="off" data-league-chat-input></textarea></label>
             <button type="submit" aria-label="Send message" data-league-chat-send disabled><img src="assets/league/chat-send.svg" alt="" width="20" height="20"></button>
@@ -1246,15 +1513,21 @@
 
 </main>
 
-<script src="js/data.js"></script>
+<script src="js/data.js?v=3"></script>
+<script src="js/pick-card.js?v=1"></script>
+<script src="js/leaderboard.js?v=1"></script>
 <script src="js/app.js?v=7"></script>
-<script src="js/main.js"></script>
-<script src="js/rankings.js?v=4"></script>
-<script src="js/arena.js?v=1"></script>
-<script src="js/league.js?v=3"></script>
+<script src="js/main.js?v=4"></script>
+<script src="js/live.js?v=3"></script>
+<script src="js/rankings.js?v=8"></script>
+<script src="js/league.js?v=6"></script>
+<script src="js/league-create.js?v=3"></script>
+<script src="js/league-picks.js?v=1"></script>
 <script src="js/my-zone.js?v=2"></script>
+<script src="js/ranks.js?v=3"></script>
 <script src="js/notifications.js?v=5"></script>
 <script src="js/community.js?v=6"></script>
 <script src="js/settings.js?v=2"></script>
+<script src="js/avatars.js?v=1"></script>
 </body>
 </html>

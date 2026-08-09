@@ -373,12 +373,6 @@
   text-overflow: ellipsis;
 }
 
-.arena-league__pin {
-  width: 12px;
-  height: 12px;
-  flex: none;
-  opacity: .5;
-}
 
 .arena-league__copy small {
   display: -webkit-box;

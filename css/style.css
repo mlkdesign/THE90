@@ -1011,6 +1011,50 @@ img    { display: block; }
 
 
 /* =========================================================
+   Section label — the "◆ RULES" heading shared by the league,
+   live match and rank screens
+   ========================================================= */
+
+.section-label {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  line-height: 18px;
+  text-transform: uppercase;
+}
+.section-label i {
+  color: var(--brand-primary);
+  font-size: 9px;
+  font-style: normal;
+  line-height: 1;
+}
+
+/* Outlined pill used for a section's secondary action or tag */
+.pill-tag {
+  height: 28px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, .2);
+  border-radius: 999px;
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+button.pill-tag { transition: border-color .16s ease, color .16s ease; }
+button.pill-tag:hover { border-color: rgba(255, 255, 255, .45); }
+
+
+/* =========================================================
    Responsive — the mockup is scaled to fit by js/app.js,
    here we only tighten the chrome around it
    ========================================================= */
@@ -1020,4 +1064,103 @@ img    { display: block; }
 }
 @media (max-width: 520px) {
   .stage { gap: 20px; padding: 20px 8px 24px; }
+}
+
+
+/* =========================================================
+   Preset avatars — offered under the upload tile during setup
+   ========================================================= */
+
+.avatar-presets {
+  width: 100%;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.avatar-presets__title {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 18px;
+  text-align: center;
+}
+.avatar-presets__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.avatar-card {
+  position: relative;
+  aspect-ratio: 1;
+  padding: 0;
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: 20px;
+  background: var(--input-bg);
+  transition: border-color .16s ease, transform .12s ease;
+}
+/* only the photo fills the tile — the lock and tick keep their own size */
+.avatar-card__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 22%;
+}
+.avatar-card:active { transform: scale(.97); }
+.avatar-card.is-on { border-color: var(--brand-primary); }
+
+.avatar-card__tick {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  width: 20px;
+  height: 20px;
+  padding: 2px;
+  border-radius: 50%;
+  background: var(--bg-primary);
+}
+
+/* locked ones are dimmed so the price, not the photo, is what you read */
+.avatar-card--locked .avatar-card__photo { filter: brightness(.4); }
+.avatar-card__lock {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 15px;
+  height: 17px;
+  transform: translate(-50%, -80%);
+}
+.avatar-card__price {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  left: 6px;
+  padding: 3px 0;
+  border-radius: 999px;
+  background: rgba(36, 255, 0, .1);
+  color: var(--brand-primary);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 14px;
+  text-align: center;
+}
+
+.avatar-unlock { align-items: center; text-align: center; }
+.avatar-unlock__preview {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto;
+  border-radius: 32px;
+  object-fit: cover;
+  object-position: center 22%;
+}
+.avatar-unlock__price {
+  margin: 0;
+  color: var(--brand-primary);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 24px;
 }

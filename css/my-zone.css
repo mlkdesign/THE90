@@ -56,25 +56,20 @@
   width: 126px;
   height: 126px;
   flex: none;
-  border: 1px solid #cca13b;
-  border-radius: 999px;
-  box-shadow: 0 4px 16px rgba(255, 141, 40, .4);
 }
 .mz-avatar__photo {
-  width: 100%;
-  height: 100%;
-  border-radius: inherit;
+  width: 126px;
+  height: 126px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 50%;
   object-fit: cover;
-  object-position: center;
 }
-.mz-avatar__crown {
+.mz-avatar__rank {
   position: absolute;
-  z-index: 2;
-  left: 50%;
-  bottom: -7px;
-  transform: translateX(-50%);
-  width: 28px;
-  height: 23px;
+  right: 6px;
+  bottom: 6px;
+  width: 36px;
+  height: 36px;
 }
 
 .mz-identity {
@@ -97,28 +92,6 @@
   color: rgba(255, 255, 255, .6);
 }
 
-.mz-balance {
-  height: 64px;
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  border: 1px solid rgba(255, 255, 255, .1);
-  border-radius: 24px;
-  background:
-    linear-gradient(180deg, rgba(36, 255, 0, .2) 0%, rgba(22, 153, 0, 0) 100%),
-    #101a15;
-  overflow: hidden;
-}
-.mz-balance img { width: 24px; height: 24px; }
-.mz-balance strong {
-  font-size: 24px;
-  font-weight: 700;
-  line-height: 32px;
-  letter-spacing: -.24px;
-  color: var(--text-primary);
-}
 
 .mz-stats {
   width: 100%;
@@ -177,6 +150,113 @@
   transform: rotate(-90deg);
 }
 .mz-heading--single { justify-content: flex-start; }
+
+/* =========================================================
+   Level card — Figma › My Zone – Profile › Card (621:3239)
+   Same violet treatment as the status header, so the two read
+   as one thing: where you are and what the next step costs.
+   ========================================================= */
+
+.mz-level {
+  width: 358px;
+  padding: 0 4px 4px 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid #9933ff;
+  border-radius: 24px;
+  background: linear-gradient(to left, rgba(217, 102, 255, 0), rgba(217, 102, 255, .2));
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  text-align: left;
+  transition: filter .18s ease, transform .12s ease;
+}
+.mz-level:hover { filter: brightness(1.1); }
+.mz-level:active { transform: scale(.99); }
+
+.mz-level__badge {
+  width: 100px;
+  height: 100px;
+  flex: 0 0 100px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.mz-level__badge img { width: 74px; height: 74px; object-fit: contain; }
+
+.mz-level__body {
+  min-width: 0;
+  flex: 1;
+  padding: 0 16px 0 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.mz-level__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.mz-level__points {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.mz-level__points b {
+  color: var(--brand-primary);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -.2px;
+}
+.mz-level__points small,
+.mz-level__all {
+  color: #fff;
+  font-size: 10px;
+  opacity: .6;
+}
+.mz-level__all {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+.mz-level__all img { transform: rotate(-90deg); }
+
+.mz-level__meter {
+  height: 12px;
+  padding: 2px;
+  display: block;
+  overflow: hidden;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, .1);
+}
+.mz-level__meter i {
+  display: block;
+  width: 13%;
+  height: 100%;
+  border-radius: 12px;
+  background: var(--brand-primary);
+  transition: width .6s ease;
+}
+
+.mz-level__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #fff;
+  font-size: 10px;
+}
+.mz-level__foot > span { opacity: .6; }
+.mz-level__foot b {
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .5px;
+  opacity: 1;
+}
+.mz-level__foot > span b { margin-left: 4px; }
 
 .mz-achievements,
 .mz-favorites,
@@ -275,98 +355,7 @@ button.mz-showcase__item:active { transform: scale(.94); }
   gap: 8px;
 }
 
-.mz-live {
-  position: relative;
-  width: 100%;
-  height: 64px;
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border: 1px solid var(--brand-primary);
-  border-radius: 24px;
-  background: #101a15;
-  overflow: hidden;
-}
-.mz-live::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  box-shadow: inset 0 0 80px rgba(36, 255, 0, .6);
-  pointer-events: none;
-}
-.mz-live__badge {
-  position: relative;
-  z-index: 1;
-  height: 26px;
-  padding: 3px 8px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  border-radius: 11px;
-  background: var(--bg-primary);
-}
-.mz-live__badge i {
-  width: 4px;
-  height: 4px;
-  border-radius: 2px;
-  background: var(--brand-primary);
-  animation: live-blink 1.4s steps(1, end) infinite;
-}
-.mz-live__badge strong,
-.mz-live__badge span {
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 20px;
-  letter-spacing: .5px;
-}
-.mz-live__badge strong { color: var(--brand-primary); }
-.mz-live__badge span { color: var(--text-dim); }
 
-.mz-live__match {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-}
-.mz-live__team {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 16px;
-  color: #fff;
-}
-.mz-live__team img {
-  width: 24px;
-  height: 24px;
-  padding: 2px;
-  border-radius: 50%;
-  background: #fff;
-  object-fit: contain;
-}
-.mz-live__match > strong {
-  height: 32px;
-  padding: 0 8px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  border-radius: 12px;
-  background: var(--bg-primary);
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 26px;
-  color: #fff;
-}
-.mz-live__match > strong i {
-  font-size: 14px;
-  font-style: normal;
-  color: var(--text-dim);
-}
 
 .mz-result {
   width: 100%;

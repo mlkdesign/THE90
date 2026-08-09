@@ -17,9 +17,23 @@
 .rankings-hero {
   position: relative;
   width: 390px;
-  height: 451px;
+  height: 479px;
   overflow: hidden;
-  background: linear-gradient(180deg, rgba(36, 255, 0, .2) 0%, rgba(22, 153, 0, 0) 100%);
+  background:
+    linear-gradient(180deg, rgba(36, 255, 0, .2) 0%, rgba(22, 153, 0, 0) 100%),
+    var(--bg-primary);
+}
+/* Figma › Global – Top Leaders › Top 3 leaders — the pitch sits under the wash */
+.rankings-hero__bg {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
+  opacity: .4;
+  pointer-events: none;
 }
 /* Dims the podium from below so the steps melt into the list instead of
    being cut off — fully opaque a little before the hero ends. */
@@ -43,7 +57,7 @@
 .rankings-heading {
   position: absolute;
   z-index: 3;
-  top: 62px;
+  top: 134px;
   left: 69px;
   width: 252px;
   display: flex;
@@ -66,34 +80,11 @@
   font-size: 12px;
   line-height: 18px;
 }
-.rankings-tabs {
-  width: 252px;
-  height: 40px;
-  margin-top: 4px;
-  padding: 4px;
-  display: flex;
-  gap: 4px;
-  border-radius: 99px;
-  background: rgba(255, 255, 255, .1);
-}
-.rankings-tabs button {
-  width: 120px;
-  height: 32px;
-  border-radius: 99px;
-  color: var(--text-dim);
-  font-size: 12px;
-  line-height: 18px;
-}
-.rankings-tabs button.is-active {
-  background: var(--brand-primary);
-  color: var(--text-on-brand);
-  font-weight: 600;
-}
 
 .rankings-podium {
   position: absolute;
   z-index: 1;
-  top: 189px;
+  top: 217px;
   left: 0;
   width: 390px;
   height: 262px;
@@ -154,81 +145,90 @@
 .rankings-podium__user--first span { background: linear-gradient(90deg, #ffd626, #d9a621 50%, #ffc208); color: #000; }
 .rankings-podium__user--second span { background: linear-gradient(90deg, #d9dee5, #a8b0b8 50%, #ccd1d9); color: #000; }
 .rankings-podium__user--third span { background: linear-gradient(90deg, #de943d, #b87333 50%, #cc8033); color: #000; }
+.rankings-podium__user span {
+  height: auto;
+  padding: 4px 4px 4px 16px;
+}
 .rankings-podium__user span img,
 .rankings-score img { width: 14px; height: 12px; flex: none; }
 
-.rankings-podium__step {
+/* One drum per place, each standing under its winner. They are taller than the
+   podium box on purpose — the hero's bottom fade swallows the base. */
+.rankings-podium__stand {
   position: absolute;
   z-index: 1;
-  bottom: 0;
-  width: 100px;
-  border: 1px solid;
-  border-radius: 16px 16px 0 0;
-  overflow: hidden;
+  height: 246px;
+  object-fit: cover;
+  object-position: center top;
+  pointer-events: none;
 }
-.rankings-podium__step::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(255, 255, 255, .13), rgba(255, 255, 255, 0));
-}
-.rankings-podium__step b {
-  position: absolute;
-  z-index: 2;
-  top: 12px;
-  left: 36px;
-  width: 28px;
-  height: 28px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  color: #000;
-  font-size: 16px;
-  line-height: 20px;
-}
-.rankings-podium__step--second { left: 25px; height: 108px; border-color: #d9dee5; background: rgba(204, 209, 217, .08); }
-.rankings-podium__step--second b { background: linear-gradient(90deg, #d9dee5, #a8b0b8 50%, #ccd1d9); }
-.rankings-podium__step--first { left: 145px; height: 118px; border-color: #ffd626; background: rgba(255, 214, 38, .09); }
-.rankings-podium__step--first b { background: linear-gradient(90deg, #ffd626, #d9a621 50%, #ffc208); }
-.rankings-podium__step--third { left: 265px; height: 98px; border-color: #de943d; background: rgba(222, 148, 61, .08); }
-.rankings-podium__step--third b { background: linear-gradient(90deg, #de943d, #b87333 50%, #cc8033); }
+.rankings-podium__stand--first  { top: 136px; left: 143px; width: 104px; }
+.rankings-podium__stand--second { top: 146px; left: 24px;  width: 102px; }
+.rankings-podium__stand--third  { top: 156px; left: 257px; width: 116px; }
 
 /* Steps and winners rise from below every time Rankings is opened. */
 @keyframes rankings-rise {
   from { opacity: 0; transform: translateY(48px); }
   to   { opacity: 1; transform: none; }
 }
-.rankings-podium.is-entering .rankings-podium__step,
+.rankings-podium.is-entering .rankings-podium__stand,
 .rankings-podium.is-entering .rankings-podium__user {
   animation: rankings-rise .5s cubic-bezier(.2, .8, .3, 1) backwards;
 }
-.rankings-podium.is-entering .rankings-podium__step--third,
+.rankings-podium.is-entering .rankings-podium__stand--third,
 .rankings-podium.is-entering .rankings-podium__user--third { animation-delay: 0s; }
-.rankings-podium.is-entering .rankings-podium__step--second,
+.rankings-podium.is-entering .rankings-podium__stand--second,
 .rankings-podium.is-entering .rankings-podium__user--second { animation-delay: .09s; }
-.rankings-podium.is-entering .rankings-podium__step--first,
+.rankings-podium.is-entering .rankings-podium__stand--first,
 .rankings-podium.is-entering .rankings-podium__user--first { animation-delay: .18s; }
 
 .rankings-list {
   position: relative;
   z-index: 4;
   width: 390px;
-  min-height: 5600px;
-  padding: 0 16px 220px;
+  /* clears the pinned card and the navbar — no more, now that the list ends
+     at your own position instead of running to rank 100 */
+  padding: 0 16px 170px;
   display: flex;
   flex-direction: column;
   gap: 16px;
   background: var(--bg-primary);
 }
 
-.rankings-leagues {
-  display: none;
-  width: 390px;
-  padding: 0 16px 140px;
+.rankings-neighbours {
+  display: flex;
   flex-direction: column;
   gap: 16px;
 }
-.rankings-leagues h2 {
+/* This heading is the break in the ranks — it sits centred where the row of
+   dots used to be, so it reads as a divider rather than a section label. */
+.rankings-neighbours__title {
+  margin: 0;
+  padding: 8px 0;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  line-height: 14px;
+  text-align: center;
+  text-transform: uppercase;
+}
+.rankings-neighbours__hint {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 16px;
+  text-align: center;
+}
+
+/* The league shelves live in Arena now; the cards keep their own look.
+   The Arena column already carries the gutter, so this just stacks. */
+.arena-leagues {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.arena-leagues h2 {
   margin: 0;
   color: var(--text-primary);
   font-size: 12px;
@@ -258,6 +258,8 @@
   inset: 0;
   background: linear-gradient(90deg, rgba(31, 203, 114, .72), rgba(0, 0, 0, .4));
 }
+.rankings-league-card--own::after { background: linear-gradient(90deg, rgba(31, 203, 114, .55), rgba(0, 0, 0, .5)); }
+.rankings-league-card--own .rankings-league-card__copy { padding-left: 16px; }
 .rankings-league-card--olive::after { background: linear-gradient(90deg, rgba(73, 86, 53, .8), rgba(0, 0, 0, .35)); }
 .rankings-league-card--red::after { background: linear-gradient(90deg, rgba(151, 74, 62, .8), rgba(0, 0, 0, .35)); }
 .rankings-league-card--gray::after { background: linear-gradient(90deg, rgba(86, 86, 86, .8), rgba(0, 0, 0, .35)); }
@@ -294,7 +296,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.rankings-league-card__copy strong i { color: rgba(255, 255, 255, .5); font-size: 9px; font-style: normal; }
 .rankings-league-card__copy small { font-size: 12px; line-height: 14px; }
 .rankings-league-card__copy b { display: flex; align-items: center; gap: 5px; color: var(--brand-primary); font-size: 10px; font-weight: 400; line-height: 20px; white-space: nowrap; }
 .rankings-league-card__place {
@@ -313,11 +314,6 @@
 .rankings-league-card__place small { font-size: 11px; font-weight: 600; line-height: 20px; }
 .rankings-league-card__arrow { width: 12px; flex: 0 0 12px; color: rgba(255, 255, 255, .42); font-size: 28px; line-height: 28px; }
 
-.rankings-scroll.is-leagues .rankings-hero { height: 173px; background: none; }
-.rankings-scroll.is-leagues .rankings-hero::after,
-.rankings-scroll.is-leagues .rankings-podium,
-.rankings-scroll.is-leagues .rankings-list { display: none; }
-.rankings-scroll.is-leagues .rankings-leagues { display: flex; }
 .rankings-row {
   width: 358px;
   height: 40px;
@@ -416,10 +412,247 @@
 .shell-footer.is-rankings .pickbar { display: none !important; }
 .shell-footer.is-rankings .rankings-pin { display: flex; }
 .shell-footer.is-rankings .rankings-pin.is-row-visible { display: none; }
-.shell-footer.is-rankings .rankings-pin.is-scope-hidden { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .rankings-pin { transition: none; }
-  .rankings-podium.is-entering .rankings-podium__step,
+  .rankings-podium.is-entering .rankings-podium__stand,
   .rankings-podium.is-entering .rankings-podium__user { animation: none; }
+}
+
+
+/* =========================================================
+   My own leagues — the ones you created, and the paid skin
+   you can put on them
+   ========================================================= */
+
+.own-leagues:empty { display: none; }
+.own-leagues {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.league-badge {
+  margin-left: 6px;
+  padding: 2px 8px;
+  border: 1px solid var(--brand-primary);
+  border-radius: 999px;
+  color: var(--brand-primary);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+/* ---------- empty state ---------- */
+
+.leagues-empty {
+  width: 358px;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 24px;
+  background: var(--bg-surface);
+  text-align: center;
+}
+.leagues-empty__icon {
+  width: 48px;
+  height: 48px;
+  color: var(--brand-primary);
+}
+.leagues-empty__icon svg { width: 48px; height: 48px; display: block; }
+.leagues-empty strong {
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 26px;
+}
+.leagues-empty p {
+  max-width: 260px;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 20px;
+}
+.leagues-empty__cta {
+  width: auto;
+  margin-top: 8px;
+  padding: 0 32px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+/* secondary entry point once you already own a league */
+.leagues-add {
+  width: 358px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px dashed rgba(255, 255, 255, .2);
+  border-radius: 16px;
+  color: var(--text-primary);
+  font-size: 13px;
+  transition: border-color .16s ease, background .16s ease;
+}
+.leagues-add i { color: var(--brand-primary); font-size: 18px; font-style: normal; line-height: 1; }
+.leagues-add:hover { border-color: rgba(255, 255, 255, .4); background: rgba(255, 255, 255, .04); }
+
+/* ---------- Premium ---------- */
+
+.premium-card {
+  position: relative;
+  width: 358px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 24px;
+  background: var(--bg-surface);
+}
+/* the glow sits in the top-right corner, the way the live block glows */
+.premium-card::after {
+  content: '';
+  position: absolute;
+  top: -60px;
+  right: -40px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(36, 255, 0, .22), rgba(36, 255, 0, 0) 70%);
+  pointer-events: none;
+}
+.premium-card > * { position: relative; }
+
+.premium-card__eyebrow {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--brand-primary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  line-height: 14px;
+  text-transform: uppercase;
+}
+.premium-card h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 28px;
+}
+.premium-card__lead {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 20px;
+}
+.premium-card__features {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  line-height: 16px;
+  text-transform: uppercase;
+}
+.premium-card__features b { color: var(--brand-primary); font-weight: 700; }
+.premium-card__split {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 18px;
+}
+.premium-card__split img { flex: 0 0 20px; }
+.premium-card__split b { color: #fff; font-weight: 700; }
+
+.premium-card__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.premium-card__price {
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 18px;
+}
+.premium-card__price b {
+  color: var(--brand-primary);
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 32px;
+}
+.premium-card__cta {
+  width: auto;
+  height: 48px;
+  padding: 0 24px;
+  font-size: 14px;
+}
+
+.premium-active {
+  width: 358px;
+  height: 48px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--brand-primary);
+  border-radius: 16px;
+  background: rgba(36, 255, 0, .06);
+  color: var(--brand-primary);
+  font-size: 13px;
+  font-weight: 600;
+}
+.premium-active i { color: var(--text-muted); font-style: normal; }
+
+.premium-sheet__list {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  list-style: none;
+}
+.premium-sheet__list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 20px;
+}
+.premium-sheet__price {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .06);
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 18px;
+}
+.premium-sheet__price strong {
+  margin-top: 4px;
+  color: var(--brand-primary);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 22px;
 }

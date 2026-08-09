@@ -158,12 +158,6 @@
     }, 1000);
   });
 
-  if (join) {
-    join.addEventListener('click', function () {
-      join.textContent = join.dataset.joined ? 'Participace league' : 'You are participating';
-      join.dataset.joined = join.dataset.joined ? '' : 'true';
-    });
-  }
 
   /* -------------------------------------------------------
      Full participant list — collapsed shows the top three plus
@@ -178,8 +172,12 @@
   var yourScoreCell = document.querySelector('[data-league-your-score]');
   var leagueScroll = document.querySelector('[data-league-scroll]');
 
+  var BOARD = window.THE90.board;
   var PARTICIPANT_COUNT = 40;
   var YOUR_RANK = 15;
+
+  // You are not on a league's board until you have actually joined it.
+  var joined = true;
   var leagueTop = [
     { name: 'Zara Volkov', handle: '@zarav', avatar: 'assets/league/zara.png', score: 6671 },
     { name: 'Kai Tanaka', handle: '@kait', avatar: 'assets/league/kai.png', score: 6231 },
@@ -203,7 +201,7 @@
   ];
 
   function formatScore(value) {
-    return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return BOARD.format(value);
   }
 
   function participantAt(rank) {
@@ -264,10 +262,56 @@
     return row;
   }
 
-  if (allButton && topBlock && fullBlock) {
+  function createNeighbours(ranks) {
+    var block = document.createElement('div');
+    block.className = 'league-neighbours';
+
+    var title = document.createElement('p');
+    title.className = 'league-neighbours__title';
+    title.textContent = 'Your position';
+    block.appendChild(title);
+
+    ranks.forEach(function (rank) { block.appendChild(createMember(rank)); });
+
+    var index = ranks.indexOf(YOUR_RANK);
+    var above = index > 0 ? ranks[index - 1] : null;
+    var hint = document.createElement('p');
+    hint.className = 'league-neighbours__hint';
+    hint.textContent = BOARD.chaseHint(
+      { rank: YOUR_RANK, score: participantAt(YOUR_RANK).score },
+      above ? {
+        rank: above,
+        score: participantAt(above).score,
+        name: participantAt(above).name
+      } : null,
+      'coins'
+    );
+    block.appendChild(hint);
+    return block;
+  }
+
+  function renderFull() {
+    // Same shape as the global board: the leading 20, then wherever you are.
+    var shape = BOARD.plan(PARTICIPANT_COUNT, joined ? YOUR_RANK : null);
     var fragment = document.createDocumentFragment();
-    for (var rank = 1; rank <= PARTICIPANT_COUNT; rank += 1) fragment.appendChild(createMember(rank));
+
+    shape.lead.forEach(function (rank) {
+      // without membership your seat belongs to whoever is next in line
+      if (!joined && rank === YOUR_RANK) return;
+      fragment.appendChild(createMember(rank));
+    });
+    if (shape.neighbours.length) {
+      fragment.appendChild(createNeighbours(shape.neighbours));
+    }
     fullBlock.replaceChildren(fragment);
+  }
+
+  if (allButton && topBlock && fullBlock) {
+    renderFull();
+    document.addEventListener('the90:league-membership', function (event) {
+      joined = event.detail.joined;
+      renderFull();
+    });
 
     // Keep the pinned card in sync with the score it has inside the full list.
     if (yourScoreCell) {

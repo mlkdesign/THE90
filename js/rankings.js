@@ -1,13 +1,17 @@
-/* THE90 — Global leaderboard with 100 users */
+/* THE90 — Global leaderboard: top 20, then your position with its neighbours */
 (function () {
   'use strict';
+
+  var BOARD = window.THE90.board;
+  var PLAYER_COUNT = 100;
+  var YOUR_RANK = 47;
+  var PODIUM_COUNT = 3;      // ranks 1–3 live on the podium, not in the list
 
   var list = document.querySelector('[data-rankings-list]');
   var scroll = document.querySelector('[data-rankings-scroll]');
   var pin = document.querySelector('[data-rankings-pin]');
   var screen = document.querySelector('[data-screen="rankings"]');
   var podium = document.querySelector('.rankings-podium');
-  var scopeButtons = Array.prototype.slice.call(document.querySelectorAll('[data-ranking-scope]'));
   if (!list || !scroll || !pin || !screen) return;
 
   var firstNames = [
@@ -36,18 +40,18 @@
     10: { name: 'Liam Becker', handle: '@liamb' }
   };
 
+  /* Season points, strictly decreasing. The old scale handed whole blocks of
+     players the same 2 points, which made "N points to pass" meaningless.
+     The decay is tuned so rank 47 lands on the 1 520 shown in My Zone. */
+  var TOP_SCORE = 2480;
+  var DECAY = 0.98942;
+
   function scoreFor(rank) {
-    if (rank === 4) return 89;
-    if (rank === 5) return 88;
-    if (rank === 6) return 87;
-    if (rank < 47) return Math.max(3, 87 - Math.round((rank - 6) * 84 / 40));
-    if (rank <= 64) return 2;
-    if (rank <= 82) return 1;
-    return 0;
+    return Math.round(TOP_SCORE * Math.pow(DECAY, rank - 1));
   }
 
   function generatedUser(rank) {
-    if (rank === 47) {
+    if (rank === YOUR_RANK) {
       return { name: 'Your Name', handle: '@yournickname', avatar: 'assets/img/avatar.png', isYou: true };
     }
     if (known[rank]) {
@@ -92,7 +96,7 @@
 
     var score = document.createElement('span');
     score.className = 'rankings-score';
-    score.textContent = scoreFor(rank) + ' ';
+    score.textContent = BOARD.format(scoreFor(rank)) + ' ';
     var crown = document.createElement('img');
     crown.src = 'assets/notifications/crown.svg';
     crown.alt = '';
@@ -107,26 +111,61 @@
     return row;
   }
 
-  var fragment = document.createDocumentFragment();
-  for (var rank = 4; rank <= 100; rank += 1) fragment.appendChild(createRow(rank));
-  list.replaceChildren(fragment);
-  list.dataset.userCount = '100';
+  function createNeighbours(ranks) {
+    var block = document.createElement('section');
+    block.className = 'rankings-neighbours';
+    block.setAttribute('aria-label', 'Your position');
 
-  scopeButtons.forEach(function (button) {
-    button.addEventListener('click', function () {
-      var leaguesActive = button.dataset.rankingScope === 'leagues';
-      scopeButtons.forEach(function (item) {
-        var active = item === button;
-        item.classList.toggle('is-active', active);
-        item.setAttribute('aria-selected', String(active));
-      });
-      scroll.classList.toggle('is-leagues', leaguesActive);
-      pin.classList.toggle('is-scope-hidden', leaguesActive);
-      pin.classList.remove('is-row-visible');
-      scroll.scrollTop = 0;
-      schedulePinUpdate();
-    });
+    // this heading is what marks the jump in the ranks — it replaces the
+    // row of dots that used to sit here
+    var title = document.createElement('p');
+    title.className = 'rankings-neighbours__title';
+    title.textContent = 'Your position';
+    block.appendChild(title);
+
+    ranks.forEach(function (rank) { block.appendChild(createRow(rank)); });
+    return block;
+  }
+
+  // Shown instead of the neighbours block when there is no position yet.
+  function createUnranked() {
+    var block = document.createElement('p');
+    block.className = 'rankings-neighbours__hint';
+    block.textContent = 'Make your first pick to enter the leaderboard';
+    return block;
+  }
+
+  var shape = BOARD.plan(PLAYER_COUNT, YOUR_RANK);
+  var fragment = document.createDocumentFragment();
+
+  shape.lead.forEach(function (rank) {
+    if (rank > PODIUM_COUNT) fragment.appendChild(createRow(rank));
   });
+
+  if (!YOUR_RANK) {
+    fragment.appendChild(createUnranked());
+  } else if (shape.neighbours.length) {
+    fragment.appendChild(createNeighbours(shape.neighbours));
+  }
+
+  list.replaceChildren(fragment);
+  list.dataset.userCount = String(PLAYER_COUNT);
+
+  // Keep the fixed card at the bottom telling the same story as the rows.
+  (function fillPin() {
+    if (!YOUR_RANK) return;
+    var rankCell = pin.querySelector('.rankings-pin__rank');
+    var scoreCell = pin.querySelector('.rankings-score');
+    if (rankCell) rankCell.textContent = YOUR_RANK;
+    if (!scoreCell) return;
+    scoreCell.textContent = BOARD.format(scoreFor(YOUR_RANK)) + ' ';
+    var crown = document.createElement('img');
+    crown.src = 'assets/notifications/crown.svg';
+    crown.alt = '';
+    crown.width = 14;
+    crown.height = 12;
+    scoreCell.appendChild(crown);
+  })();
 
   var currentRow = list.querySelector('[data-current-rank]');
   var updateQueued = false;
@@ -169,6 +208,10 @@
   window.addEventListener('resize', schedulePinUpdate);
   window.addEventListener('the90:screen', function (event) {
     if (event.detail !== 'rankings') return;
+    // Top Leaders always opens on the podium, however far the list was scrolled
+    // last time — otherwise the section reappears somewhere in the middle.
+    scroll.scrollTop = 0;
+    pin.classList.remove('is-row-visible');
     schedulePinUpdate();
     playPodium();
   });

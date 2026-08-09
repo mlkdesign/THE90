@@ -1,0 +1,378 @@
+/* =========================================================
+   THE90 — live matches
+   Carousel on the main screen, plus the match screen it opens.
+   ========================================================= */
+
+/* ---------- carousel on the main screen ---------- */
+
+.livewrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+/* The track bleeds past the page gutter and carries the gutter itself: the card
+   keeps the same 358px width as everything else in the column, the 8px of
+   vertical air stops the container clipping its border and glow, and the next
+   match shows at the edge instead of being cut off entirely. */
+.live-track {
+  margin: 0 -16px;
+  padding: 8px 16px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-left: 16px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.live-track::-webkit-scrollbar { width: 0; height: 0; }
+.live-track > .live {
+  width: 100%;
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  text-align: left;
+  transition: transform .12s ease, opacity .2s ease;
+}
+.live-track > .live:active { transform: scale(.99); }
+
+/* =========================================================
+   Match screen
+   ========================================================= */
+
+.screen--live {
+  overflow: hidden;
+  background: var(--bg-primary);
+}
+
+.live-head {
+  position: absolute;
+  z-index: 10;
+  top: 62px;
+  left: 0;
+  width: 390px;
+  height: 40px;
+  padding: 10px 16px;
+  display: grid;
+  grid-template-columns: 20px 1fr 20px;
+  align-items: center;
+  background: var(--bg-primary);
+}
+.live-head button,
+.live-head > span { width: 20px; height: 20px; }
+.live-head button { display: grid; place-items: center; }
+.live-head button img { width: 20px; height: 20px; transform: rotate(90deg); }
+.live-head h1 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  line-height: 20px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.live-scroll {
+  position: absolute;
+  inset: 102px 0 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.live-scroll::-webkit-scrollbar { display: none; }
+
+/* ---------- scoreboard ---------- */
+
+.live-board {
+  width: 390px;
+  padding: 12px 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, .1);
+}
+.live-board__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.live-board__status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.live-board__status i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--brand-primary);
+  animation: live-blink 1.4s steps(1, end) infinite;
+}
+.live-board__status b { color: var(--brand-primary); font-size: 15px; font-weight: 800; }
+.live-board__where {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.live-board__teams {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.live-board__team {
+  width: 88px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.live-board__team img {
+  width: 64px;
+  height: 64px;
+  padding: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .06);
+  object-fit: contain;
+}
+.live-board__team small {
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 16px;
+  text-align: center;
+}
+.live-board__score {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #fff;
+  font-size: 56px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  line-height: 60px;
+}
+.live-board__score i {
+  color: rgba(255, 255, 255, .35);
+  font-size: 36px;
+  font-style: normal;
+}
+
+.live-content {
+  width: 390px;
+  padding: 20px 16px 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ---------- the live window ---------- */
+
+.live-window {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-radius: 24px;
+  background: var(--bg-surface);
+}
+.live-window__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.live-window__tag {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.live-window__timer {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+}
+.live-window__timer svg {
+  position: absolute;
+  inset: 0;
+  width: 56px;
+  height: 56px;
+  transform: rotate(-90deg);
+}
+.live-window__track,
+.live-window__fill { fill: none; stroke-width: 3; }
+.live-window__track { stroke: rgba(255, 255, 255, .12); }
+.live-window__fill {
+  stroke: var(--brand-primary);
+  stroke-linecap: round;
+  transition: stroke-dashoffset .9s linear;
+}
+.live-window__timer b {
+  position: relative;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+.is-window-open .live-window__timer b { color: var(--brand-primary); }
+
+.live-window h2 {
+  margin: 0;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 28px;
+}
+
+.live-window__options {
+  display: flex;
+  gap: 8px;
+}
+.live-option {
+  flex: 1 0 0;
+  min-width: 1px;
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid transparent;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .06);
+  transition: border-color .16s ease, background .16s ease, opacity .16s ease;
+}
+/* fixed two-line box so a long club name does not push its percentage
+   out of line with the others */
+.live-option span {
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  line-height: 14px;
+  text-align: center;
+  text-transform: uppercase;
+}
+.live-option b {
+  color: var(--text-muted);
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  line-height: 22px;
+}
+.live-option:hover:not(:disabled):not(.is-on) { background: rgba(255, 255, 255, .1); }
+.live-option:disabled:not(.is-on) { opacity: .5; cursor: default; }
+.live-option.is-on {
+  border-color: var(--brand-primary);
+  background: rgba(36, 255, 0, .08);
+  box-shadow: 0 0 24px rgba(36, 255, 0, .18);
+  opacity: 1;
+}
+.live-option.is-on span { color: var(--text-primary); }
+.live-option.is-on b { color: var(--brand-primary); }
+
+.live-window__locked {
+  margin: 0;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, .08);
+  color: var(--brand-primary);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+/* ---------- events ---------- */
+
+.live-events {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.live-events__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.live-events__list { display: flex; flex-direction: column; }
+
+.live-event {
+  padding: 14px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+.live-event:last-child { border-bottom: 0; }
+.live-event__minute {
+  width: 44px;
+  flex: 0 0 44px;
+  color: var(--brand-primary);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  line-height: 20px;
+}
+.live-event__icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  color: rgba(255, 255, 255, .55);
+}
+.live-event__icon svg { width: 20px; height: 20px; display: block; }
+/* goals are the only events worth colouring */
+.live-event--goal .live-event__icon {
+  color: var(--brand-primary);
+  filter: drop-shadow(0 0 6px rgba(36, 255, 0, .6));
+}
+.live-event--goal .live-event__copy strong { color: var(--brand-primary); }
+
+.live-event__copy {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.live-event__copy strong {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 20px;
+}
+.live-event__copy small {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 17px;
+}
+.live-event__score {
+  flex: none;
+  color: #fff;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  line-height: 20px;
+}
+
+/* On the match screen the footer is navigation only — no pick bar,
+   no leaderboard card. */
+.shell-footer.is-live-match .pickbar,
+.shell-footer.is-live-match .rankings-pin,
+.shell-footer.is-live-match .league-join,
+.shell-footer.is-live-match .league-chat-input { display: none !important; }

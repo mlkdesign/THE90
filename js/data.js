@@ -35,7 +35,6 @@ window.THE90 = (function () {
   /* ---------------- Poisson model ---------------- */
 
   var HOME_EDGE = 1.18;   // home advantage multiplier
-  var MARGIN    = 0.92;   // bookmaker payout (8% margin)
   var MAX_GOALS = 8;
 
   function poisson(k, lambda) {
@@ -80,50 +79,28 @@ window.THE90 = (function () {
     return p;
   }
 
-  function scoreProb(m, h, a) {
-    if (h > MAX_GOALS || a > MAX_GOALS) return 0.0004;
-    return grid(m)[h][a];
-  }
+  /* ---------------- points ----------------
+     Flat, and a card pays once. Calling the exact score is worth 30 and
+     already contains the outcome, so it replaces the 10 rather than adding
+     to it — nothing on a card stacks. 1–1 is exactly as hard to call as
+     4–1, so both pay the same 30: no odds, no favourite bonus, nothing
+     that makes a "bigger" scoreline worth more.
+     ---------------------------------------- */
 
-  /* ---------------- odds & points ---------------- */
+  var POINTS = {
+    outcome:    10,   // 1 / X / 2 on its own
+    score:      30,   // exact score — instead of the 10, not on top of it
+    liveWindow: 20    // separate market, answered during the match
+  };
 
-  function odds(prob) {
-    if (prob <= 0) return 999;
-    return (1 / prob) * MARGIN;
-  }
+  var MAX_PER_MATCH = POINTS.score;   // 30
 
-  // one unit per market — tuned so a single 1X2 pick lands around +100…+250,
-  // the same order of magnitude as the Figma mock (+150)
-  var UNIT = { outcome: 50, score: 15, btts: 25 };
-  var SCORE_CAP = 900;
-
-  function outcomeOdds(m) {
-    var p = probs(m);
-    return { home: odds(p.home), draw: odds(p.draw), away: odds(p.away) };
-  }
-
-  function bttsOdds(m) {
-    var p = probs(m);
-    return { yes: odds(p.bttsYes), no: odds(p.bttsNo) };
-  }
-
-  // points for a complete pick on one card
+  // points for a pick on one card — the best single thing it called
   function pickPoints(m, pick) {
-    var out = 0, sc = 0, bt = 0;
-
-    if (pick.outcome) {
-      out = Math.round(outcomeOdds(m)[pick.outcome] * UNIT.outcome);
-    }
-    if (pick.score && pick.score.home !== null && pick.score.away !== null) {
-      sc = Math.min(
-        SCORE_CAP,
-        Math.round(odds(scoreProb(m, pick.score.home, pick.score.away)) * UNIT.score)
-      );
-    }
-    if (pick.btts) {
-      bt = Math.round(bttsOdds(m)[pick.btts] * UNIT.btts);
-    }
-    return { outcome: out, score: sc, btts: bt, total: out + sc + bt };
+    var hasScore = pick.score && pick.score.home !== null && pick.score.away !== null;
+    if (hasScore) return { outcome: 0, score: POINTS.score, total: POINTS.score };
+    if (pick.outcome) return { outcome: POINTS.outcome, score: 0, total: POINTS.outcome };
+    return { outcome: 0, score: 0, total: 0 };
   }
 
   /* ---------------- crowd split (shown after Accept) ---------------- */
@@ -209,20 +186,101 @@ window.THE90 = (function () {
     return days;
   }
 
-  /* ---------------- live match ---------------- */
+  /* ---------------- live matches ----------------
+     Three at once, so the main screen has something to swipe
+     through and the live screen has something to open.
+     ---------------------------------------------- */
 
-  var LIVE = { home: 'arsenal', away: 'chelsea', scoreHome: 2, scoreAway: 2, minute: 67 };
+  var LIVE_MATCHES = [
+    {
+      id: 'live-1',
+      title: 'El Clásico · Live',
+      league: 'La Liga',
+      venue: 'Bernabéu',
+      home: 'real-madrid', away: 'barcelona',
+      scoreHome: 2, scoreAway: 1,
+      minute: 67,
+      window: {
+        question: 'Who scores next?',
+        options: [
+          { id: 'home', label: 'Real Madrid', share: 41 },
+          { id: 'none', label: 'No goal', share: 27 },
+          { id: 'away', label: 'Barcelona', share: 32 }
+        ]
+      },
+      events: [
+        { minute: '64’', type: 'goal', title: 'Goal — Vinícius Júnior', detail: 'Real Madrid · assist by Bellingham', score: '2–1' },
+        { minute: '58’', type: 'card', title: 'Yellow card — Pedri', detail: 'Barcelona · late tackle on Valverde' },
+        { minute: '51’', type: 'goal', title: 'Goal — Lewandowski', detail: 'Barcelona · penalty, low to the left corner', score: '1–1' },
+        { minute: '45+2’', type: 'whistle', title: 'Half-time', detail: 'Real Madrid lead at the break', score: '1–0' },
+        { minute: '38’', type: 'goal', title: 'Goal — Mbappé', detail: 'Real Madrid · assist by Rodrygo', score: '1–0' },
+        { minute: '12’', type: 'sub', title: 'Substitution — Gavi ↔ De Jong', detail: 'Barcelona' }
+      ]
+    },
+    {
+      id: 'live-2',
+      title: 'London Derby · Live',
+      league: 'Premier League',
+      venue: 'Emirates',
+      home: 'arsenal', away: 'chelsea',
+      scoreHome: 2, scoreAway: 2,
+      minute: 54,
+      window: {
+        question: 'Who scores next?',
+        options: [
+          { id: 'home', label: 'Arsenal', share: 38 },
+          { id: 'none', label: 'No goal', share: 31 },
+          { id: 'away', label: 'Chelsea', share: 31 }
+        ]
+      },
+      events: [
+        { minute: '52’', type: 'goal', title: 'Goal — Palmer', detail: 'Chelsea · low drive from the edge of the box', score: '2–2' },
+        { minute: '47’', type: 'goal', title: 'Goal — Saka', detail: 'Arsenal · assist by Ødegaard', score: '2–1' },
+        { minute: '45+1’', type: 'whistle', title: 'Half-time', detail: 'All square at the break', score: '1–1' },
+        { minute: '33’', type: 'card', title: 'Yellow card — Caicedo', detail: 'Chelsea · pulling back a counter' },
+        { minute: '21’', type: 'goal', title: 'Goal — Jackson', detail: 'Chelsea · header from a corner', score: '1–1' },
+        { minute: '9’', type: 'goal', title: 'Goal — Havertz', detail: 'Arsenal · rebound from the post', score: '1–0' }
+      ]
+    },
+    {
+      id: 'live-3',
+      title: 'Der Klassiker · Live',
+      league: 'Bundesliga',
+      venue: 'Allianz Arena',
+      home: 'bayern', away: 'dortmund',
+      scoreHome: 0, scoreAway: 1,
+      minute: 31,
+      window: {
+        question: 'Who scores next?',
+        options: [
+          { id: 'home', label: 'Bayern Munich', share: 46 },
+          { id: 'none', label: 'No goal', share: 24 },
+          { id: 'away', label: 'Dortmund', share: 30 }
+        ]
+      },
+      events: [
+        { minute: '28’', type: 'card', title: 'Yellow card — Kimmich', detail: 'Bayern Munich · dissent' },
+        { minute: '19’', type: 'goal', title: 'Goal — Adeyemi', detail: 'Dortmund · breakaway, round the keeper', score: '0–1' },
+        { minute: '11’', type: 'sub', title: 'Substitution — Coman ↔ Sané', detail: 'Bayern Munich · early injury change' },
+        { minute: '3’', type: 'whistle', title: 'Kick-off', detail: 'Dortmund get the game under way', score: '0–0' }
+      ]
+    }
+  ];
+
+  // Kept so anything still expecting a single fixture keeps working.
+  var LIVE = LIVE_MATCHES[0];
 
   return {
     CLUBS: CLUBS,
     club: club,
     logo: logo,
     bg: bg,
-    outcomeOdds: outcomeOdds,
-    bttsOdds: bttsOdds,
+    POINTS: POINTS,
+    MAX_PER_MATCH: MAX_PER_MATCH,
     pickPoints: pickPoints,
     crowd: crowd,
     buildCalendar: buildCalendar,
-    LIVE: LIVE
+    LIVE: LIVE,
+    LIVE_MATCHES: LIVE_MATCHES
   };
 })();

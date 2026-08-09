@@ -24,15 +24,13 @@
   var selectedDay = today;
 
   var matches    = today.matches;                    // the 10 daily picks
-  var picks      = {};                               // matchId -> { outcome, score, btts }
+  var picks      = {};                               // matchId -> { outcome, score, derived }
   var accepted   = false;                            // the whole slip has been confirmed
   var editing    = {};                               // matchId -> true while being re-opened
   var expanded   = {};                               // matchId -> true when the row is open
   var showAll    = false;
 
-  matches.forEach(function (m) {
-    picks[m.id] = { outcome: null, score: { home: null, away: null }, btts: null };
-  });
+  matches.forEach(function (m) { picks[m.id] = T.pickCard.blank(); });
 
 
   /* =======================================================
@@ -47,9 +45,7 @@
 
   function fmt(n) { return n.toLocaleString('en-US').replace(/,/g, ' '); }
 
-  function hasPick(p) {
-    return !!(p.outcome || p.btts);
-  }
+  function hasPick(p) { return T.pickCard.hasPick(p); }
 
   function pickCount() {
     return matches.filter(function (m) { return hasPick(picks[m.id]); }).length;
@@ -62,11 +58,6 @@
     }, 0);
   }
 
-  function outcomeFromScore(h, a) {
-    if (h === null || a === null) return null;
-    return h > a ? 'home' : (h === a ? 'draw' : 'away');
-  }
-
   function editCount() { return Object.keys(editing).length; }
 
   // a card is interactive before the slip is accepted, or while being edited
@@ -74,27 +65,13 @@
 
 
   /* =======================================================
-     LIVE block
+     Deadline on the picks header
+
+     A list of matches is a list. A list with a clock on it is
+     a task, so the countdown runs to the end of the day.
      ======================================================= */
 
-  (function initLive() {
-    var L = T.LIVE;
-    $('[data-live-home-logo]').src  = T.logo(L.home);
-    $('[data-live-away-logo]').src  = T.logo(L.away);
-    $('[data-live-home-short]').textContent = T.club(L.home).short;
-    $('[data-live-away-short]').textContent = T.club(L.away).short;
-    $('[data-live-home-score]').textContent = L.scoreHome;
-    $('[data-live-away-score]').textContent = L.scoreAway;
-
-    var minute = L.minute;
-    var minuteEl = $('[data-live-minute]');
-    minuteEl.textContent = minute + '’';
-
-    setInterval(function () {
-      minute = minute >= 90 ? 46 : minute + 1;
-      minuteEl.textContent = minute + '’';
-    }, 10000);
-  })();
+  T.pickCard.countdown($('[data-picks-deadline]'));
 
 
   /* =======================================================
@@ -102,196 +79,11 @@
      ======================================================= */
 
   function openCard(m) {
-    var home = T.club(m.home), away = T.club(m.away);
-
-    var card = el(
-      '<article class="mcard" data-card="' + m.id + '">' +
-        '<div class="mcard__head">' +
-          '<img class="mcard__flag mcard__flag--l" src="' + T.bg(m.home) + '" alt="">' +
-          '<img class="mcard__flag mcard__flag--r" src="' + T.bg(m.away) + '" alt="">' +
-          '<div class="pitch">' +
-            '<span class="pitch__box pitch__box--l"></span>' +
-            '<span class="pitch__box pitch__box--r"></span>' +
-            '<span class="pitch__mid"></span>' +
-            '<span class="pitch__circle"></span>' +
-          '</div>' +
-          '<div class="mcard__meta">' +
-            '<span class="chip">' + m.league + '</span>' +
-            '<span class="mcard__time">' + (selectedDay.isToday ? 'Today' : selectedDay.weekday) + ', ' + m.kickoff + '</span>' +
-          '</div>' +
-          '<div class="mcard__teams">' +
-            '<div class="mcard__team">' +
-              '<img class="mcard__crest" src="' + T.logo(m.home) + '" alt="">' +
-              '<span class="mcard__name">' + home.name + '</span>' +
-            '</div>' +
-            '<div class="mcard__team">' +
-              '<img class="mcard__crest" src="' + T.logo(m.away) + '" alt="">' +
-              '<span class="mcard__name">' + away.name + '</span>' +
-            '</div>' +
-          '</div>' +
-        '</div>' +
-
-        '<div class="mcard__body">' +
-          '<div class="mcard__row">' +
-            '<div class="seg" data-outcome>' +
-              '<button class="seg__btn" type="button" data-val="home"><span>Win 1</span></button>' +
-              '<button class="seg__btn" type="button" data-val="draw"><span>Draw</span></button>' +
-              '<button class="seg__btn" type="button" data-val="away"><span>Win 2</span></button>' +
-            '</div>' +
-          '</div>' +
-
-          '<div class="scores">' +
-            '<div class="stepper" data-side="home">' +
-              '<button class="stepper__btn" type="button" data-step="-1">-</button>' +
-              '<input class="stepper__field" inputmode="numeric" maxlength="2" placeholder="-" aria-label="' + home.name + ' score">' +
-              '<button class="stepper__btn" type="button" data-step="1">+</button>' +
-            '</div>' +
-            '<div class="stepper" data-side="away">' +
-              '<button class="stepper__btn" type="button" data-step="-1">-</button>' +
-              '<input class="stepper__field" inputmode="numeric" maxlength="2" placeholder="-" aria-label="' + away.name + ' score">' +
-              '<button class="stepper__btn" type="button" data-step="1">+</button>' +
-            '</div>' +
-          '</div>' +
-
-          '<div class="btts">' +
-            '<span class="btts__label">Both to score?</span>' +
-            '<div class="seg" data-btts>' +
-              '<button class="seg__btn" type="button" data-val="yes"><span>Yes</span></button>' +
-              '<button class="seg__btn" type="button" data-val="no"><span>No</span></button>' +
-            '</div>' +
-          '</div>' +
-
-          '<div class="mcard__row" data-edit-row hidden>' +
-            '<button class="editbtn" type="button" data-edit>Edit</button>' +
-          '</div>' +
-        '</div>' +
-      '</article>'
-    );
-
-    wireCard(card, m);
-    return card;
-  }
-
-  function wireCard(card, m) {
-    var p = picks[m.id];
-
-    // outcome
-    $$('[data-outcome] .seg__btn', card).forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        if (!isEditable(m)) return;
-        var v = btn.dataset.val;
-        p.outcome = (p.outcome === v) ? null : v;
-
-        // an outcome that contradicts the entered score clears the score
-        var implied = outcomeFromScore(p.score.home, p.score.away);
-        if (p.outcome && implied && implied !== p.outcome) {
-          p.score = { home: null, away: null };
-        }
-        renderCard(card, m);
-        renderPickBar();
-      });
+    return T.pickCard.create(m, picks[m.id], {
+      when: selectedDay.isToday ? 'Today' : selectedDay.weekday,
+      editable: function () { return isEditable(m); },
+      onChange: renderPickBar
     });
-
-    // both to score
-    $$('[data-btts] .seg__btn', card).forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        if (!isEditable(m)) return;
-        var v = btn.dataset.val;
-        var was = p.btts;
-        p.btts = (was === v) ? null : v;
-
-        if (p.btts === 'no') {
-          // "no goals from both" only has one scoreline that is also a draw
-          p.score = { home: 0, away: 0 };
-          p.outcome = 'draw';
-        } else if (was === 'no' && p.btts === null) {
-          // undoing "No" takes the auto-filled 0:0 with it
-          if (p.score.home === 0 && p.score.away === 0) {
-            p.score = { home: null, away: null };
-            p.outcome = null;
-          }
-        } else if (p.btts === 'yes') {
-          // "Yes" fills nothing; it only clears a score that contradicts it
-          if (p.score.home !== null && p.score.away !== null &&
-              !(p.score.home > 0 && p.score.away > 0)) {
-            p.score = { home: null, away: null };
-          }
-        }
-        renderCard(card, m);
-        renderPickBar();
-      });
-    });
-
-    // score steppers + keyboard
-    $$('.stepper', card).forEach(function (st) {
-      var side  = st.dataset.side;
-      var field = $('.stepper__field', st);
-
-      $$('.stepper__btn', st).forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          if (!isEditable(m)) return;
-          var cur = p.score[side];
-          var next = (cur === null ? 0 : cur) + Number(btn.dataset.step);
-          if (next < 0) next = 0;
-          if (next > 20) next = 20;
-          p.score[side] = next;
-          syncScore(m, p);
-          renderCard(card, m);
-          renderPickBar();
-        });
-      });
-
-      field.addEventListener('input', function () {
-        if (!isEditable(m)) return;
-        var raw = field.value.replace(/\D/g, '');
-        p.score[side] = raw === '' ? null : Math.min(20, parseInt(raw, 10));
-        syncScore(m, p);
-
-        // keep the caret usable while typing: patch siblings, not this input
-        renderCard(card, m, field);
-        renderPickBar();
-      });
-
-      field.addEventListener('blur', function () { renderCard(card, m); });
-    });
-  }
-
-  // a complete score decides the outcome (and both-to-score) for you
-  function syncScore(m, p) {
-    if (p.score.home === null || p.score.away === null) return;
-    p.outcome = outcomeFromScore(p.score.home, p.score.away);
-    p.btts    = (p.score.home > 0 && p.score.away > 0) ? 'yes' : 'no';
-  }
-
-  function renderCard(card, m, skipField) {
-    var p = picks[m.id];
-    var picked = hasPick(p);
-    var locked = card.classList.contains('is-locked');
-
-    card.classList.toggle('is-picked', picked);
-
-    $$('[data-outcome] .seg__btn', card).forEach(function (b) {
-      b.classList.toggle('is-on', p.outcome === b.dataset.val);
-    });
-    $$('[data-btts] .seg__btn', card).forEach(function (b) {
-      b.classList.toggle('is-on', p.btts === b.dataset.val);
-    });
-
-    $$('.stepper', card).forEach(function (st) {
-      var side = st.dataset.side, v = p.score[side];
-      var field = $('.stepper__field', st);
-      if (field !== skipField) field.value = v === null ? '' : v;
-      field.classList.toggle('has-value', v !== null);
-      var editable = isEditable(m);
-      $('.stepper__btn[data-step="-1"]', st).disabled = !editable || v === null || v === 0;
-      $('.stepper__btn[data-step="1"]',  st).disabled = !editable;
-    });
-
-    // a confirmed card only shows the markets that were actually played
-    if (locked) {
-      $('.scores', card).hidden = (p.score.home === null || p.score.away === null);
-      $('.btts', card).hidden   = !p.btts;
-    }
   }
 
 
@@ -348,7 +140,7 @@
       renderPicks();
     });
 
-    renderCard(card, m);
+    card.render();
     return card;
   }
 
@@ -356,7 +148,7 @@
   function editableCard(m) {
     var card = openCard(m);
     card.classList.add('is-editing');
-    renderCard(card, m);
+    card.render();
     return card;
   }
 
@@ -376,7 +168,7 @@
       matches.forEach(function (m) {
         var card = openCard(m);
         picksWrap.appendChild(card);
-        renderCard(card, m);
+        card.render();
       });
       watchAll.hidden = true;
       $('[data-picks-dot]').classList.toggle('is-on', pickCount() > 0);

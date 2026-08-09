@@ -184,6 +184,31 @@
   flex-direction: column;
   gap: 16px;
 }
+
+.league-neighbours {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+/* Same divider treatment as the global board. */
+.league-neighbours__title {
+  margin: 0;
+  padding: 8px 0;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  line-height: 14px;
+  text-align: center;
+  text-transform: uppercase;
+}
+.league-neighbours__hint {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 16px;
+  text-align: center;
+}
 .league-member {
   width: 358px;
   min-height: 40px;
@@ -275,19 +300,211 @@
 }
 .league-participants__all[aria-expanded="true"] img { transform: rotate(180deg); }
 
-.league-prizes {
-  padding: 16px;
+/* =========================================================
+   Rules
+   ========================================================= */
+
+.league-rules {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, .03);
 }
-.league-prizes p {
-  margin: 0;
-  color: rgba(247, 250, 248, .5);
+.rules-card {
+  padding: 4px 16px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 24px;
+  background: var(--bg-surface);
+}
+.rule {
+  padding: 16px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+.rule__icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  margin-top: 2px;
+  color: var(--brand-primary);
+}
+.rule__icon svg { width: 20px; height: 20px; display: block; }
+.rule__copy {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.rule__copy strong {
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 18px;
+}
+.rule__copy small {
+  color: var(--text-muted);
   font-size: 12px;
-  line-height: 15px;
+  line-height: 17px;
+}
+.rule__points {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+.rule__points b {
+  color: var(--brand-primary);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  line-height: 18px;
+}
+
+.rules-video {
+  margin: 16px 0;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  border: 1px dashed rgba(255, 255, 255, .18);
+  border-radius: 16px;
+  transition: border-color .16s ease;
+}
+.rules-video:hover { border-color: rgba(255, 255, 255, .34); }
+.rules-video__tag {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.rules-video__play {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--brand-primary);
+  color: var(--text-on-brand);
+  box-shadow: 0 0 32px rgba(36, 255, 0, .35);
+}
+.rules-video__play svg { width: 22px; height: 22px; display: block; margin-left: 3px; }
+.rules-video__label {
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   Prizes
+   ========================================================= */
+
+.league-prizes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.league-prizes__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.prize {
+  position: relative;
+  padding: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  overflow: hidden;
+  border-radius: 24px;
+  background: var(--bg-surface);
+}
+/* The place number sits in the corner as texture, not as a label. */
+.prize__ghost {
+  position: absolute;
+  top: -18px;
+  right: 8px;
+  color: rgba(255, 255, 255, .05);
+  font-size: 120px;
+  font-weight: 800;
+  line-height: 1;
+  pointer-events: none;
+}
+.prize__badge {
+  width: 64px;
+  height: 64px;
+  flex: 0 0 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border: 1px solid rgba(255, 255, 255, .2);
+  border-radius: 16px;
+}
+.prize__badge b { color: #fff; font-size: 22px; font-weight: 800; line-height: 24px; }
+.prize__badge small {
+  color: var(--text-muted);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.prize__body {
+  position: relative;
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.prize__label {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.prize__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.prize-chip {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .08);
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+}
+
+/* first place carries the brand colour, everything inside inverts */
+.prize--first {
+  background: var(--brand-primary);
+  box-shadow: 0 0 40px rgba(36, 255, 0, .22);
+}
+.prize--first .prize__ghost { color: rgba(0, 0, 0, .1); }
+.prize--first .prize__badge {
+  border-color: transparent;
+  background: #0E0E0E;
+}
+.prize--first .prize__badge small { color: rgba(255, 255, 255, .6); }
+.prize--first .prize__label { color: rgba(6, 18, 13, .65); }
+.prize--first .prize-chip {
+  background: #0E0E0E;
+  color: var(--text-primary);
 }
 
 /* Shared app footer variants for League and League Chat. */
@@ -470,4 +687,108 @@
   .league-actions button,
   .league-join,
   .league-chat-input > button { transition: none; }
+}
+
+
+/* =========================================================
+   Create your league
+   ========================================================= */
+
+.content--create {
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 20px;
+  padding-top: 78px;
+  padding-bottom: 40px;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.content--create::-webkit-scrollbar { display: none; }
+.content--create .offer { margin-bottom: 4px; }
+
+.league-cover {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+}
+.league-cover input { position: absolute; opacity: 0; pointer-events: none; }
+.league-cover__preview {
+  width: 72px;
+  height: 72px;
+  flex: 0 0 72px;
+  display: grid;
+  place-items: center;
+  border: 1px dashed rgba(255, 255, 255, .32);
+  border-radius: 20px;
+  background: var(--input-bg);
+  background-position: center;
+  background-size: cover;
+  color: var(--text-muted);
+  font-size: 24px;
+}
+.league-cover__preview.has-image { color: transparent; border-style: solid; }
+.league-cover__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.league-cover__copy strong {
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+}
+.league-cover__copy small {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.create-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.create-row__label {
+  margin-left: 2px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+}
+.create-submit { margin-top: 4px; }
+
+
+/* =========================================================
+   Daily picks inside a league
+
+   Same card as Main, turned on its side: the round is a short
+   list you swipe through rather than a page you scroll.
+   ========================================================= */
+
+.league-picks {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.league-picks .section-head { padding: 0; }
+
+.picks-track {
+  margin: 0 -16px;
+  padding: 0 16px 8px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-left: 16px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.picks-track::-webkit-scrollbar { width: 0; height: 0; }
+.picks-track > .mcard {
+  width: 358px;
+  flex: 0 0 358px;
+  scroll-snap-align: start;
 }
