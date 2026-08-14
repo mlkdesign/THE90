@@ -176,7 +176,7 @@
   }
 
   function isAppScreen(name) {
-    return name === 'main' || name === 'rankings' || name === 'arena' || name === 'my-zone' || name === 'notifications' ||
+    return name === 'main' || name === 'rankings' || name === 'arena' || name === 'leagues' || name === 'my-zone' || name === 'notifications' ||
       name === 'invite-friends' || name === 'support' || name === 'support-contact' ||
       name === 'support-requests' || name === 'support-chat' ||
       name.indexOf('settings') === 0;

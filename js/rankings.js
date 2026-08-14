@@ -120,7 +120,7 @@
     // row of dots that used to sit here
     var title = document.createElement('p');
     title.className = 'rankings-neighbours__title';
-    title.textContent = 'Your position';
+    title.textContent = '•••';
     block.appendChild(title);
 
     ranks.forEach(function (rank) { block.appendChild(createRow(rank)); });
@@ -204,17 +204,51 @@
     podium.classList.add('is-entering');
   }
 
-  scroll.addEventListener('scroll', schedulePinUpdate, { passive: true });
-  window.addEventListener('resize', schedulePinUpdate);
+
+  /* =======================================================
+     Parallax
+
+     The top three sit on a block that only travels half as
+     far as the page does, so it appears to rise slowly while
+     the leaderboard climbs over it. The shade that covers the
+     podium belongs to the list, not to the hero, so it arrives
+     with the ranks rather than staying put (see rankings.css).
+
+     Written straight from the scroll handler rather than from a
+     frame callback: a parallax that lags the scroll by a frame
+     is exactly the wobble it is supposed to avoid.
+     ======================================================= */
+
+  var hero = document.querySelector('.rankings-hero');
+  var RATE = .5;
+  var still = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  function parallax() {
+    if (!hero) return;
+    var drift = still.matches ? 0 : Math.max(0, scroll.scrollTop) * RATE;
+    hero.style.transform = drift ? 'translate3d(0,' + drift.toFixed(2) + 'px,0)' : '';
+  }
+
+  scroll.addEventListener('scroll', function () {
+    parallax();
+    schedulePinUpdate();
+  }, { passive: true });
+  window.addEventListener('resize', function () {
+    parallax();
+    schedulePinUpdate();
+  });
+  if (still.addEventListener) still.addEventListener('change', parallax);
   window.addEventListener('the90:screen', function (event) {
     if (event.detail !== 'rankings') return;
     // Top Leaders always opens on the podium, however far the list was scrolled
     // last time — otherwise the section reappears somewhere in the middle.
     scroll.scrollTop = 0;
+    parallax();
     pin.classList.remove('is-row-visible');
     schedulePinUpdate();
     playPodium();
   });
+  parallax();
   schedulePinUpdate();
   if (screen.classList.contains('is-active')) playPodium();
 })();

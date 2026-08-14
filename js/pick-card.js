@@ -2,10 +2,12 @@
    THE90 — the pick card
 
    One card, two homes: the daily slip on Main and the round
-   inside a league. Both need identical behaviour — the stepper
-   that counts from zero, the outcome that follows a complete
-   score — so the markup and the wiring live here rather than
-   being written twice and drifting apart.
+   inside a league. Both need identical behaviour, so the markup
+   and the wiring live here rather than being written twice.
+
+   The score is a drum: drag it like the wheel on a phone, or
+   step it with the buttons — the page's own scroll never moves
+   it. Position one is "–" (no score at all), then 0 through 20.
    ========================================================= */
 
 (function () {
@@ -15,6 +17,9 @@
 
   var $  = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+
+  var MAX_GOALS = 20;
+  var CELL = 48;            // one drum position, in px
 
   function el(html) {
     var d = document.createElement('div');
@@ -34,16 +39,17 @@
     p.derived = true;
   }
 
-  // the first value on one side starts the other at 0 — that is what makes
-  // 2–0 three taps instead of four
+  // the first value on one side starts the other at 0
   function seedOtherSide(p, side) {
     var other = side === 'home' ? 'away' : 'home';
     if (p.score[other] === null) p.score[other] = 0;
   }
 
-  // emptying a side takes back the outcome the complete score had filled in
-  function clearScore(p, side) {
-    p.score[side] = null;
+  /* Half a scoreline is not a scoreline. Sending one side back to "–" drops
+     the other with it — the same rule as entering one, which seeds the other
+     at 0 — along with any outcome the pair had filled in. */
+  function clearScore(p) {
+    p.score = { home: null, away: null };
     if (!p.derived) return;
     p.outcome = null;
     p.derived = false;
@@ -55,6 +61,22 @@
 
   function hasPick(p) { return !!p.outcome; }
 
+  // drum index 0 is "no score"; 1…21 are the goals 0…20
+  function toIndex(value) { return value === null ? 0 : value + 1; }
+  function fromIndex(i) { return i <= 0 ? null : Math.min(MAX_GOALS, i - 1); }
+
+  function drumMarkup(side, label) {
+    var cells = '<span class="drum__cell drum__cell--none">–</span>';
+    for (var g = 0; g <= MAX_GOALS; g += 1) cells += '<span class="drum__cell">' + g + '</span>';
+    return '<div class="scorepad" data-side="' + side + '">' +
+      '<button class="scorepad__step" type="button" data-step="-1" aria-label="Fewer goals for ' + label + '">-</button>' +
+      '<div class="drum" tabindex="0" role="spinbutton" aria-label="' + label + ' score">' +
+        '<div class="drum__reel" data-reel>' + cells + '</div>' +
+      '</div>' +
+      '<button class="scorepad__step" type="button" data-step="1" aria-label="More goals for ' + label + '">+</button>' +
+    '</div>';
+  }
+
 
   /* =======================================================
      Build
@@ -62,9 +84,6 @@
        match    fixture from THE90.buildCalendar()
        pick     the mutable pick object for that fixture
        options  { when, editable(), onChange() }
-
-     Returns the element with a render() hung off it, so callers
-     can repaint after changing the pick from the outside.
      ======================================================= */
 
   function create(match, pick, options) {
@@ -76,23 +95,20 @@
     var card = el(
       '<article class="mcard" data-card="' + match.id + '">' +
         '<div class="mcard__head">' +
-          '<img class="mcard__flag mcard__flag--l" src="' + T.bg(match.home) + '" alt="">' +
-          '<img class="mcard__flag mcard__flag--r" src="' + T.bg(match.away) + '" alt="">' +
+          '<img class="mcard__pitch" src="assets/img/card-pitch.jpg" alt="">' +
           '<div class="pitch">' +
             '<span class="pitch__box pitch__box--l"></span>' +
             '<span class="pitch__box pitch__box--r"></span>' +
             '<span class="pitch__mid"></span>' +
             '<span class="pitch__circle"></span>' +
           '</div>' +
-          '<div class="mcard__meta">' +
-            '<span class="chip">' + match.league + '</span>' +
-            '<span class="mcard__time">' + (opts.when || 'Today') + ', ' + match.kickoff + '</span>' +
-          '</div>' +
+          '<span class="mcard__when">' + (opts.when || 'Today') + ' • ' + match.kickoff + '</span>' +
           '<div class="mcard__teams">' +
             '<div class="mcard__team">' +
               '<img class="mcard__crest" src="' + T.logo(match.home) + '" alt="">' +
               '<span class="mcard__name">' + home.name + '</span>' +
             '</div>' +
+            '<span class="mcard__vs">VS</span>' +
             '<div class="mcard__team">' +
               '<img class="mcard__crest" src="' + T.logo(match.away) + '" alt="">' +
               '<span class="mcard__name">' + away.name + '</span>' +
@@ -100,65 +116,74 @@
           '</div>' +
         '</div>' +
 
-        '<div class="mcard__body">' +
-          '<div class="mcard__row">' +
-            '<div class="seg" data-outcome>' +
-              '<button class="seg__btn" type="button" data-val="home"><span>Win 1</span></button>' +
-              '<button class="seg__btn" type="button" data-val="draw"><span>Draw</span></button>' +
-              '<button class="seg__btn" type="button" data-val="away"><span>Win 2</span></button>' +
+        '<div class="mcard__bodywrap">' +
+          '<div class="mcard__body">' +
+            '<div class="mcard__block">' +
+              '<p class="mcard__label">Choose the winner or draw:</p>' +
+              '<div class="seg" data-outcome>' +
+                '<button class="seg__btn" type="button" data-val="home"><span>' + home.name + '</span></button>' +
+                '<button class="seg__btn" type="button" data-val="draw"><span>Draw</span></button>' +
+                '<button class="seg__btn" type="button" data-val="away"><span>' + away.name + '</span></button>' +
+              '</div>' +
             '</div>' +
-          '</div>' +
 
-          '<div class="scores">' +
-            '<div class="stepper" data-side="home">' +
-              '<button class="stepper__btn" type="button" data-step="-1">-</button>' +
-              '<input class="stepper__field" inputmode="numeric" maxlength="2" placeholder="-" aria-label="' + home.name + ' score">' +
-              '<button class="stepper__btn" type="button" data-step="1">+</button>' +
+            '<div class="mcard__block">' +
+              '<div class="exact__head">' +
+                '<span class="exact__title">Add exact score <i>(optional)</i></span>' +
+                '<span class="exact__hot">' +
+                  '<img src="assets/icons/fire.svg" alt="" width="14" height="14">Hot pick' +
+                '</span>' +
+              '</div>' +
+              '<div class="exact__body">' +
+                '<div class="scores">' +
+                  drumMarkup('home', home.name) +
+                  drumMarkup('away', away.name) +
+                '</div>' +
+              '</div>' +
             '</div>' +
-            '<div class="stepper" data-side="away">' +
-              '<button class="stepper__btn" type="button" data-step="-1">-</button>' +
-              '<input class="stepper__field" inputmode="numeric" maxlength="2" placeholder="-" aria-label="' + away.name + ' score">' +
-              '<button class="stepper__btn" type="button" data-step="1">+</button>' +
-            '</div>' +
-          '</div>' +
-
-          '<div class="mcard__row" data-edit-row hidden>' +
-            '<button class="editbtn" type="button" data-edit>Edit</button>' +
           '</div>' +
         '</div>' +
       '</article>'
     );
 
-    function render(skipField) {
-      var locked = card.classList.contains('is-locked');
-      card.classList.toggle('is-picked', hasPick(pick));
 
+    /* ---- rendering ---- */
+
+    function paintDrum(pad, animate) {
+      var side = pad.dataset.side;
+      var reel = $('[data-reel]', pad);
+      var index = toIndex(pick.score[side]);
+      reel.style.transition = animate ? 'transform .28s cubic-bezier(.2,.8,.3,1)' : 'none';
+      reel.style.transform = 'translateY(' + (-index * CELL) + 'px)';
+      $$('.drum__cell', reel).forEach(function (cell, i) {
+        cell.classList.toggle('is-current', i === index);
+      });
+      pad.classList.toggle('is-set', pick.score[side] !== null);
+      // a step with nowhere to go is dead: "–" is the floor, 20 the ceiling
+      $$('.scorepad__step', pad).forEach(function (b) {
+        var atEnd = Number(b.dataset.step) < 0 ? index === 0 : index === MAX_GOALS + 1;
+        b.disabled = !editable() || atEnd;
+      });
+    }
+
+    function render(animate) {
+      card.classList.toggle('is-picked', hasPick(pick));
       $$('[data-outcome] .seg__btn', card).forEach(function (b) {
         b.classList.toggle('is-on', pick.outcome === b.dataset.val);
       });
-
-      $$('.stepper', card).forEach(function (st) {
-        var side = st.dataset.side, v = pick.score[side];
-        var field = $('.stepper__field', st);
-        if (field !== skipField) field.value = v === null ? '' : v;
-        field.classList.toggle('has-value', v !== null);
-        var live = editable();
-        $('.stepper__btn[data-step="-1"]', st).disabled = !live;
-        $('.stepper__btn[data-step="1"]',  st).disabled = !live;
-      });
-
-      // a confirmed card only shows the markets that were actually played
-      if (locked) {
-        $('.scores', card).hidden = (pick.score.home === null || pick.score.away === null);
-      }
+      $$('.scorepad', card).forEach(function (pad) { paintDrum(pad, animate !== false); });
     }
 
-    function changed(skipField) {
-      render(skipField);
-      onChange();
+    var answered = false;
+
+    function changed(firstAnswer) {
+      render();
+      onChange(firstAnswer === true);
     }
 
-    // ---- outcome ----
+
+    /* ---- outcome ---- */
+
     $$('[data-outcome] .seg__btn', card).forEach(function (btn) {
       btn.addEventListener('click', function () {
         if (!editable()) return;
@@ -171,55 +196,97 @@
           pick.score = { home: null, away: null };
           pick.derived = false;
         }
-        changed();
+
+        // the very first outcome on this card is the moment to point at the
+        // button; changing your mind afterwards is not
+        var first = !answered && !!pick.outcome;
+        answered = answered || !!pick.outcome;
+        changed(first);
       });
     });
 
-    // ---- score steppers + keyboard ----
-    $$('.stepper', card).forEach(function (st) {
-      var side  = st.dataset.side;
-      var field = $('.stepper__field', st);
 
-      $$('.stepper__btn', st).forEach(function (btn) {
+    /* ---- the score drum ---- */
+
+    function setIndex(side, index) {
+      var next = Math.max(0, Math.min(MAX_GOALS + 1, index));
+      if (next === 0) {
+        clearScore(pick);
+      } else {
+        pick.score[side] = fromIndex(next);
+        seedOtherSide(pick, side);
+        syncScore(pick);
+      }
+    }
+
+    $$('.scorepad', card).forEach(function (pad) {
+      var side = pad.dataset.side;
+      var drum = $('.drum', pad);
+      var reel = $('[data-reel]', pad);
+
+      $$('.scorepad__step', pad).forEach(function (btn) {
         btn.addEventListener('click', function () {
           if (!editable()) return;
-          var cur  = pick.score[side];
-          var step = Number(btn.dataset.step);
-
-          if (cur === null) {
-            // counting starts at 0, and either button reaches it in one tap
-            pick.score[side] = 0;
-            seedOtherSide(pick, side);
-            syncScore(pick);
-          } else if (cur === 0 && step < 0) {
-            clearScore(pick, side);
-          } else {
-            pick.score[side] = Math.max(0, Math.min(20, cur + step));
-            syncScore(pick);
-          }
+          setIndex(side, toIndex(pick.score[side]) + Number(btn.dataset.step));
           changed();
         });
       });
 
-      field.addEventListener('input', function () {
+      // drag the wheel — the reel follows the finger, then settles on a cell
+      var startY = 0, startIndex = 0, dragging = false, moved = false;
+
+      drum.addEventListener('pointerdown', function (event) {
         if (!editable()) return;
-        var raw = field.value.replace(/\D/g, '');
-        if (raw === '') {
-          clearScore(pick, side);
-        } else {
-          pick.score[side] = Math.min(20, parseInt(raw, 10));
-          seedOtherSide(pick, side);
-          syncScore(pick);
-        }
-        // keep the caret usable while typing: patch siblings, not this input
-        changed(field);
+        dragging = true;
+        moved = false;
+        startY = event.clientY;
+        startIndex = toIndex(pick.score[side]);
+        reel.style.transition = 'none';
+        drum.setPointerCapture(event.pointerId);
       });
 
-      field.addEventListener('blur', function () { render(); });
+      drum.addEventListener('pointermove', function (event) {
+        if (!dragging) return;
+        var delta = event.clientY - startY;
+        if (Math.abs(delta) > 3) moved = true;
+        var offset = startIndex * CELL - delta;
+        // rubber-band past the ends so the wheel feels physical
+        var limit = (MAX_GOALS + 1) * CELL;
+        if (offset < 0) offset /= 3;
+        if (offset > limit) offset = limit + (offset - limit) / 3;
+        reel.style.transform = 'translateY(' + (-offset) + 'px)';
+      });
+
+      function settle(event) {
+        if (!dragging) return;
+        dragging = false;
+        if (drum.hasPointerCapture && event && drum.hasPointerCapture(event.pointerId)) {
+          drum.releasePointerCapture(event.pointerId);
+        }
+        if (!moved) { paintDrum(pad, true); return; }
+        var shift = Math.round((event.clientY - startY) / CELL);
+        setIndex(side, startIndex - shift);
+        changed();
+      }
+      drum.addEventListener('pointerup', settle);
+      drum.addEventListener('pointercancel', settle);
+
+      /* No wheel handler on purpose: scrolling the page over a drum used to
+         change the score by accident. The value moves only when you drag it
+         or press the buttons. */
+
+      drum.addEventListener('keydown', function (event) {
+        if (!editable()) return;
+        var step = event.key === 'ArrowUp' ? -1 : (event.key === 'ArrowDown' ? 1 : 0);
+        if (!step) return;
+        event.preventDefault();
+        setIndex(side, toIndex(pick.score[side]) + step);
+        changed();
+      });
     });
 
     card.render = render;
-    render();
+    render(false);
     return card;
   }
 

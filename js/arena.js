@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  var screen = document.querySelector('[data-screen="arena"]');
+  var screen = document.querySelector('[data-screen="leagues"]');
   if (!screen) return;
 
   var REVEAL = 112;
@@ -163,6 +163,6 @@
   });
 
   window.addEventListener('the90:screen', function (event) {
-    if (event.detail !== 'arena') closeOthers(null);
+    if (event.detail !== 'leagues') closeOthers(null);
   });
 })();

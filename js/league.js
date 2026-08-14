@@ -12,17 +12,22 @@
   var join = document.querySelector('[data-league-join]');
   if (!screen || !list || !scroll || !form || !input || !send || !footer) return;
 
-  var STORAGE_KEY = 'the90.leagueChat.v1';
+  /* Bump when the seeded conversation changes — the chat is kept in
+     localStorage, so an old transcript would otherwise stick around. */
+  var STORAGE_KEY = 'the90.leagueChat.v2';
   var LINE_HEIGHT = 20;
   var MAX_LINES = 5;
   var replyPending = false;
   var initialMessages = [
     { role: 'agent', author: 'Alex Rivera', avatar: 'assets/league/chat-alex.png', text: "Hey everyone! Who's coming to the meetup on Saturday? We've got a great topic lined up 🎉", time: '3:10 PM' },
     { role: 'user', text: "I'll be there! Is it still at the usual café? I can bring some snacks if needed.", time: '3:12 PM' },
+    { role: 'system', text: 'Zara Volkov made her picks for Round 3' },
     { role: 'agent', author: 'Alex Rivera', avatar: 'assets/league/chat-alex.png', text: "Yep, same place! Doors open at 2 PM. We're doing a book swap this time.", time: '3:15 PM' },
     { role: 'agent', author: 'Alex Rivera', avatar: 'assets/league/chat-alex.png', text: "Bring any books you've finished — fiction, non-fiction, anything goes!", time: '3:15 PM' },
+    { role: 'system', text: 'Kai Tanaka called the exact score and took 30 points' },
     { role: 'agent', author: 'Leo Hart', avatar: 'assets/league/chat-leo.png', text: "Oh nice, I love book swaps! I've got a couple of novels I've been meaning to pass along.", time: '3:18 PM' },
     { role: 'user', text: "Count me in! I'll bring that sci-fi collection I mentioned last week. Should be a fun afternoon.", time: '3:22 PM' },
+    { role: 'system', text: 'Nina Okafor earned a 500 Coins streak bonus' },
     { role: 'agent', author: 'Marcus', text: "Awesome, sounds like a full house! I'll set up the discussion corner too — last time the debates got pretty lively 😄", time: '3:25 PM' }
   ];
 
@@ -47,6 +52,17 @@
   }
 
   function createMessage(message) {
+    /* Not everything in a league chat is somebody talking — picks landing and
+       bonuses paying out get announced too. Those sit centred and bare, with
+       no avatar and no bubble, so they read as the room rather than a person. */
+    if (message.role === 'system') {
+      var note = document.createElement('p');
+      note.className = 'league-chat-system';
+      note.setAttribute('role', 'status');
+      note.textContent = message.text;
+      return note;
+    }
+
     var row = document.createElement('article');
     var isUser = message.role === 'user';
     row.className = 'league-chat-message' + (isUser ? ' league-chat-message--user' : '');
@@ -346,6 +362,7 @@
       if (leagueScroll) leagueScroll.scrollTop = 0;
     });
   }
+
 
   window.addEventListener('resize', updateComposer);
   window.addEventListener('the90:screen', function (event) {

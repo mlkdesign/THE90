@@ -14,14 +14,37 @@
 }
 .rankings-scroll::-webkit-scrollbar { display: none; }
 
+/* Sits over the scroller, under the status bar's own type: rows and podium
+   dissolve into the background colour as they reach the top instead of being
+   cut off by the edge of the screen. Clear again by the time it reaches the
+   Top Leaders heading, so nothing is dimmed at rest. */
+.rankings-scrim {
+  position: absolute;
+  z-index: 5;
+  top: 0;
+  left: 0;
+  width: 390px;
+  height: 84px;
+  background: linear-gradient(180deg,
+    var(--bg-primary) 0%,
+    rgba(14, 14, 14, .92) 26%,
+    rgba(14, 14, 14, .55) 52%,
+    rgba(14, 14, 14, .18) 76%,
+    rgba(14, 14, 14, 0) 100%);
+  pointer-events: none;
+}
+
 .rankings-hero {
   position: relative;
   width: 390px;
-  height: 479px;
+  height: 400px;
   overflow: hidden;
   background:
     linear-gradient(180deg, rgba(36, 255, 0, .2) 0%, rgba(22, 153, 0, 0) 100%),
     var(--bg-primary);
+  /* js/rankings.js drives translateY on scroll — the block drifts up at half
+     the speed of the list, so the leaderboard climbs over it */
+  will-change: transform;
 }
 /* Figma › Global – Top Leaders › Top 3 leaders — the pitch sits under the wash */
 .rankings-hero__bg {
@@ -35,29 +58,15 @@
   opacity: .4;
   pointer-events: none;
 }
-/* Dims the podium from below so the steps melt into the list instead of
-   being cut off — fully opaque a little before the hero ends. */
-.rankings-hero::after {
-  content: '';
-  position: absolute;
-  z-index: 2;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 120px;
-  background: linear-gradient(180deg,
-    rgba(14, 14, 14, 0) 0%,
-    rgba(14, 14, 14, .22) 42%,
-    rgba(14, 14, 14, .72) 72%,
-    var(--bg-primary) 90%,
-    var(--bg-primary) 100%);
-  pointer-events: none;
-}
+/* The fade that swallows the feet of the podium is not painted here — it
+   belongs to the list (.rankings-list::before) so that it travels with it.
+   Standing still in the hero it would drift away from the list on scroll and
+   leave the steps cut off in mid-air. */
 
 .rankings-heading {
   position: absolute;
   z-index: 3;
-  top: 134px;
+  top: 64px;
   left: 69px;
   width: 252px;
   display: flex;
@@ -84,7 +93,7 @@
 .rankings-podium {
   position: absolute;
   z-index: 1;
-  top: 217px;
+  top: 132px;
   left: 0;
   width: 390px;
   height: 262px;
@@ -182,6 +191,10 @@
 .rankings-podium.is-entering .rankings-podium__stand--first,
 .rankings-podium.is-entering .rankings-podium__user--first { animation-delay: .18s; }
 
+/* Ranks 4 and down ride over the podium: opaque, on top, and carrying their
+   own shade upward. Because the block scrolls at full speed while the hero
+   only manages half, the shade climbs the steps and puts the top three away
+   from the feet up. */
 .rankings-list {
   position: relative;
   z-index: 4;
@@ -193,6 +206,22 @@
   flex-direction: column;
   gap: 16px;
   background: var(--bg-primary);
+  box-shadow: 0 -20px 30px 0 rgba(14, 14, 14, .55);
+}
+.rankings-list::before {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  left: 0;
+  height: 120px;
+  background: linear-gradient(180deg,
+    rgba(14, 14, 14, 0) 0%,
+    rgba(14, 14, 14, .22) 42%,
+    rgba(14, 14, 14, .72) 72%,
+    var(--bg-primary) 90%,
+    var(--bg-primary) 100%);
+  pointer-events: none;
 }
 
 .rankings-neighbours {
@@ -223,12 +252,12 @@
 
 /* The league shelves live in Arena now; the cards keep their own look.
    The Arena column already carries the gutter, so this just stacks. */
-.arena-leagues {
+.leagues-stack {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
-.arena-leagues h2 {
+.leagues-stack h2 {
   margin: 0;
   color: var(--text-primary);
   font-size: 12px;

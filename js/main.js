@@ -15,7 +15,6 @@
   if (!screen) return;
 
   var TOTAL_PICKS  = 10;
-  var COLLAPSED_VISIBLE = 3;
 
   var BASE_BALANCE = 10000;
 
@@ -26,9 +25,6 @@
   var matches    = today.matches;                    // the 10 daily picks
   var picks      = {};                               // matchId -> { outcome, score, derived }
   var accepted   = false;                            // the whole slip has been confirmed
-  var editing    = {};                               // matchId -> true while being re-opened
-  var expanded   = {};                               // matchId -> true when the row is open
-  var showAll    = false;
 
   matches.forEach(function (m) { picks[m.id] = T.pickCard.blank(); });
 
@@ -58,10 +54,6 @@
     }, 0);
   }
 
-  function editCount() { return Object.keys(editing).length; }
-
-  // a card is interactive before the slip is accepted, or while being edited
-  function isEditable(m) { return !accepted || !!editing[m.id]; }
 
 
   /* =======================================================
@@ -71,200 +63,255 @@
      a task, so the countdown runs to the end of the day.
      ======================================================= */
 
+  /* =======================================================
+     The round
+
+     Ten cards on one horizontal rail, one card per swipe.
+
+     Answering a card reveals the confirmation card and arms its
+     button; pressing it is what banks the pick and moves the
+     progress bar. Until then the button stays dead, so every card
+     needs a deliberate confirmation before the round moves on.
+     ======================================================= */
+
+  var picksWrap = $('[data-picks]');
+  var winbar    = $('[data-winbar]');
+  var winPoints = $('[data-win-points]');
+  var winNext   = $('[data-win-next]');
+  var winClose  = $('[data-win-close]');
+  var doneCell  = $('[data-picks-done]');
+  var totalCell = $('[data-picks-total]');
+  var meter     = $('[data-picks-meter]');
+
+  var cards = {};        // matchId -> element
+  var banked = {};       // matchId -> true once the pick has been confirmed
+  var doneCard  = $('[data-picks-done-card]');
+  var donePoints = $('[data-done-points]');
+  var doneEdit  = $('[data-done-edit]');
+  var doneArt   = $('[data-done-art]');
+  var doneAnim  = null;
+  var stillness = window.matchMedia('(prefers-reduced-motion: reduce)');
+
   T.pickCard.countdown($('[data-picks-deadline]'));
 
-
-  /* =======================================================
-     Open (interactive) match card
-     ======================================================= */
-
-  function openCard(m) {
+  function build(m) {
     return T.pickCard.create(m, picks[m.id], {
       when: selectedDay.isToday ? 'Today' : selectedDay.weekday,
-      editable: function () { return isEditable(m); },
-      onChange: renderPickBar
+      editable: function () { return !accepted; },
+      onChange: function (firstAnswer) {
+        // touching a confirmed pick sends it back for confirmation
+        banked[m.id] = false;
+        refresh(firstAnswer);
+      }
     });
   }
 
+  matches.forEach(function (m) {
+    var card = build(m);
+    cards[m.id] = card;
+    picksWrap.insertBefore(card, doneCard);
+  });
 
-  /* =======================================================
-     Accepted card — collapsed row + read-only recap
-     ======================================================= */
-
-  function collapsedCard(m) {
-    var row = el(
-      '<button class="ccard" type="button" data-collapsed="' + m.id + '">' +
-        '<img class="ccard__flag ccard__flag--l" src="' + T.bg(m.home) + '" alt="">' +
-        '<img class="ccard__flag ccard__flag--r" src="' + T.bg(m.away) + '" alt="">' +
-        '<span class="ccard__crests">' +
-          '<img class="ccard__crest" src="' + T.logo(m.home) + '" alt="">' +
-          '<img class="ccard__crest" src="' + T.logo(m.away) + '" alt="">' +
-        '</span>' +
-        '<span class="ccard__names">' +
-          '<span>' + T.club(m.home).name + '</span><i>–</i><span>' + T.club(m.away).name + '</span>' +
-        '</span>' +
-        '<img class="ccard__mark" src="assets/icons/check.svg" alt="Pick accepted" width="16" height="16">' +
-      '</button>'
-    );
-
-    row.addEventListener('click', function () {
-      expanded[m.id] = !expanded[m.id];
-      renderPicks();
-    });
-    return row;
+  function bankedCount() {
+    return matches.filter(function (m) { return banked[m.id]; }).length;
   }
 
-  // confirmed card: read-only recap with the crowd split, plus an Edit button
-  function recapCard(m) {
-    var card = openCard(m);
-    var split = T.crowd(m);
-
-    card.classList.add('is-locked');
-
-    $$('[data-outcome] .seg__btn', card).forEach(function (b) {
-      b.insertAdjacentHTML('beforeend',
-        '<span class="seg__pct">' + split[b.dataset.val] + '%</span>');
-    });
-
-    $('[data-edit-row]', card).hidden = false;
-    $('[data-edit]', card).addEventListener('click', function () {
-      editing[m.id] = true;
-      renderPicks();
-      renderPickBar();
-    });
-
-    // collapse again on a click anywhere in the header
-    $('.mcard__head', card).style.cursor = 'pointer';
-    $('.mcard__head', card).addEventListener('click', function () {
-      expanded[m.id] = false;
-      renderPicks();
-    });
-
-    card.render();
-    return card;
+  function answeredCount() {
+    return matches.filter(function (m) { return hasPick(picks[m.id]); }).length;
   }
 
-  // confirmed card re-opened for editing: no crowd split, fully interactive
-  function editableCard(m) {
-    var card = openCard(m);
-    card.classList.add('is-editing');
-    card.render();
-    return card;
+  // the next card still waiting to be confirmed, wrapping past the end
+  function nextOpen(from) {
+    for (var step = 1; step <= matches.length; step += 1) {
+      var i = (from + step) % matches.length;
+      if (!banked[matches[i].id]) return i;
+    }
+    return -1;
   }
 
+  function currentIndex() {
+    var mid = picksWrap.scrollLeft + picksWrap.clientWidth / 2;
+    var best = 0, bestGap = Infinity;
+    matches.forEach(function (m, i) {
+      var card = cards[m.id];
+      var centre = card.offsetLeft + card.offsetWidth / 2;
+      var gap = Math.abs(centre - mid);
+      if (gap < bestGap) { bestGap = gap; best = i; }
+    });
+    return best;
+  }
 
-  /* =======================================================
-     Picks list
-     ======================================================= */
+  function slideTo(index) {
+    var first = cards[matches[0].id];
+    var card = index === -1 ? doneCard : cards[matches[index].id];
+    picksWrap.scrollTo({
+      left: card.offsetLeft - first.offsetLeft,
+      behavior: stillness.matches ? 'auto' : 'smooth'
+    });
+  }
 
-  var picksWrap  = $('[data-picks]');
-  var watchAll   = $('[data-watch-all]');
-  var watchLabel = $('[data-watch-all-label]');
+  function nudgeCta() {
+    if (!winNext) return;
+    winNext.classList.remove('is-nudging');
+    void winNext.offsetWidth;                 // restart the animation
+    winNext.classList.add('is-nudging');
+  }
 
-  function renderPicks() {
-    picksWrap.innerHTML = '';
+  // the button always speaks for the card you are looking at
+  function updateCta() {
+    if (!winNext) return;
+    var m = matches[currentIndex()];
+    var ready = hasPick(picks[m.id]) && !banked[m.id];
+    winNext.disabled = !ready;
+    winNext.textContent = bankedCount() === matches.length - 1 ? 'Accept all picks' : 'Next pick';
+  }
 
-    if (!accepted) {
-      matches.forEach(function (m) {
-        var card = openCard(m);
-        picksWrap.appendChild(card);
-        card.render();
+  function refresh(firstAnswer) {
+    var done = bankedCount();
+    var total = matches.length;
+
+    if (doneCell) doneCell.textContent = done;
+    if (totalCell) totalCell.textContent = '/' + total;
+    if (meter) meter.style.width = (done / total * 100) + '%';
+    if (winPoints) winPoints.textContent = fmt(totalPoints());
+    if (donePoints) donePoints.textContent = fmt(totalPoints());
+
+    updateCta();
+    applyWinbar();
+    if (firstAnswer) nudgeCta();
+  }
+
+  /* The confirm card belongs to the picks: it is there while you are on
+     them, and gets out of the way as soon as you scroll on. The closing card
+     carries the summary itself, so the two never show together. */
+  function applyWinbar() {
+    showWinbar(answeredCount() > 0 && !isFinished() && atPicks);
+  }
+
+  function isFinished() {
+    return Boolean(doneCard) && !doneCard.hidden;
+  }
+
+  /* The round closes on its own card at the end of the rail: no surface, no
+     border, just the tick, the total and a way back in. */
+  function finish() {
+    if (!doneCard) return;
+    doneCard.hidden = false;
+    refresh();
+    slideTo(-1);
+
+    if (!doneArt || typeof lottie === 'undefined') return;
+    if (doneAnim) { doneAnim.goToAndPlay(0, true); return; }
+
+    /* Fetched as a script rather than handed to lottie as a `path`: an XHR
+       for the JSON is blocked when the prototype is opened straight from
+       disk, and the tick would silently never appear. Still lazy — the file
+       only loads once a round is actually finished. */
+    withDoneData(function (data) {
+      if (doneAnim || !data) return;
+      doneAnim = lottie.loadAnimation({
+        container: doneArt,
+        renderer: 'svg',
+        loop: false,
+        autoplay: true,
+        animationData: data
       });
-      watchAll.hidden = true;
-      $('[data-picks-dot]').classList.toggle('is-on', pickCount() > 0);
+    });
+  }
+
+  function withDoneData(then) {
+    if (window.THE90_PICKS_DONE) return then(window.THE90_PICKS_DONE);
+    var tag = document.createElement('script');
+    tag.src = 'assets/lottie/picks-done.js';
+    tag.onload = function () { then(window.THE90_PICKS_DONE); };
+    tag.onerror = function () { then(null); };
+    document.head.appendChild(tag);
+  }
+
+  if (doneEdit) {
+    doneEdit.addEventListener('click', function () {
+      doneCard.hidden = true;
+      refresh();
+      slideTo(0);
+    });
+  }
+
+  function showWinbar(show) {
+    if (!winbar) return;
+    if (show) {
+      if (winbar.classList.contains('is-in')) return;
+      winbar.hidden = false;
+      void winbar.offsetWidth;      // flush layout so the slide has a start state
+      winbar.classList.add('is-in');
       return;
     }
-
-    var visible = showAll ? matches : matches.slice(0, COLLAPSED_VISIBLE);
-    visible.forEach(function (m) {
-      if (!expanded[m.id])  { picksWrap.appendChild(collapsedCard(m)); return; }
-      picksWrap.appendChild(editing[m.id] ? editableCard(m) : recapCard(m));
-    });
-
-    watchAll.hidden = false;
-    watchAll.classList.toggle('is-open', showAll);
-    watchLabel.textContent = showAll ? 'Hide picks' : 'Watch all picks';
-    $('[data-picks-dot]').classList.add('is-on');
-  }
-
-  watchAll.addEventListener('click', function () {
-    showAll = !showAll;
-    renderPicks();
-  });
-
-
-  /* =======================================================
-     Pick bar
-     ======================================================= */
-
-  var pickbar    = $('[data-pickbar]');
-  var estEl      = $('[data-est]');
-  var acceptBtn  = $('[data-accept]');
-  var countEl    = $('[data-accept-count]');
-
-  function renderPickBar() {
-    var n = pickCount();
-    var isEditPass = accepted && editCount() > 0;
-
-    // hidden until the first pick, and again once the slip is confirmed —
-    // it only comes back while a confirmed card is being edited
-    if (accepted ? !isEditPass : n === 0) { hidePickBar(); return; }
-
-    if (pickbar.hidden) {
-      pickbar.hidden = false;
-      pickbar.classList.remove('is-out');
-    }
-
-    // always the full slip, including the card currently being changed
-    estEl.textContent = '+' + fmt(totalPoints());
-    countEl.textContent = n + '/' + TOTAL_PICKS;
-
-    var ready = n === TOTAL_PICKS;
-    acceptBtn.classList.toggle('is-locked', !ready);
-    acceptBtn.classList.toggle('is-ready', ready);
-    acceptBtn.classList.toggle('is-editpass', isEditPass);   // hides the counter
-  }
-
-  function hidePickBar() {
-    if (pickbar.hidden) return;
-    pickbar.classList.add('is-out');
+    winbar.classList.remove('is-in');
+    // with motion off there is no slide to wait out
+    if (stillness.matches) { winbar.hidden = true; return; }
     setTimeout(function () {
-      pickbar.hidden = true;
-      pickbar.classList.remove('is-out');
-    }, 220);
+      if (!winbar.classList.contains('is-in')) winbar.hidden = true;
+    }, 260);
   }
 
-  acceptBtn.addEventListener('click', function () {
-    if (pickCount() < TOTAL_PICKS) return;
+  var HIDE_AFTER = 100;        // px of page scroll before the bar steps aside
+  var atPicks = true;
+  var pageScroll = $('[data-scroll]');
 
-    var wasEditPass = accepted;
-    var won = totalPoints();
+  /* Read straight off the scroll position rather than watched with an
+     observer: the callback would arrive on a frame, and the bar has to keep
+     up with the scroll it is reacting to. Once you have moved away from the
+     picks the bar is in the way, so it goes early. */
+  function readAtPicks() {
+    return !pageScroll || pageScroll.scrollTop <= HIDE_AFTER;
+  }
 
-    accepted = true;
-    editing  = {};
-    expanded = {};
-    if (!wasEditPass) showAll = false;
+  if (pageScroll) {
+    pageScroll.addEventListener('scroll', function () {
+      var now = readAtPicks();
+      if (now === atPicks) return;
+      atPicks = now;
+      applyWinbar();
+    }, { passive: true });
+  }
 
-    hidePickBar();
-    renderPicks();
+  // swiping between cards re-points the button at whatever is on screen
+  var scrollFrame;
+  picksWrap.addEventListener('scroll', function () {
+    cancelAnimationFrame(scrollFrame);
+    scrollFrame = requestAnimationFrame(updateCta);
+  }, { passive: true });
 
-    var balEl = $('[data-balance]');
-    balEl.textContent = fmt(BASE_BALANCE + won);
-    balEl.classList.remove('is-bump');
-    void balEl.offsetWidth;
-    balEl.classList.add('is-bump');
+  if (winNext) {
+    winNext.addEventListener('click', function () {
+      var here = currentIndex();
+      var m = matches[here];
+      if (!hasPick(picks[m.id]) || banked[m.id]) return;
 
-    // the modal is the reward for completing the slip — not for re-editing it
-    if (wasEditPass) return;
+      banked[m.id] = true;          // this is the confirmation the bar counts
+      var open = nextOpen(here);
+      refresh();
+      if (open !== -1) slideTo(open);
+      else finish();                // that was the last one
+    });
+  }
 
-    $('[data-scroll]').scrollTo({ top: 0, behavior: 'smooth' });
-    openModal(
-      'Congratulations!',
-      'All 10 picks completed successfully. If every one of them lands you take ' +
-      '<b>+' + fmt(won) + '</b> rating points.',
-      'Got It'
-    );
-  });
+  if (winClose) {
+    winClose.addEventListener('click', function () {
+      if (doneCard) doneCard.hidden = true;
+      matches.forEach(function (m) {
+        picks[m.id] = T.pickCard.blank();
+        banked[m.id] = false;
+        var card = build(m);
+        picksWrap.replaceChild(card, cards[m.id]);
+        cards[m.id] = card;
+      });
+      picksWrap.scrollTo({ left: 0, behavior: stillness.matches ? 'auto' : 'smooth' });
+      if (winNext) winNext.classList.remove('is-nudging');
+      refresh();
+    });
+  }
+
+  refresh();
 
 
   /* =======================================================
@@ -304,22 +351,28 @@
       });
     }
 
+    // Figma › match-card (678:5469): the fixture standing on a pitch, kickoff
+    // over the halfway line, a crest and a name on either side of it.
+    function side(slug) {
+      return '<span class="ccard__side">' +
+        '<img class="ccard__crest" src="' + T.logo(slug) + '" alt="">' +
+        '<b>' + T.club(slug).name + '</b>' +
+      '</span>';
+    }
+
+    var when = selectedDay.date + ' ' + selectedDay.monthLong;
+
     dayList.innerHTML = '';
     selectedDay.matches.forEach(function (m) {
       dayList.appendChild(el(
-        '<div class="ccard">' +
-          '<img class="ccard__flag ccard__flag--l" src="' + T.bg(m.home) + '" alt="">' +
-          '<img class="ccard__flag ccard__flag--r" src="' + T.bg(m.away) + '" alt="">' +
-          '<span class="ccard__crests">' +
-            '<img class="ccard__crest" src="' + T.logo(m.home) + '" alt="">' +
-            '<img class="ccard__crest" src="' + T.logo(m.away) + '" alt="">' +
+        '<article class="ccard">' +
+          '<span class="ccard__when">' + when + ' • ' + m.kickoff + '</span>' +
+          '<span class="ccard__row">' +
+            side(m.home) +
+            '<span class="ccard__vs">VS</span>' +
+            side(m.away) +
           '</span>' +
-          '<span class="ccard__names">' +
-            '<span>' + T.club(m.home).name + '</span><i>–</i><span>' + T.club(m.away).name + '</span>' +
-          '</span>' +
-          '<img class="ccard__chev" src="assets/icons/chevron-down.svg" alt="" width="20" height="20" ' +
-               'style="transform:rotate(-90deg)">' +
-        '</div>'
+        '</article>'
       ));
     });
   }
@@ -356,7 +409,6 @@
      Boot
      ======================================================= */
 
-  renderPicks();
   renderCalendar();
 
   // welcome reward — fires as soon as the main screen is first shown

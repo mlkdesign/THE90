@@ -7,7 +7,26 @@
 .screen--league-chat {
   overflow: hidden;
   background: var(--bg-primary);
+  /* the browser keeps vertical panning; sideways is ours, for the pager */
+  touch-action: pan-y;
 }
+
+/* Mid-swipe both screens are on stage at once and follow the pointer;
+   .is-settling is the flick home once you let go (js/league-pager.js). */
+.screen--league.is-paging,
+.screen--league-chat.is-paging {
+  z-index: 12;
+  opacity: 1;
+  visibility: visible;
+  transition: none;
+}
+.screen--league.is-settling,
+.screen--league-chat.is-settling {
+  transition: transform .28s cubic-bezier(.2, .8, .3, 1);
+}
+
+/* the picks rail scrolls sideways on its own */
+.screen--league .picks-track { touch-action: pan-x; }
 
 .league-scroll {
   position: absolute;
@@ -24,6 +43,25 @@
   z-index: 8;
   top: 62px;
   left: 16px;
+}
+
+/* Its mirror image on the right: same button, chevron pointing the other
+   way, because the chat is the screen on that side. */
+.league-chatbtn {
+  z-index: 8;
+  top: 62px;
+  right: 16px;
+  left: auto;
+  overflow: visible;
+}
+.league-chatbtn img { transform: rotate(-90deg); }
+.league-chatbtn .iconbtn__badge {
+  top: -5px;
+  right: -5px;
+  border: 2px solid var(--bg-primary);
+  width: 18px;
+  height: 18px;
+  border-radius: 9px;
 }
 
 .league-hero {
@@ -159,7 +197,10 @@
   font-size: 15px !important;
   font-weight: 600;
 }
-.league-actions__invite { background: rgba(255, 255, 255, .1); color: var(--text-primary); }
+/* the pair share a look — they are two ways into the same league, not a
+   primary action and a secondary one */
+.league-actions__invite,
+.league-actions__rules { background: rgba(255, 255, 255, .1); color: var(--text-primary); }
 .league-actions button:active,
 .league-join:active { transform: scale(.97); }
 .league-actions button:hover,
@@ -364,18 +405,96 @@
   line-height: 18px;
 }
 
+/* ---------------------------------------------------------
+   Rules, on their own page
+
+   Opened from the button next to Invite friend. Same head as
+   the rank ladder, so sub-pages of the app all behave alike.
+   --------------------------------------------------------- */
+
+.screen--lrules {
+  overflow: hidden;
+  background: var(--bg-primary);
+}
+.lrules-head {
+  position: absolute;
+  z-index: 10;
+  top: 62px;
+  left: 0;
+  width: 390px;
+  height: 40px;
+  padding: 10px 16px;
+  display: grid;
+  grid-template-columns: 20px 1fr 20px;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, .1);
+  background: var(--bg-primary);
+}
+.lrules-head button,
+.lrules-head > span { width: 20px; height: 20px; }
+.lrules-head button { display: grid; place-items: center; }
+.lrules-head button img { width: 20px; height: 20px; transform: rotate(90deg); }
+.lrules-head h1 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  text-align: center;
+}
+
+.lrules-scroll {
+  position: absolute;
+  inset: 102px 0 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.lrules-scroll::-webkit-scrollbar { display: none; }
+
+.lrules-content {
+  width: 390px;
+  padding: 20px 16px 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.lrules-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.lrules-lead {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+/* the video: our own poster until you press play, then the real player */
 .rules-video {
-  margin: 16px 0;
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--bg-surface);
+}
+.rules-video__poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
   padding: 20px 16px;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: center;
   gap: 12px;
   border: 1px dashed rgba(255, 255, 255, .18);
   border-radius: 16px;
   transition: border-color .16s ease;
 }
-.rules-video:hover { border-color: rgba(255, 255, 255, .34); }
+.rules-video__poster:hover { border-color: rgba(255, 255, 255, .34); }
 .rules-video__tag {
   color: var(--text-muted);
   font-size: 11px;
@@ -401,6 +520,16 @@
   letter-spacing: .04em;
   text-transform: uppercase;
 }
+.rules-video iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+/* in fullscreen the frame is the whole screen, so drop the card's shaping */
+.rules-video:fullscreen { border-radius: 0; background: #000; }
+
 
 
 /* =========================================================
@@ -412,100 +541,102 @@
   flex-direction: column;
   gap: 12px;
 }
-.league-prizes__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
 
-.prize {
+/* ---------------------------------------------------------
+   Winners' prize — Figma › League › match-card-prize (680:6437)
+
+   The whole thing stands on a floodlit pitch with the cup in
+   the corner: first place written straight onto it, the two
+   runners-up on frosted rows underneath with their badges.
+   --------------------------------------------------------- */
+
+.prizecard {
   position: relative;
-  padding: 20px;
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  overflow: hidden;
+  width: 100%;
+  padding: 64px 16px 16px;
+  border: 1px solid rgba(255, 255, 255, .1);
   border-radius: 24px;
-  background: var(--bg-surface);
+  background: var(--bg-primary);
+  overflow: hidden;
 }
-/* The place number sits in the corner as texture, not as a label. */
-.prize__ghost {
+/* pitch and cup come out of Figma as one exported image */
+.prizecard__bg {
   position: absolute;
-  top: -18px;
-  right: 8px;
-  color: rgba(255, 255, 255, .05);
-  font-size: 120px;
-  font-weight: 800;
-  line-height: 1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
   pointer-events: none;
 }
-.prize__badge {
-  width: 64px;
-  height: 64px;
-  flex: 0 0 64px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  border: 1px solid rgba(255, 255, 255, .2);
-  border-radius: 16px;
-}
-.prize__badge b { color: #fff; font-size: 22px; font-weight: 800; line-height: 24px; }
-.prize__badge small {
-  color: var(--text-muted);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-}
-.prize__body {
+.prizecard__body {
   position: relative;
-  min-width: 0;
-  flex: 1;
+  z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-}
-.prize__label {
-  color: var(--text-muted);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-}
-.prize__chips {
-  display: flex;
-  flex-wrap: wrap;
   gap: 8px;
 }
-.prize-chip {
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, .08);
-  color: var(--text-primary);
+
+/* first place is not a row — it is the card */
+.prizecard__first {
+  width: 210px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #fff;
+}
+.prizecard__first strong {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -.18px;
+  line-height: 23px;
+}
+.prizecard__first p {
+  margin: 0;
   font-size: 12px;
-  font-weight: 600;
-  line-height: 16px;
+  font-weight: 400;
+  line-height: 15px;
 }
 
-/* first place carries the brand colour, everything inside inverts */
-.prize--first {
-  background: var(--brand-primary);
-  box-shadow: 0 0 40px rgba(36, 255, 0, .22);
+.prizerow {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .1);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
 }
-.prize--first .prize__ghost { color: rgba(0, 0, 0, .1); }
-.prize--first .prize__badge {
-  border-color: transparent;
-  background: #0E0E0E;
-}
-.prize--first .prize__badge small { color: rgba(255, 255, 255, .6); }
-.prize--first .prize__label { color: rgba(6, 18, 13, .65); }
-.prize--first .prize-chip {
-  background: #0E0E0E;
+.prizerow__copy {
+  flex: 1 0 0;
+  min-width: 1px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   color: var(--text-primary);
 }
+.prizerow__copy strong {
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 18px;
+  white-space: nowrap;
+}
+.prizerow__copy small {
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 13px;
+  opacity: .6;
+}
+.prizerow__art {
+  width: 100px;
+  flex: none;
+  align-self: stretch;
+  display: grid;
+  place-items: center;
+}
+.prizerow__art img { width: 70px; height: 70px; object-fit: contain; }
+.prizerow--third .prizerow__art img { width: 66px; height: 66px; }
 
 /* Shared app footer variants for League and League Chat. */
 .league-join,
@@ -514,7 +645,10 @@
 .shell-footer.is-league .rankings-pin,
 .shell-footer.is-league-chat .pickbar,
 .shell-footer.is-league-chat .rankings-pin,
-.shell-footer.is-league-chat .league-join { display: none !important; }
+.shell-footer.is-league-chat .league-join,
+.shell-footer.is-league-rules .pickbar,
+.shell-footer.is-league-rules .rankings-pin,
+.shell-footer.is-league-rules .league-join { display: none !important; }
 .shell-footer.is-league .league-join { display: flex; width: 100%; flex: none; }
 .shell-footer.is-league-chat .league-chat-input { display: flex; }
 
@@ -627,6 +761,18 @@
   flex-direction: column;
   gap: 20px;
 }
+/* The room talking rather than a person: picks landing, bonuses paying out.
+   Centred, no avatar, no bubble, no timestamp. */
+.league-chat-system {
+  width: 100%;
+  margin: 0;
+  padding: 2px 24px;
+  color: var(--text-dim);
+  font-size: 11px;
+  line-height: 16px;
+  text-align: center;
+}
+
 .league-chat-message { width: 100%; display: flex; align-items: flex-start; gap: 12px; }
 .league-chat-message--user { justify-content: flex-end; }
 .league-chat-message__avatar {

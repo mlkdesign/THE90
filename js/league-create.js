@@ -10,7 +10,10 @@
   var $  = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
-  var OWN_KEY = 'the90.ownLeagues.v1';
+  /* Bump this whenever the shape of a stored league changes. Leagues are kept
+     in localStorage, so a browser that saw an earlier build keeps handing back
+     the old objects — including cover paths for files that no longer exist. */
+  var OWN_KEY = 'the90.ownLeagues.v4';
   var PREMIUM_KEY = 'the90.premium.v1';
 
   var form = $('[data-league-create-form]');
@@ -19,11 +22,11 @@
   var addButton = $('[data-own-add]');
   if (!form || !listWrap || !empty) return;
 
+  /* Covers exported whole out of Figma: backdrop, the league's art and the
+     fade into the card surface, in one image. */
   var COVERS = [
-    'assets/clubs/bg-arsenal.jpg',
-    'assets/clubs/bg-barcelona.jpg',
-    'assets/clubs/bg-chelsea.jpg',
-    'assets/clubs/bg-liverpool.jpg'
+    'assets/league/card-cover-cup.jpg',
+    'assets/league/card-cover-ball.jpg'
   ];
 
 
@@ -42,16 +45,26 @@
     try { localStorage.setItem(key, JSON.stringify(value)); } catch (error) { /* storage may be unavailable */ }
   }
 
-  // The prototype ships with one league you already run, so the section has
-  // something to show without going through the create flow first.
-  var SEEDED = [{
-    name: 'Office League',
-    cover: 'assets/clubs/bg-arsenal.jpg',
-    privacy: 'invite',
-    privacyLabel: 'Invite only',
-    fee: 100,
-    length: '5 rounds'
-  }];
+  var COVER_CUP = COVERS[0];
+  var COVER_BALL = COVERS[1];
+  var BLURB = 'Invite-only VIP tournament · 5 rounds of top matches · branded prizes from the sponsor';
+
+  // The prototype ships with a full shelf, so "My Leagues" reads the same as
+  // "Joined Leagues" without going through the create flow first.
+  var SEEDED = [
+    { name: 'Office League', cover: COVER_CUP,
+      rank: '#14', of: '/ 128', messages: 145, unread: 3, rounds: 5, subtitle: BLURB,
+      privacy: 'invite', privacyLabel: 'Invite only', fee: 100, length: '5 rounds' },
+    { name: 'Arsenal Fans',  cover: COVER_BALL,
+      rank: '#1',  of: '/ 128', messages: 12,  unread: 0, rounds: 3, subtitle: BLURB,
+      privacy: 'invite', privacyLabel: 'Invite only', fee: 0,   length: '5 rounds' },
+    { name: 'Sunday Derby',  cover: COVER_CUP,
+      rank: '#6',  of: '/ 15',  messages: 87,  unread: 12, rounds: 5, subtitle: BLURB,
+      privacy: 'public', privacyLabel: 'Public',      fee: 0,   length: '5 rounds' },
+    { name: 'Chelsea Crew',  cover: COVER_BALL,
+      rank: '#22', of: '/ 64',  messages: 40,  unread: 0, rounds: 4, subtitle: BLURB,
+      privacy: 'public', privacyLabel: 'Public',      fee: 0,   length: '5 rounds' }
+  ];
 
   var leagues = load(OWN_KEY, null) || SEEDED.slice();
   var premium = load(PREMIUM_KEY, false) === true;
@@ -61,62 +74,88 @@
      The list of leagues you own
      ======================================================= */
 
+  function el(tag, className, text) {
+    var node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  function stat(value, label, modifier, unread) {
+    var cell = el('span', 'lcard__stat' + (modifier ? ' ' + modifier : ''));
+    var top = el('b');
+    top.appendChild(document.createTextNode(value));
+    if (unread) top.appendChild(el('em', 'lcard__new', '+' + unread));
+    cell.appendChild(top);
+    cell.appendChild(el('i', null, label));
+    return cell;
+  }
+
+  /* Same card as the Joined shelf — a league you run should not look like a
+     different species from one you were invited into. */
   function createCard(league, index) {
-    var card = document.createElement('button');
-    card.className = 'rankings-league-card rankings-league-card--own';
-    card.type = 'button';
-    card.dataset.go = 'league';
-    card.dataset.leagueJoined = 'true';
-    card.dataset.leagueOwn = 'true';
+    var card = el('article', 'lcard');
 
-    var bg = document.createElement('img');
-    bg.className = 'rankings-league-card__bg';
-    bg.src = league.cover || COVERS[index % COVERS.length];
-    bg.alt = '';
+    var open = el('button', 'lcard__open');
+    open.type = 'button';
+    open.dataset.go = 'league';
+    open.dataset.leagueJoined = 'true';
+    open.dataset.leagueOwn = 'true';
+    open.setAttribute('aria-label', 'Open ' + league.name);
 
-    var copy = document.createElement('span');
-    copy.className = 'rankings-league-card__copy';
+    var cover = el('span', 'lcard__cover');
 
-    var title = document.createElement('strong');
-    title.textContent = league.name;
+    // a cover saved by an older build may point at a file that has since been
+    // renamed; fall back rather than leave a hole where the photo should be
+    var banner = el('img', 'lcard__banner');
+    banner.src = COVERS.indexOf(league.cover) === -1
+      ? COVERS[index % COVERS.length]
+      : league.cover;
+    banner.alt = '';
+
+    var title = el('span', 'lcard__title');
+    var name = el('strong', null, league.name);
     if (premium) {
-      var badge = document.createElement('em');
-      badge.className = 'league-badge';
-      badge.textContent = 'Premium';
-      title.appendChild(document.createTextNode(' '));
-      title.appendChild(badge);
+      var badge = el('em', 'league-badge', 'Premium');
+      name.appendChild(document.createTextNode(' '));
+      name.appendChild(badge);
     }
+    title.appendChild(name);
+    // a league you set up yourself has its own settings to show
+    title.appendChild(el('small', null, league.subtitle ||
+      (league.privacyLabel + ' · ' + league.length + ' · ' +
+       (league.fee > 0 ? league.fee + ' Coins entry' : 'Free entry'))));
 
-    var sub = document.createElement('small');
-    sub.textContent = league.privacyLabel + ' · ' + league.length +
-      ' · ' + (league.fee > 0 ? league.fee + ' Coins entry' : 'Free entry');
+    cover.appendChild(banner);
 
-    // A chat is the point of a private league, so this line stays here and
-    // nowhere else — public leagues lost it entirely.
-    var chat = document.createElement('b');
-    chat.textContent = 'Chat open · you are the host';
+    var stats = el('span', 'lcard__stats');
+    stats.appendChild(stat(league.rank || '#1', league.of || '/ 1', 'lcard__stat--rank'));
+    stats.appendChild(stat(String(league.messages || 0), 'Messages', null, league.unread));
+    stats.appendChild(stat(String(league.rounds || 5), 'rounds'));
 
-    copy.appendChild(title);
-    copy.appendChild(sub);
-    copy.appendChild(chat);
+    var body = el('span', 'lcard__body');
+    body.appendChild(title);
+    body.appendChild(el('span', 'lcard__rule'));
+    body.appendChild(stats);
 
-    var place = document.createElement('span');
-    place.className = 'rankings-league-card__place';
-    var rank = document.createElement('strong');
-    rank.textContent = '#1';
-    var of = document.createElement('small');
-    of.textContent = '/ 1';
-    place.appendChild(rank);
-    place.appendChild(of);
+    open.appendChild(cover);
+    open.appendChild(body);
 
-    var arrow = document.createElement('span');
-    arrow.className = 'rankings-league-card__arrow';
-    arrow.textContent = '›';
+    var menu = el('button', 'lcard__menu');
+    menu.type = 'button';
+    menu.dataset.lcardMenu = '';
+    menu.setAttribute('aria-haspopup', 'menu');
+    menu.setAttribute('aria-expanded', 'false');
+    menu.setAttribute('aria-label', 'Options for ' + league.name);
+    var dots = el('img');
+    dots.src = 'assets/DotsThreeOutline.svg';
+    dots.width = 20;
+    dots.height = 20;
+    dots.alt = '';
+    menu.appendChild(dots);
 
-    card.appendChild(bg);
-    card.appendChild(copy);
-    card.appendChild(place);
-    card.appendChild(arrow);
+    card.appendChild(open);
+    card.appendChild(menu);
     return card;
   }
 
@@ -170,6 +209,11 @@
     titleEl.textContent = title;
     textEl.textContent = text;
     button.textContent = (cta && cta.label) || 'Got It';
+    button.classList.toggle('is-danger', !!(cta && cta.danger));
+
+    // the trophy belongs to a reward, not to "are you sure you want to delete"
+    var badgeArt = $('.modal__badge');
+    if (badgeArt) badgeArt.hidden = !!(cta && cta.danger);
 
     // app.js routes anything carrying data-go, so the modal button can send
     // you somewhere without this module reaching into the router
@@ -179,12 +223,21 @@
     button.addEventListener('click', function restore() {
       button.removeEventListener('click', restore);
       button.textContent = 'Got It';
+      button.classList.remove('is-danger');
+      if (badgeArt) badgeArt.hidden = false;
       delete button.dataset.go;
+      // the X cancels; getting here means the button itself was pressed
+      if (cta && cta.onConfirm) cta.onConfirm();
     });
 
     modal.hidden = false;
     modal.classList.remove('is-out');
   }
+
+  // the same modal doubles as the confirm for anything destructive
+  window.THE90.confirm = function (title, text, label, onConfirm) {
+    reward(title, text, { label: label, danger: true, onConfirm: onConfirm });
+  };
 
 
   /* =======================================================
@@ -241,6 +294,62 @@
     if (field) field.classList.remove('is-error', 'is-valid');
   }
 
+
+  /* =======================================================
+     Create or edit
+
+     The same form does both: editing loads a league into it and
+     submitting writes back over that one instead of adding.
+     ======================================================= */
+
+  var formTitle = $('.offer__title', form);
+  var formSub = $('.offer__sub', form);
+  var submitButton = $('[data-league-create-submit]', form);
+  var editing = -1;
+
+  function selectSeg(host, value) {
+    if (!host) return;
+    $$('.seg__btn', host).forEach(function (button) {
+      button.classList.toggle('is-on', button.dataset.val === String(value));
+    });
+  }
+
+  function dressForm() {
+    var isEdit = editing > -1;
+    if (formTitle) formTitle.textContent = isEdit ? 'Edit your league' : 'Create your league';
+    if (formSub) formSub.textContent = isEdit
+      ? 'Change what you need — everyone in it sees the update.'
+      : 'Set it up once — invite whoever you want.';
+    if (submitButton) submitButton.textContent = isEdit ? 'Save changes' : 'Create league';
+  }
+
+  function startCreate() {
+    editing = -1;
+    resetForm();
+    selectSeg($('[data-league-privacy]', form), 'invite');
+    selectSeg($('[data-league-fee]', form), '0');
+    selectSeg($('[data-league-length]', form), '5 rounds');
+    dressForm();
+  }
+
+  function startEdit(index) {
+    var league = leagues[index];
+    if (!league) return;
+    editing = index;
+    resetForm();
+    if (nameInput) nameInput.value = league.name;
+    selectSeg($('[data-league-privacy]', form), league.privacy);
+    selectSeg($('[data-league-fee]', form), league.fee);
+    selectSeg($('[data-league-length]', form), league.length);
+    dressForm();
+  }
+
+  // opening the form from anywhere other than an Edit action means "new one"
+  document.addEventListener('click', function (event) {
+    var trigger = event.target.closest('[data-go="league-create"]');
+    if (trigger) startCreate();
+  });
+
   form.addEventListener('submit', function (event) {
     event.preventDefault();
 
@@ -263,28 +372,63 @@
     var fee = $('[data-league-fee]', form);
     var length = $('[data-league-length]', form);
 
-    leagues.push({
+    var settings = {
       name: name,
-      cover: pickedCover,
       privacy: segValue(privacy),
       privacyLabel: segLabel(privacy),
       fee: Number(segValue(fee)) || 0,
       length: segLabel(length)
-    });
+    };
+
+    var wasEditing = editing > -1;
+    if (wasEditing) {
+      // keep everything the card shows that the form does not ask about
+      var current = leagues[editing];
+      Object.keys(settings).forEach(function (key) { current[key] = settings[key]; });
+      if (pickedCover) current.cover = pickedCover;
+      delete current.subtitle;   // the settings line replaces the seeded blurb
+    } else {
+      settings.cover = pickedCover;
+      leagues.push(settings);
+    }
     save(OWN_KEY, leagues);
 
+    editing = -1;
     resetForm();
     renderOwn();
 
-    // Land back on the shelf the new league just joined, so dismissing the
-    // modal leaves you looking at it.
-    var backToArena = document.querySelector('[data-nav="arena"]');
-    if (backToArena) backToArena.click();
+    // Land back on the shelf the league lives on, so dismissing the modal
+    // leaves you looking at it.
+    var backToLeagues = document.querySelector('[data-nav="leagues"]');
+    if (backToLeagues) backToLeagues.click();
+    if (window.THE90 && window.THE90.leaguesTab) window.THE90.leaguesTab('own');
 
-    reward('Your league is live!',
-      'Share the invite link and start picking. ' + name + ' is ready for its first round.',
-      { label: 'Invite friends', go: 'invite-friends' });
+    if (wasEditing) {
+      reward('Changes saved', name + ' has been updated.');
+    } else {
+      reward('Your league is live!',
+        'Share the invite link and start picking. ' + name + ' is ready for its first round.',
+        { label: 'Invite friends', go: 'invite-friends' });
+    }
   });
+
+
+  /* =======================================================
+     What the card's ... menu can do to a league you run
+     ======================================================= */
+
+  window.THE90.ownLeagues = {
+    nameAt: function (index) {
+      return leagues[index] ? leagues[index].name : '';
+    },
+    edit: startEdit,
+    remove: function (index) {
+      if (!leagues[index]) return;
+      leagues.splice(index, 1);
+      save(OWN_KEY, leagues);
+      renderOwn();
+    }
+  };
 
   /* =======================================================
      Which league you are looking at

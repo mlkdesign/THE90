@@ -166,6 +166,9 @@ window.THE90 = (function () {
   /* ---------------- calendar ---------------- */
 
   var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  // the date strip is tight and abbreviates; a fixture card has room to spell it
+  var MONTHS_FULL = ['January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'];
   var WDAYS  = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   function buildCalendar() {
@@ -176,6 +179,7 @@ window.THE90 = (function () {
       days.push({
         key: key,
         month: MONTHS[d.getMonth()],
+        monthLong: MONTHS_FULL[d.getMonth()],
         date: d.getDate(),
         weekday: i === 0 ? 'Today' : WDAYS[d.getDay()],
         isToday: i === 0,
