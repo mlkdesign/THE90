@@ -100,12 +100,13 @@
         name === 'support' || name === 'support-contact' || name === 'support-requests' ||
         name === 'ranks';
       var isLiveMatch = name === 'live-match';
-      var appSection = name === 'main' || name === 'rankings' || name === 'arena' || name === 'leagues' || name === 'my-zone' || isMyZoneSubpage || isLeagueScreen || isSettings || isLiveMatch;
+      var isArenaTournament = name === 'arena-tournament';
+      var appSection = name === 'main' || name === 'rankings' || name === 'arena' || isArenaTournament || name === 'leagues' || name === 'my-zone' || isMyZoneSubpage || isLeagueScreen || isSettings || isLiveMatch;
       shellFooter.classList.toggle('is-visible', appSection);
       shellFooter.classList.toggle('is-my-zone', name === 'my-zone' || isMyZoneSubpage);
       shellFooter.classList.toggle('is-settings', isSettings);
       shellFooter.classList.toggle('is-rankings', name === 'rankings');
-      shellFooter.classList.toggle('is-arena', name === 'arena');
+      shellFooter.classList.toggle('is-arena', name === 'arena' || isArenaTournament);
       shellFooter.classList.toggle('is-leagues', name === 'leagues');
       shellFooter.classList.toggle('is-league', name === 'league');
       shellFooter.classList.toggle('is-league-chat', name === 'league-chat');
@@ -113,7 +114,7 @@
       shellFooter.classList.toggle('is-live-match', isLiveMatch);
       $$('[data-nav]', shellFooter).forEach(function (nav) {
         var activeName = (isSettings || isMyZoneSubpage) ? 'my-zone' :
-          (isLeagueScreen ? 'leagues' : (isLiveMatch ? 'main' : name));
+          (isLeagueScreen ? 'leagues' : ((isLiveMatch ? 'main' : (isArenaTournament ? 'arena' : name))));
         var active = nav.dataset.nav === activeName;
         nav.classList.toggle('is-active', active);
         if (active) nav.setAttribute('aria-current', 'page');

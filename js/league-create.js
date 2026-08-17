@@ -22,11 +22,10 @@
   var addButton = $('[data-own-add]');
   if (!form || !listWrap || !empty) return;
 
-  /* Covers exported whole out of Figma: backdrop, the league's art and the
-     fade into the card surface, in one image. */
+  /* Art exported from THELEAGUES - Main (712:8963). */
   var COVERS = [
-    'assets/league/card-cover-cup.jpg',
-    'assets/league/card-cover-ball.jpg'
+    'assets/leagues/theleagues-gold-trophy.png',
+    'assets/leagues/theleagues-bronze-trophy.png'
   ];
 
 
@@ -47,23 +46,18 @@
 
   var COVER_CUP = COVERS[0];
   var COVER_BALL = COVERS[1];
-  var BLURB = 'Invite-only VIP tournament · 5 rounds of top matches · branded prizes from the sponsor';
+  var BLURB = 'Set your rules, invite friends and compete for the top spot.';
 
-  // The prototype ships with a full shelf, so "My Leagues" reads the same as
-  // "Joined Leagues" without going through the create flow first.
   var SEEDED = [
-    { name: 'Office League', cover: COVER_CUP,
-      rank: '#14', of: '/ 128', messages: 145, unread: 3, rounds: 5, subtitle: BLURB,
+    { name: 'Weekend challenge', cover: COVER_CUP, premium: true,
+      subtitle: 'Guess the outcomes of top matches and win cool prizes',
       privacy: 'invite', privacyLabel: 'Invite only', fee: 100, length: '5 rounds' },
-    { name: 'Arsenal Fans',  cover: COVER_BALL,
-      rank: '#1',  of: '/ 128', messages: 12,  unread: 0, rounds: 3, subtitle: BLURB,
-      privacy: 'invite', privacyLabel: 'Invite only', fee: 0,   length: '5 rounds' },
-    { name: 'Sunday Derby',  cover: COVER_CUP,
-      rank: '#6',  of: '/ 15',  messages: 87,  unread: 12, rounds: 5, subtitle: BLURB,
-      privacy: 'public', privacyLabel: 'Public',      fee: 0,   length: '5 rounds' },
-    { name: 'Chelsea Crew',  cover: COVER_BALL,
-      rank: '#22', of: '/ 64',  messages: 40,  unread: 0, rounds: 4, subtitle: BLURB,
-      privacy: 'public', privacyLabel: 'Public',      fee: 0,   length: '5 rounds' }
+    { name: 'Friends League', cover: COVER_CUP,
+      subtitle: 'Just friends, just football, just the best league.',
+      privacy: 'invite', privacyLabel: 'Invite only', fee: 0, length: '5 rounds' },
+    { name: 'Office Warriors', cover: COVER_BALL,
+      subtitle: 'Colleagues on the field, friends in life. Only forward!',
+      privacy: 'public', privacyLabel: 'Public', fee: 0, length: '5 rounds' }
   ];
 
   var leagues = load(OWN_KEY, null) || SEEDED.slice();
@@ -81,81 +75,132 @@
     return node;
   }
 
-  function stat(value, label, modifier, unread) {
-    var cell = el('span', 'lcard__stat' + (modifier ? ' ' + modifier : ''));
-    var top = el('b');
-    top.appendChild(document.createTextNode(value));
-    if (unread) top.appendChild(el('em', 'lcard__new', '+' + unread));
-    cell.appendChild(top);
-    cell.appendChild(el('i', null, label));
-    return cell;
+  function temporaryShareLabel(button, label) {
+    var previous = button.textContent;
+    button.textContent = label;
+    window.setTimeout(function () { button.textContent = previous; }, 1600);
   }
 
-  /* Same card as the Joined shelf — a league you run should not look like a
-     different species from one you were invited into. */
-  function createCard(league, index) {
-    var card = el('article', 'lcard');
+  function inviteLinkFor(name) {
+    var url = new URL(window.location.href);
+    url.search = '';
+    url.hash = '';
+    url.searchParams.set('league', name);
+    return url.toString();
+  }
 
-    var open = el('button', 'lcard__open');
+  function copyLeagueLink(url) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(url).then(function () { return true; }, function () { return false; });
+    }
+    var input = document.createElement('textarea');
+    input.value = url;
+    input.setAttribute('readonly', '');
+    input.style.position = 'fixed';
+    input.style.opacity = '0';
+    document.body.appendChild(input);
+    input.select();
+    var copied = false;
+    try { copied = document.execCommand('copy'); } catch (error) { /* copying may be unavailable */ }
+    input.remove();
+    return Promise.resolve(copied);
+  }
+
+  function leagueNameFor(button) {
+    if (button.dataset.leagueName) return button.dataset.leagueName;
+    var card = button.closest('.theleagues-card');
+    var title = card && card.querySelector('.theleagues-card__title');
+    if (title) return title.textContent.trim();
+    var page = button.closest('.league-content');
+    var heading = page && page.querySelector('.league-summary h1');
+    return heading ? heading.textContent.trim() : 'THE90 League';
+  }
+
+  function shareLeague(button) {
+    var name = leagueNameFor(button);
+    var url = inviteLinkFor(name);
+    var shareData = {
+      title: name + ' on THE90',
+      text: 'Join my ' + name + ' league on THE90.',
+      url: url
+    };
+
+    if (navigator.share) {
+      navigator.share(shareData).catch(function (error) {
+        if (error && error.name === 'AbortError') return;
+        copyLeagueLink(url).then(function (copied) {
+          temporaryShareLabel(button, copied ? 'Link copied' : 'Share unavailable');
+        });
+      });
+      return;
+    }
+
+    copyLeagueLink(url).then(function (copied) {
+      temporaryShareLabel(button, copied ? 'Link copied' : 'Share unavailable');
+    });
+  }
+
+  document.addEventListener('click', function (event) {
+    var button = event.target.closest('[data-share-league]');
+    if (!button) return;
+    event.preventDefault();
+    event.stopPropagation();
+    shareLeague(button);
+  });
+
+  function createCard(league, index) {
+    var card = el('article', 'theleagues-card');
+    var open = el('button', 'theleagues-card__open');
     open.type = 'button';
     open.dataset.go = 'league';
     open.dataset.leagueJoined = 'true';
     open.dataset.leagueOwn = 'true';
     open.setAttribute('aria-label', 'Open ' + league.name);
 
-    var cover = el('span', 'lcard__cover');
-
-    // a cover saved by an older build may point at a file that has since been
-    // renamed; fall back rather than leave a hole where the photo should be
-    var banner = el('img', 'lcard__banner');
-    banner.src = COVERS.indexOf(league.cover) === -1
-      ? COVERS[index % COVERS.length]
-      : league.cover;
+    var art = el('span', 'theleagues-card__art');
+    var banner = el('img');
+    banner.src = league.cover && COVERS.indexOf(league.cover) > -1
+      ? league.cover
+      : COVERS[index === 2 ? 1 : 0];
     banner.alt = '';
+    art.appendChild(banner);
 
-    var title = el('span', 'lcard__title');
-    var name = el('strong', null, league.name);
-    if (premium) {
-      var badge = el('em', 'league-badge', 'Premium');
-      name.appendChild(document.createTextNode(' '));
-      name.appendChild(badge);
-    }
-    title.appendChild(name);
-    // a league you set up yourself has its own settings to show
-    title.appendChild(el('small', null, league.subtitle ||
-      (league.privacyLabel + ' · ' + league.length + ' · ' +
-       (league.fee > 0 ? league.fee + ' Coins entry' : 'Free entry'))));
+    var body = el('span', 'theleagues-card__body');
+    var copy = el('span', 'theleagues-card__copy');
+    if (league.premium || premium) copy.appendChild(el('em', 'theleagues-card__tag', 'Premium'));
+    copy.appendChild(el('h3', 'theleagues-card__title', league.name));
+    copy.appendChild(el('p', null, league.subtitle || BLURB));
 
-    cover.appendChild(banner);
+    var footer = el('span', 'theleagues-card__footer');
+    var avatars = el('span', 'theleagues-card__avatars');
+    [
+      'assets/leagues/theleagues-member-1.png',
+      'assets/leagues/theleagues-member-2.png',
+      'assets/leagues/theleagues-member-3.png',
+      'assets/leagues/theleagues-member-4.png'
+    ].forEach(function (src) {
+      var avatar = el('img');
+      avatar.src = src;
+      avatar.alt = '';
+      avatars.appendChild(avatar);
+    });
+    avatars.appendChild(el('span', 'theleagues-card__more', '+12'));
+    footer.appendChild(avatars);
 
-    var stats = el('span', 'lcard__stats');
-    stats.appendChild(stat(league.rank || '#1', league.of || '/ 1', 'lcard__stat--rank'));
-    stats.appendChild(stat(String(league.messages || 0), 'Messages', null, league.unread));
-    stats.appendChild(stat(String(league.rounds || 5), 'rounds'));
-
-    var body = el('span', 'lcard__body');
-    body.appendChild(title);
-    body.appendChild(el('span', 'lcard__rule'));
-    body.appendChild(stats);
-
-    open.appendChild(cover);
+    body.appendChild(copy);
+    body.appendChild(el('span', 'theleagues-card__rule'));
+    body.appendChild(footer);
+    open.appendChild(art);
     open.appendChild(body);
 
-    var menu = el('button', 'lcard__menu');
-    menu.type = 'button';
-    menu.dataset.lcardMenu = '';
-    menu.setAttribute('aria-haspopup', 'menu');
-    menu.setAttribute('aria-expanded', 'false');
-    menu.setAttribute('aria-label', 'Options for ' + league.name);
-    var dots = el('img');
-    dots.src = 'assets/DotsThreeOutline.svg';
-    dots.width = 20;
-    dots.height = 20;
-    dots.alt = '';
-    menu.appendChild(dots);
+    var invite = el('button', 'theleagues-card__invite', 'Invite friends');
+    invite.type = 'button';
+    invite.dataset.shareLeague = 'true';
+    invite.dataset.leagueName = league.name;
+    invite.setAttribute('aria-label', 'Share invite link for ' + league.name);
 
     card.appendChild(open);
-    card.appendChild(menu);
+    card.appendChild(invite);
     return card;
   }
 
@@ -169,6 +214,9 @@
     var has = leagues.length > 0;
     empty.hidden = has;
     if (addButton) addButton.hidden = !has;
+    Array.prototype.forEach.call(document.querySelectorAll('[data-leagues-count]'), function (count) {
+      count.textContent = '(' + leagues.length + ')';
+    });
   }
 
 

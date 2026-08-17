@@ -18,8 +18,8 @@
 <link rel="stylesheet" href="css/style.css?v=4">
 <link rel="stylesheet" href="css/main.css?v=23">
 <link rel="stylesheet" href="css/rankings.css?v=12">
-<link rel="stylesheet" href="css/leagues.css?v=10">
-<link rel="stylesheet" href="css/arena.css?v=7">
+    <link rel="stylesheet" href="css/leagues.css?v=15">
+<link rel="stylesheet" href="css/arena.css?v=30">
 <link rel="stylesheet" href="css/live.css?v=4">
 <link rel="stylesheet" href="css/league.css?v=10">
 <link rel="stylesheet" href="css/my-zone.css?v=6">
@@ -472,7 +472,46 @@
         <!-- ============ SCREEN: LEAGUES ============ -->
         <section class="screen screen--leagues" data-screen="leagues">
           <div class="leagues-scroll" data-leagues-scroll>
-            <div class="leagues-content">
+            <main class="theleagues-content">
+              <section class="theleagues-hero" aria-labelledby="theleagues-title">
+                <div class="theleagues-hero__copy">
+                  <h1 id="theleagues-title">Your community. Your rules.</h1>
+                  <p>Create your league or join friends' leagues, chat, compete and have fun together.</p>
+                </div>
+                <div class="theleagues-tabs" role="tablist" aria-label="Your leagues">
+                  <button class="theleagues-tab" type="button" role="tab" aria-selected="false" data-leagues-tab="joined">Joined Leagues</button>
+                  <button class="theleagues-tab is-on" type="button" role="tab" aria-selected="true" data-leagues-tab="own">My Leagues</button>
+                </div>
+              </section>
+
+              <section class="theleagues-panel" role="tabpanel" data-leagues-panel="joined" hidden>
+                <p class="theleagues-empty">You have not joined any leagues yet.</p>
+                <article class="theleagues-create-card">
+                  <img src="assets/leagues/theleagues-create-trophy.png" alt="">
+                  <div><h2>Create Your Own League</h2><p>Set your rules, invite friends and compete for the top spot.</p></div>
+                  <button type="button" data-go="league-create">Create League</button>
+                </article>
+              </section>
+
+              <section class="theleagues-panel" role="tabpanel" data-leagues-panel="own">
+                <header class="theleagues-section-head">
+                  <h2>My Leagues <span data-leagues-count>(3)</span></h2>
+                  <button type="button" class="theleagues-sort" aria-label="Sort leagues by recent">Sort by: <b>Recent</b><img src="assets/icons/chevron-down.svg" alt=""></button>
+                </header>
+                <div class="theleagues-list" data-own-leagues></div>
+                <div class="theleagues-empty" data-own-empty hidden>
+                  <strong>No leagues of your own yet</strong>
+                  <p>Start a league and invite the people you want to play with.</p>
+                </div>
+                <article class="theleagues-create-card">
+                  <img src="assets/leagues/theleagues-create-trophy.png" alt="">
+                  <div><h2>Create Your Own League</h2><p>Set your rules, invite friends and compete for the top spot.</p></div>
+                  <button type="button" data-go="league-create">Create League</button>
+                </article>
+              </section>
+            </main>
+
+            <div class="leagues-legacy" aria-hidden="true">
               <div class="leagues-tabs" role="tablist" aria-label="Your leagues">
                 <button class="leagues-tab is-on" type="button" role="tab" aria-selected="true" data-leagues-tab="joined">Joined Leagues</button>
                 <button class="leagues-tab" type="button" role="tab" aria-selected="false" data-leagues-tab="own">My Leagues</button>
@@ -596,7 +635,7 @@
                 </button>
                 <button class="balance" type="button" data-go="my-zone" aria-label="Open My Zone profile">
                   <span class="balance__avatar">
-                    <img src="assets/img/avatar.png" alt="">
+                    <img src="assets/arena/thearena-avatar.png" alt="">
                     <img class="balance__rank-icon" src="assets/icons/rank-badge.svg" alt="" width="16" height="16">
                   </span>
                   <span class="balance__copy">
@@ -604,7 +643,7 @@
                       <img class="balance__coin" src="assets/icons/soccer-ball.svg" alt="" width="16" height="16">
                       <span class="balance__value">10 000</span>
                     </span>
-                    <small class="balance__rank" data-rank-label>Diamond</small>
+                    <small class="balance__rank">VIP level</small>
                   </span>
                 </button>
               </div>
@@ -613,10 +652,113 @@
         </section>
 
           <!-- ============ SCREEN: ARENA ============ -->
-          <!-- Placeholder: the Arena has no design yet, so the screen just holds its
-               place in the nav and says so rather than pretending to be finished. -->
           <section class="screen screen--arena" data-screen="arena">
             <div class="arena-scroll" data-arena-scroll>
+              <main class="thearena-content">
+                <section class="thearena-hero" aria-labelledby="thearena-title">
+                  <div class="thearena-hero__copy">
+                    <h1 id="thearena-title">Compete. Predict. Win.</h1>
+                    <p>Join exclusive tournaments, predict outcomes, climb the leaderboard and win awesome prizes</p>
+                  </div>
+                  <div class="thearena-filters" role="tablist" aria-label="Tournament filters">
+                    <button class="thearena-filter is-active" type="button" role="tab" aria-selected="true" data-arena-filter="all">All Tournaments</button>
+                    <button class="thearena-filter" type="button" role="tab" aria-selected="false" data-arena-filter="open">Open</button>
+                    <button class="thearena-filter" type="button" role="tab" aria-selected="false" data-arena-filter="ranked">Ranked</button>
+                    <button class="thearena-filter" type="button" role="tab" aria-selected="false" data-arena-filter="sponsored">Sponsored</button>
+                  </div>
+                </section>
+
+                <section class="thearena-section thearena-featured-section" aria-labelledby="arena-live-title">
+                  <header class="thearena-section__head"><h2 id="arena-live-title">Live Tournaments</h2><button type="button" class="thearena-link" data-featured-toggle aria-controls="live-tournaments" aria-expanded="false">View all</button></header>
+                  <div class="thearena-featured-viewport" id="live-tournaments" data-featured-viewport aria-label="Live tournaments">
+                    <div class="thearena-featured-track" data-featured-track>
+                      <article class="thearena-featured thearena-featured-card" data-arena-tournament data-featured-card data-arena-kind="sponsored" data-tournament-phase="live" data-tournament-id="diamond-cup" data-tournament-state="joined" role="button" tabindex="0" aria-label="Open Diamond Cup tournament, live now">
+                        <div class="thearena-featured__cover">
+                          <img src="assets/arena/thearena-diamond-cup.png" alt="Diamond Cup trophy">
+                          <span class="thearena-tag thearena-tag--sponsored">Sponsored</span>
+                          <span class="thearena-time thearena-time--live"><i aria-hidden="true"></i>Live now</span>
+                        </div>
+                        <div class="thearena-featured__body">
+                          <div class="thearena-featured__copy"><h3>DIAMOND CUP</h3><p>Exclusive VIP tournament · 5 rounds of top matches · branded sponsor prizes</p></div>
+                          <div class="thearena-featured__footer">
+                            <dl class="thearena-stats"><div><dt>40</dt><dd>Participants</dd></div><div><dt>5</dt><dd>Rounds</dd></div></dl>
+                            <div class="thearena-place"><strong>#6</strong><span>Your place</span></div>
+                          </div>
+                        </div>
+                      </article>
+                      <article class="thearena-featured thearena-featured-card" data-arena-tournament data-featured-card data-arena-kind="open" data-tournament-phase="live" data-tournament-id="weekend-spotlight" data-tournament-state="joined" role="button" tabindex="0" aria-label="Open Weekend Challenge tournament, live now">
+                        <div class="thearena-featured__cover">
+                          <img src="assets/arena/thearena-gold-cup.png" alt="Golden football trophy">
+                          <span class="thearena-tag thearena-tag--open">Open</span>
+                          <span class="thearena-time thearena-time--live"><i aria-hidden="true"></i>Live now</span>
+                        </div>
+                        <div class="thearena-featured__body">
+                          <div class="thearena-featured__copy"><h3>WEEKEND CHALLENGE</h3><p>Predict top matches this weekend and compete for exclusive prizes</p></div>
+                          <div class="thearena-featured__footer">
+                            <dl class="thearena-stats"><div><dt>40</dt><dd>Participants</dd></div><div><dt>5</dt><dd>Rounds</dd></div></dl>
+                            <div class="thearena-place"><strong>#12</strong><span>Your place</span></div>
+                          </div>
+                        </div>
+                      </article>
+                      <article class="thearena-featured thearena-featured-card" data-arena-tournament data-featured-card data-arena-kind="sponsored" data-tournament-phase="live" data-tournament-id="final-whistle" data-tournament-state="joined" role="button" tabindex="0" aria-label="Open Final Whistle tournament, live now">
+                        <div class="thearena-featured__cover">
+                          <img src="assets/arena/thearena-football.png" alt="Silver football trophy">
+                          <span class="thearena-tag thearena-tag--sponsored">Sponsored</span>
+                          <span class="thearena-time thearena-time--live"><i aria-hidden="true"></i>Live now</span>
+                        </div>
+                        <div class="thearena-featured__body">
+                          <div class="thearena-featured__copy"><h3>FINAL WHISTLE</h3><p>Join the sponsor cup and make your picks before the final kickoff</p></div>
+                          <div class="thearena-featured__footer">
+                            <dl class="thearena-stats"><div><dt>32</dt><dd>Participants</dd></div><div><dt>3</dt><dd>Rounds</dd></div></dl>
+                            <div class="thearena-place"><strong>#3</strong><span>Your place</span></div>
+                          </div>
+                        </div>
+                      </article>
+                    </div>
+                  </div>
+                  <p class="thearena-featured-empty" data-featured-empty hidden>No live tournaments of this type are running now.</p>
+                  <div class="thearena-featured-pagination" data-featured-pagination aria-label="Live tournament pages"></div>
+                </section>
+
+                <section class="thearena-section thearena-upcoming" aria-labelledby="arena-upcoming-title">
+                  <header class="thearena-section__head"><h2 id="arena-upcoming-title">Upcoming Tournament</h2><button type="button" class="thearena-link" data-arena-show-all>View all</button></header>
+                  <div class="thearena-tournament-list">
+                    <article class="thearena-tournament" data-arena-tournament data-arena-kind="open" data-tournament-id="weekend-challenge" data-tournament-state="open" role="button" tabindex="0" aria-label="Open Weekend Challenge tournament">
+                      <div class="thearena-tournament__art"><img src="assets/arena/thearena-gold-cup.png" alt="Golden football trophy"></div>
+                      <div class="thearena-tournament__body">
+                        <div class="thearena-tournament__topline"><span class="thearena-tag thearena-tag--open">Open</span><span class="thearena-time"><img src="assets/arena/thearena-timer.svg" alt="">2d 14h</span></div>
+                        <div class="thearena-tournament__copy"><h3>Weekend challenge</h3><p>Guess the outcomes of top matches and win cool prizes</p></div>
+                        <div class="thearena-tournament__bottom"><dl><div><dt>40</dt><dd>Slots</dd></div><div><dt>5</dt><dd>Rounds</dd></div></dl><button type="button" class="thearena-join" data-arena-join>Join</button></div>
+                      </div>
+                    </article>
+                    <article class="thearena-tournament" data-arena-tournament data-arena-kind="ranked" data-tournament-id="ranked-rush" data-tournament-state="open" role="button" tabindex="0" aria-label="Open Ranked Rush tournament">
+                      <div class="thearena-tournament__art"><img src="assets/arena/thearena-bronze-cup.png" alt="Tournament statue"></div>
+                      <div class="thearena-tournament__body">
+                        <div class="thearena-tournament__topline"><span class="thearena-tag thearena-tag--ranked">Ranked</span><span class="thearena-time"><img src="assets/arena/thearena-timer.svg" alt="">2d 14h</span></div>
+                        <div class="thearena-tournament__copy"><h3>Weekend challenge</h3><p>Guess the outcomes of top matches and win cool prizes</p></div>
+                        <div class="thearena-tournament__bottom"><dl><div><dt>40</dt><dd>Slots</dd></div><div><dt>5</dt><dd>Rounds</dd></div></dl><button type="button" class="thearena-join" data-arena-join>Join</button></div>
+                      </div>
+                    </article>
+                    <article class="thearena-tournament" data-arena-tournament data-arena-kind="sponsored" data-tournament-id="sponsored-finals" data-tournament-state="locked" role="button" tabindex="0" aria-disabled="true" aria-label="Sponsored Finals tournament is locked">
+                      <div class="thearena-tournament__art"><img src="assets/arena/thearena-football.png" alt="Silver football trophy"></div>
+                      <div class="thearena-tournament__body">
+                        <div class="thearena-tournament__topline"><span class="thearena-tag thearena-tag--sponsored">Sponsored</span><span class="thearena-time"><img src="assets/arena/thearena-timer.svg" alt="">2d 14h</span></div>
+                        <div class="thearena-tournament__copy"><h3>Weekend challenge</h3><p>Guess the outcomes of top matches and win cool prizes</p></div>
+                        <div class="thearena-tournament__bottom"><dl><div><dt>40</dt><dd>Slots</dd></div><div><dt>5</dt><dd>Rounds</dd></div></dl><button type="button" class="thearena-join is-locked" data-arena-join aria-label="Tournament is locked"><img src="assets/arena/thearena-lock.svg" alt=""></button></div>
+                      </div>
+                    </article>
+                  </div>
+                </section>
+
+                <section class="thearena-section thearena-how" aria-labelledby="arena-how-title">
+                  <header class="thearena-section__head"><h2 id="arena-how-title">How it works</h2><button type="button" class="thearena-link" data-arena-rules>View rules</button></header>
+                  <div class="thearena-how__steps">
+                    <article><div class="thearena-how__art thearena-how__art--join"><img src="assets/arena/thearena-how-it-works.png" alt=""></div><h3>Join a tournament</h3><p>Choose any tournament and join in one tap.</p></article>
+                    <article><div class="thearena-how__art thearena-how__art--predict"><img src="assets/arena/thearena-how-it-works.png" alt=""></div><h3>Make predictions</h3><p>Answer questions, predict outcomes, earn points.</p></article>
+                    <article><div class="thearena-how__art thearena-how__art--win"><img src="assets/arena/thearena-how-it-works.png" alt=""></div><h3>Climb &amp; Win</h3><p>Climb the leaderboard and win amazing prizes.</p></article>
+                  </div>
+                </section>
+              </main>
               <div class="arena-content">
                 <div class="arena-soon">
                   <span class="arena-soon__badge" aria-hidden="true"><svg class="arena-soon__glyph" viewBox="-0.625 -3.125 20 20" width="34" height="34" aria-hidden="true"><path d="M17.5 1.875H15.625V0.625C15.625 0.45924 15.5592 0.300269 15.4419 0.183058C15.3247 0.0658481 15.1658 0 15 0H3.75C3.58424 0 3.42527 0.0658481 3.30806 0.183058C3.19085 0.300269 3.125 0.45924 3.125 0.625V1.875H1.25C0.918479 1.875 0.600537 2.0067 0.366117 2.24112C0.131696 2.47554 0 2.79348 0 3.125V4.375C0 5.2038 0.32924 5.99866 0.915291 6.58471C1.20547 6.87489 1.54997 7.10508 1.92911 7.26212C2.30826 7.41917 2.71462 7.5 3.125 7.5H3.41016C3.77832 8.66673 4.48029 9.70001 5.4293 10.4721C6.37831 11.2443 7.53277 11.7214 8.75 11.8445V13.75H6.875C6.70924 13.75 6.55027 13.8158 6.43306 13.9331C6.31585 14.0503 6.25 14.2092 6.25 14.375C6.25 14.5408 6.31585 14.6997 6.43306 14.8169C6.55027 14.9342 6.70924 15 6.875 15H11.875C12.0408 15 12.1997 14.9342 12.3169 14.8169C12.4342 14.6997 12.5 14.5408 12.5 14.375C12.5 14.2092 12.4342 14.0503 12.3169 13.9331C12.1997 13.8158 12.0408 13.75 11.875 13.75H10V11.8422C12.4953 11.5898 14.5656 9.83906 15.3188 7.5H15.625C16.4538 7.5 17.2487 7.17076 17.8347 6.58471C18.4208 5.99866 18.75 5.2038 18.75 4.375V3.125C18.75 2.79348 18.6183 2.47554 18.3839 2.24112C18.1495 2.0067 17.8315 1.875 17.5 1.875ZM3.125 6.25C2.62772 6.25 2.15081 6.05246 1.79917 5.70083C1.44754 5.34919 1.25 4.87228 1.25 4.375V3.125H3.125V5.625C3.125 5.83333 3.13516 6.04167 3.15547 6.25H3.125ZM17.5 4.375C17.5 4.87228 17.3025 5.34919 16.9508 5.70083C16.5992 6.05246 16.1223 6.25 15.625 6.25H15.5859C15.6116 6.01911 15.6246 5.787 15.625 5.55469V3.125H17.5V4.375Z" fill="currentColor"/></svg></span>
@@ -638,7 +780,7 @@
                   </button>
                   <button class="balance" type="button" data-go="my-zone" aria-label="Open My Zone profile">
                     <span class="balance__avatar">
-                      <img src="assets/img/avatar.png" alt="">
+                      <img src="assets/arena/thearena-avatar.png" alt="">
                       <img class="balance__rank-icon" src="assets/icons/rank-badge.svg" alt="" width="16" height="16">
                     </span>
                     <span class="balance__copy">
@@ -646,10 +788,152 @@
                         <img class="balance__coin" src="assets/icons/soccer-ball.svg" alt="" width="16" height="16">
                         <span class="balance__value">10 000</span>
                       </span>
-                      <small class="balance__rank" data-rank-label>Diamond</small>
+                      <small class="balance__rank">VIP level</small>
                     </span>
                   </button>
                 </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ SCREEN: ARENA TOURNAMENT ============ -->
+          <section class="screen screen--arena-tournament" data-screen="arena-tournament">
+            <div class="arena-tournament-scroll" data-tournament-scroll>
+              <header class="arena-tournament-hero">
+                <img src="assets/arena/thearena-tournament-hero.png" alt="Tournament trophy" data-tournament-hero>
+                <div class="arena-tournament-hero__fade" aria-hidden="true"></div>
+                <button class="setup-back league-back" type="button" data-go="arena" aria-label="Back to The Arena"><img src="assets/icons/chevron-down.svg" alt="" width="20" height="20"></button>
+              </header>
+
+              <section class="arena-tournament-summary" aria-labelledby="arena-tournament-title">
+                <div class="arena-tournament-titleblock">
+                  <span class="thearena-tag thearena-tag--sponsored" data-tournament-kind>Sponsored</span>
+                  <h1 id="arena-tournament-title" data-tournament-title>DIAMOND CUP</h1>
+                  <p data-tournament-description>Exclusive VIP tournament · 5 rounds of top matches · branded sponsor prizes</p>
+                </div>
+                <div class="arena-tournament-stats">
+                  <dl>
+                    <div><dt>Participants</dt><dd><b data-tournament-participants>15</b> <span>/ 40</span></dd></div>
+                    <div><dt><img src="assets/arena/thearena-timer.svg" alt=""> <span data-tournament-time-label>Starts in</span></dt><dd data-tournament-time>2d 14h</dd></div>
+                    <div><dt>Rounds</dt><dd><b data-tournament-rounds>3</b> <span data-tournament-round-total>/5</span></dd></div>
+                    <div data-tournament-entry><dt>Entry</dt><dd>Free</dd></div>
+                    <div data-tournament-place hidden><dt>Your place</dt><dd data-tournament-place>#6</dd></div>
+                  </dl>
+                  <button class="arena-tournament-join" type="button" data-tournament-join>Join Tournament</button>
+                </div>
+              </section>
+
+              <div class="arena-tournament-tabs-sticky">
+                <div class="arena-tournament-tabs" role="tablist" aria-label="Tournament sections" data-tournament-tabs>
+                  <button class="is-active" type="button" role="tab" aria-selected="true" aria-controls="tournament-overview" data-tournament-tab="overview">Overview</button>
+                  <button type="button" role="tab" aria-selected="false" aria-controls="tournament-events" data-tournament-tab="events">Events</button>
+                  <button type="button" role="tab" aria-selected="false" aria-controls="tournament-leaderboard" data-tournament-tab="leaderboard">Leaderboard</button>
+                  <button type="button" role="tab" aria-selected="false" aria-controls="tournament-rules" data-tournament-tab="rules">Rules</button>
+                  <button type="button" role="tab" aria-selected="false" aria-controls="tournament-prizes" data-tournament-tab="prizes">Prizes</button>
+                  <i class="arena-tournament-tabs__indicator" data-tournament-tab-indicator aria-hidden="true"></i>
+                </div>
+              </div>
+
+              <div class="arena-tournament-panels" data-tournament-panels>
+                <section class="arena-tournament-panel" id="tournament-overview" role="tabpanel" data-tournament-panel="overview">
+                  <div class="tournament-about">
+                    <h2>About tournament</h2>
+                    <p data-tournament-about>Diamond Cup is a closed VIP tournament with 5 rounds of top matches. Predict outcomes, earn points and compete for amazing prizes from our sponsor.</p>
+                    <button type="button" class="tournament-more" data-tournament-more aria-expanded="false">Show more <img src="assets/arena/thearena-tournament-back.svg" alt=""></button>
+                  </div>
+                  <article class="tournament-prize-card">
+                    <img src="assets/arena/thearena-tournament-prize.png" alt="VIP final tickets and THE90 winner jersey">
+                    <div><h2>Win <em>VIP</em> tickets to UEFA final</h2><p>+ Exclusive merch</p></div>
+                  </article>
+                </section>
+
+                <section class="arena-tournament-panel" id="tournament-events" role="tabpanel" data-tournament-panel="events">
+                  <div class="tournament-panel-head"><h2>Tournament events</h2><p>Five rounds of top matches are waiting for your predictions.</p></div>
+                  <ol class="tournament-events">
+                    <li data-tournament-event="1">
+                      <span class="tournament-events__step" data-tournament-event-marker>1</span>
+                      <article class="tournament-events__card"><div><b>Round 1 · Opening picks</b><p>Make predictions before kickoff.</p></div><i data-tournament-event-state>Next</i></article>
+                    </li>
+                    <li data-tournament-event="2">
+                      <span class="tournament-events__step" data-tournament-event-marker>2</span>
+                      <article class="tournament-events__card"><div><b>Round 2 · Knockout races</b><p>Three top matches and bonus points for streaks.</p></div><i data-tournament-event-state>Upcoming</i></article>
+                    </li>
+                    <li data-tournament-event="3">
+                      <span class="tournament-events__step" data-tournament-event-marker>3</span>
+                      <article class="tournament-events__card"><div><b>Round 3 · Semi-finals</b><p>Predictions lock 15 minutes before the first match.</p></div><i data-tournament-event-state>Upcoming</i></article>
+                    </li>
+                    <li data-tournament-event="4">
+                      <span class="tournament-events__step" data-tournament-event-marker>4</span>
+                      <article class="tournament-events__card"><div><b>Round 4 · Final weekend</b><p>Double points are available for every correct result.</p></div><i data-tournament-event-state>Upcoming</i></article>
+                    </li>
+                    <li data-tournament-event="5">
+                      <span class="tournament-events__step" data-tournament-event-marker>5</span>
+                      <article class="tournament-events__card"><div><b>Round 5 · The final</b><p>Leaderboard closes after the final whistle.</p></div><i data-tournament-event-state>Upcoming</i></article>
+                    </li>
+                  </ol>
+                </section>
+
+                <section class="arena-tournament-panel" id="tournament-leaderboard" role="tabpanel" data-tournament-panel="leaderboard">
+                  <div class="tournament-rankings" data-tournament-rankings>
+                    <div class="tournament-rankings__hero" data-tournament-ranking-hero>
+                      <img class="rankings-hero__bg" src="assets/rankings/podium-bg.jpg" alt="">
+                      <div class="rankings-podium tournament-rankings__podium" data-tournament-ranking-podium aria-label="Top three leaders"></div>
+                    </div>
+                    <div class="rankings-list tournament-rankings__list" aria-label="Tournament leaderboard" data-tournament-rankings-list></div>
+                  </div>
+                </section>
+
+                <section class="arena-tournament-panel" id="tournament-rules" role="tabpanel" data-tournament-panel="rules">
+                  <div class="tournament-panel-head"><h2>Tournament rules</h2><p>Simple rules for a fair competition.</p></div>
+                  <ol class="tournament-rules">
+                    <li><b>Make your picks before each deadline.</b><span>Predictions lock when a round begins.</span></li>
+                    <li><b>Earn points for correct outcomes.</b><span>Extra points are awarded for a winning streak.</span></li>
+                    <li><b>Follow every round.</b><span>Your final place is based on the total score after five rounds.</span></li>
+                    <li><b>Keep it fair.</b><span>Only one account may enter a tournament.</span></li>
+                  </ol>
+                </section>
+
+                <section class="arena-tournament-panel" id="tournament-prizes" role="tabpanel" data-tournament-panel="prizes">
+                  <header class="arena-prizes__head"><h2>Prizes</h2></header>
+
+                  <article class="arena-prize arena-prize--grand">
+                    <img class="arena-prize__stadium" src="assets/arena/thearena-prize-stadium.png" alt="">
+                    <div class="arena-prize__copy">
+                      <span class="arena-prize__place">1st place</span>
+                      <h3>VIP Trip to UCL Final</h3>
+                      <p>Tickets + Hotel + Flight</p>
+                      <span class="arena-prize__value">Value: $5 000</span>
+                    </div>
+                    <img class="arena-prize__grand-art" src="assets/arena/thearena-prize-trophy.png" alt="">
+                  </article>
+
+                  <article class="arena-prize">
+                    <div class="arena-prize__art"><img class="arena-prize__art--macbook" src="assets/arena/thearena-prize-macbook.png" alt="MacBook Pro 14 inch M4"></div>
+                    <div class="arena-prize__copy">
+                      <span class="arena-prize__place">2nd place</span>
+                      <h3>MacBook Pro 14&quot; M4</h3>
+                      <span class="arena-prize__value">Value: $2 000</span>
+                    </div>
+                  </article>
+
+                  <article class="arena-prize">
+                    <div class="arena-prize__art"><img class="arena-prize__art--iphone" src="assets/arena/thearena-prize-iphone.png" alt="iPhone 17 Pro Max"></div>
+                    <div class="arena-prize__copy">
+                      <span class="arena-prize__place">3rd place</span>
+                      <h3>iPhone 17 Pro Max</h3>
+                      <span class="arena-prize__value">Value: $1 200</span>
+                    </div>
+                  </article>
+
+                  <article class="arena-prize">
+                    <div class="arena-prize__art"><img class="arena-prize__art--merch" src="assets/arena/thearena-prize-merch.png" alt="Exclusive merch pack"></div>
+                    <div class="arena-prize__copy">
+                      <span class="arena-prize__place">4–10 places</span>
+                      <h3>Exclusive Merch Pack</h3>
+                      <span class="arena-prize__value">Value: $200</span>
+                    </div>
+                  </article>
+                </section>
               </div>
             </div>
           </section>
@@ -686,7 +970,7 @@
 
               <div class="league-actions">
                 <button class="league-actions__rules" type="button" data-go="league-rules">Rules</button>
-                <button class="league-actions__invite" type="button" data-go="invite-friends" data-invite-origin="league">Invite friend</button>
+                <button class="league-actions__invite" type="button" data-share-league aria-label="Share invite link for this league">Invite friend</button>
               </div>
 
               <!-- the round's picks — only once you are in the league -->
@@ -1669,14 +1953,16 @@
 <script src="js/data.js?v=4"></script>
 <script src="js/pick-card.js?v=7"></script>
 <script src="js/leaderboard.js?v=1"></script>
-<script src="js/app.js?v=9"></script>
+<script src="js/app.js?v=10"></script>
 <script src="js/main.js?v=18"></script>
 <script src="js/news.js?v=1"></script>
 <script src="js/live.js?v=3"></script>
 <script src="js/rankings.js?v=9"></script>
+<script src="js/thearena.js?v=6"></script>
+<script src="js/tournament.js?v=12"></script>
 <script src="js/league.js?v=10"></script>
-<script src="js/leagues.js?v=3"></script>
-<script src="js/league-create.js?v=15"></script>
+<script src="js/leagues.js?v=4"></script>
+<script src="js/league-create.js?v=18"></script>
 <script src="js/league-picks.js?v=1"></script>
 <script src="js/league-pager.js?v=3"></script>
 <script src="js/league-rules.js?v=1"></script>

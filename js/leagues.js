@@ -10,9 +10,10 @@
   'use strict';
 
   var T = window.THE90;
+  var main = document.querySelector('.theleagues-content');
 
-  var tabs = Array.prototype.slice.call(document.querySelectorAll('[data-leagues-tab]'));
-  var panels = Array.prototype.slice.call(document.querySelectorAll('[data-leagues-panel]'));
+  var tabs = Array.prototype.slice.call(main ? main.querySelectorAll('[data-leagues-tab]') : []);
+  var panels = Array.prototype.slice.call(main ? main.querySelectorAll('[data-leagues-panel]') : []);
   if (!tabs.length || !panels.length) return;
 
   function show(name) {
