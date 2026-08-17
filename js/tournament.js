@@ -9,38 +9,38 @@
   var tournaments = {
     'diamond-cup': {
       title: 'DIAMOND CUP', kind: 'sponsored', label: 'Sponsored', joined: true, live: true, liveMinutes: 2735,
-      participants: 15, currentRound: 3, rounds: 5, place: '#6',
+      participants: 15, capacity: 40, entry: 'Free', currentRound: 3, rounds: 5, place: '#6',
       description: 'Exclusive VIP tournament · 5 rounds of top matches · branded sponsor prizes',
       about: 'Diamond Cup is a closed VIP tournament with 5 rounds of top matches. Predict outcomes, earn points and compete for amazing prizes from our sponsor.'
     },
     'weekend-spotlight': {
       title: 'WEEKEND CHALLENGE', kind: 'open', label: 'Open', joined: true, live: true, liveMinutes: 2735,
-      participants: 40, currentRound: 2, rounds: 5, place: '#12',
+      participants: 40, capacity: 40, entry: 'Free', currentRound: 2, rounds: 5, place: '#12',
       description: 'Predict top matches this weekend and compete for exclusive prizes',
       about: 'Weekend Challenge brings together the biggest matches of the week. Make your predictions, earn points and chase a place among the best predictors.'
     },
     'final-whistle': {
       title: 'FINAL WHISTLE', kind: 'sponsored', label: 'Sponsored', joined: true, live: true, liveMinutes: 2735,
-      participants: 32, currentRound: 1, rounds: 3, place: '#3',
+      participants: 32, capacity: 40, entry: 'Free', currentRound: 1, rounds: 3, place: '#3',
       description: 'Join the sponsor cup and make your picks before the final kickoff',
       about: 'Final Whistle is the sponsor cup for the final weekend. Every pick counts as you compete across three decisive rounds.'
     },
     'weekend-challenge': {
       title: 'WEEKEND CHALLENGE', kind: 'open', label: 'Open', joined: false,
-      participants: 40, currentRound: 0, rounds: 5, place: '#10',
+      participants: 15, capacity: 40, entry: 'Free', currentRound: 0, rounds: 5, place: '#10',
       description: 'Guess the outcomes of top matches and win cool prizes',
       about: 'Make your picks for the weekend’s biggest games. Join before the first deadline to collect points in every round.'
     },
     'ranked-rush': {
       title: 'RANKED RUSH', kind: 'ranked', label: 'Ranked', joined: false,
-      participants: 40, currentRound: 0, rounds: 5, place: '#18',
+      participants: 12, capacity: 40, entry: '3€', currentRound: 0, rounds: 5, place: '#18',
       description: 'A ranked tournament for players ready to climb the leaderboard',
       about: 'Ranked Rush rewards consistent predictions. Every point improves your tournament position and brings you closer to the prize places.'
     }
   };
 
   var activeId = 'diamond-cup';
-  var activeTab = 'overview';
+  var activeTab = 'events';
   var scroll = screen.querySelector('[data-tournament-scroll]');
   var tabsSticky = screen.querySelector('.arena-tournament-tabs-sticky');
   var tabs = screen.querySelector('[data-tournament-tabs]');
@@ -399,7 +399,7 @@
     tournaments[id].joined = source.dataset.tournamentState === 'joined';
     tournaments[id].live = source.dataset.tournamentPhase === 'live';
     renderTournament();
-    setActiveTab('overview', 'auto');
+    setActiveTab('events', 'auto');
     if (scroll) scroll.scrollTop = 0;
     updateStickyTabs();
     if (window.THE90 && window.THE90.go) window.THE90.go('arena-tournament');
@@ -465,6 +465,10 @@
   if (join) {
     join.addEventListener('click', function () {
       var tournament = currentTournament();
+      if (window.THE90 && typeof window.THE90.openArenaJoinModal === 'function') {
+        window.THE90.openArenaJoinModal(activeId);
+        return;
+      }
       tournament.joined = true;
       tournament.participants += 1;
       updateArenaCard(activeId);
@@ -546,12 +550,18 @@
   document.addEventListener('the90:tournamentjoined', function (event) {
     var id = event.detail && event.detail.id;
     if (!id || !tournaments[id]) return;
+    if (!tournaments[id].joined) tournaments[id].participants += 1;
     tournaments[id].joined = true;
     if (id === activeId) renderTournament();
   });
 
-  if (window.THE90) window.THE90.openTournament = openTournament;
+  if (window.THE90) {
+    window.THE90.openTournament = openTournament;
+    window.THE90.getArenaTournament = function (id) {
+      return tournaments[id] || null;
+    };
+  }
   renderTournament();
-  setActiveTab('overview', 'auto');
+  setActiveTab('events', 'auto');
   syncTabMeasurements();
 })();

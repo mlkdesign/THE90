@@ -80,26 +80,23 @@ window.THE90 = (function () {
   }
 
   /* ---------------- points ----------------
-     Flat, and a card pays once. Calling the exact score is worth 30 and
-     already contains the outcome, so it replaces the 10 rather than adding
-     to it — nothing on a card stacks. 1–1 is exactly as hard to call as
-     4–1, so both pay the same 30: no odds, no favourite bonus, nothing
-     that makes a "bigger" scoreline worth more.
+     A daily pick is complete only when it has an exact score. That score
+     already determines its winner or draw, so every completed match carries
+     the same potential win: 40 points.
      ---------------------------------------- */
 
   var POINTS = {
-    outcome:    10,   // 1 / X / 2 on its own
-    score:      30,   // exact score — instead of the 10, not on top of it
+    outcome:    10,   // shown as the first prediction step
+    score:      40,   // exact score — the total value of a completed match
     liveWindow: 20    // separate market, answered during the match
   };
 
-  var MAX_PER_MATCH = POINTS.score;   // 30
+  var MAX_PER_MATCH = POINTS.score;   // 40
 
-  // points for a pick on one card — the best single thing it called
+  // A complete daily pick is always worth 40 points.
   function pickPoints(m, pick) {
     var hasScore = pick.score && pick.score.home !== null && pick.score.away !== null;
     if (hasScore) return { outcome: 0, score: POINTS.score, total: POINTS.score };
-    if (pick.outcome) return { outcome: POINTS.outcome, score: 0, total: POINTS.outcome };
     return { outcome: 0, score: 0, total: 0 };
   }
 

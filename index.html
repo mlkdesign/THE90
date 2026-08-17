@@ -16,10 +16,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="css/style.css?v=4">
-<link rel="stylesheet" href="css/main.css?v=23">
+<link rel="stylesheet" href="css/main.css?v=30">
 <link rel="stylesheet" href="css/rankings.css?v=12">
     <link rel="stylesheet" href="css/leagues.css?v=15">
-<link rel="stylesheet" href="css/arena.css?v=30">
+    <link rel="stylesheet" href="css/arena.css?v=39">
 <link rel="stylesheet" href="css/live.css?v=4">
 <link rel="stylesheet" href="css/league.css?v=10">
 <link rel="stylesheet" href="css/my-zone.css?v=6">
@@ -728,7 +728,7 @@
                       <div class="thearena-tournament__body">
                         <div class="thearena-tournament__topline"><span class="thearena-tag thearena-tag--open">Open</span><span class="thearena-time"><img src="assets/arena/thearena-timer.svg" alt="">2d 14h</span></div>
                         <div class="thearena-tournament__copy"><h3>Weekend challenge</h3><p>Guess the outcomes of top matches and win cool prizes</p></div>
-                        <div class="thearena-tournament__bottom"><dl><div><dt>40</dt><dd>Slots</dd></div><div><dt>5</dt><dd>Rounds</dd></div></dl><button type="button" class="thearena-join" data-arena-join>Join</button></div>
+                        <div class="thearena-tournament__bottom"><dl><div><dt>40</dt><dd>Slots</dd></div><div><dt>5</dt><dd>Rounds</dd></div></dl><button type="button" class="thearena-join" data-arena-join>Join for FREE</button></div>
                       </div>
                     </article>
                     <article class="thearena-tournament" data-arena-tournament data-arena-kind="ranked" data-tournament-id="ranked-rush" data-tournament-state="open" role="button" tabindex="0" aria-label="Open Ranked Rush tournament">
@@ -736,7 +736,7 @@
                       <div class="thearena-tournament__body">
                         <div class="thearena-tournament__topline"><span class="thearena-tag thearena-tag--ranked">Ranked</span><span class="thearena-time"><img src="assets/arena/thearena-timer.svg" alt="">2d 14h</span></div>
                         <div class="thearena-tournament__copy"><h3>Weekend challenge</h3><p>Guess the outcomes of top matches and win cool prizes</p></div>
-                        <div class="thearena-tournament__bottom"><dl><div><dt>40</dt><dd>Slots</dd></div><div><dt>5</dt><dd>Rounds</dd></div></dl><button type="button" class="thearena-join" data-arena-join>Join</button></div>
+                        <div class="thearena-tournament__bottom"><dl><div><dt>40</dt><dd>Slots</dd></div><div><dt>5</dt><dd>Rounds</dd></div></dl><button type="button" class="thearena-join" data-arena-join>Join for 3€</button></div>
                       </div>
                     </article>
                     <article class="thearena-tournament" data-arena-tournament data-arena-kind="sponsored" data-tournament-id="sponsored-finals" data-tournament-state="locked" role="button" tabindex="0" aria-disabled="true" aria-label="Sponsored Finals tournament is locked">
@@ -825,8 +825,8 @@
 
               <div class="arena-tournament-tabs-sticky">
                 <div class="arena-tournament-tabs" role="tablist" aria-label="Tournament sections" data-tournament-tabs>
-                  <button class="is-active" type="button" role="tab" aria-selected="true" aria-controls="tournament-overview" data-tournament-tab="overview">Overview</button>
-                  <button type="button" role="tab" aria-selected="false" aria-controls="tournament-events" data-tournament-tab="events">Events</button>
+                  <button class="is-active" type="button" role="tab" aria-selected="true" aria-controls="tournament-events" data-tournament-tab="events">Events</button>
+                  <button type="button" role="tab" aria-selected="false" aria-controls="tournament-overview" data-tournament-tab="overview">Overview</button>
                   <button type="button" role="tab" aria-selected="false" aria-controls="tournament-leaderboard" data-tournament-tab="leaderboard">Leaderboard</button>
                   <button type="button" role="tab" aria-selected="false" aria-controls="tournament-rules" data-tournament-tab="rules">Rules</button>
                   <button type="button" role="tab" aria-selected="false" aria-controls="tournament-prizes" data-tournament-tab="prizes">Prizes</button>
@@ -835,18 +835,6 @@
               </div>
 
               <div class="arena-tournament-panels" data-tournament-panels>
-                <section class="arena-tournament-panel" id="tournament-overview" role="tabpanel" data-tournament-panel="overview">
-                  <div class="tournament-about">
-                    <h2>About tournament</h2>
-                    <p data-tournament-about>Diamond Cup is a closed VIP tournament with 5 rounds of top matches. Predict outcomes, earn points and compete for amazing prizes from our sponsor.</p>
-                    <button type="button" class="tournament-more" data-tournament-more aria-expanded="false">Show more <img src="assets/arena/thearena-tournament-back.svg" alt=""></button>
-                  </div>
-                  <article class="tournament-prize-card">
-                    <img src="assets/arena/thearena-tournament-prize.png" alt="VIP final tickets and THE90 winner jersey">
-                    <div><h2>Win <em>VIP</em> tickets to UEFA final</h2><p>+ Exclusive merch</p></div>
-                  </article>
-                </section>
-
                 <section class="arena-tournament-panel" id="tournament-events" role="tabpanel" data-tournament-panel="events">
                   <div class="tournament-panel-head"><h2>Tournament events</h2><p>Five rounds of top matches are waiting for your predictions.</p></div>
                   <ol class="tournament-events">
@@ -871,6 +859,18 @@
                       <article class="tournament-events__card"><div><b>Round 5 · The final</b><p>Leaderboard closes after the final whistle.</p></div><i data-tournament-event-state>Upcoming</i></article>
                     </li>
                   </ol>
+                </section>
+
+                <section class="arena-tournament-panel" id="tournament-overview" role="tabpanel" data-tournament-panel="overview">
+                  <div class="tournament-about">
+                    <h2>About tournament</h2>
+                    <p data-tournament-about>Diamond Cup is a closed VIP tournament with 5 rounds of top matches. Predict outcomes, earn points and compete for amazing prizes from our sponsor.</p>
+                    <button type="button" class="tournament-more" data-tournament-more aria-expanded="false">Show more <img src="assets/arena/thearena-tournament-back.svg" alt=""></button>
+                  </div>
+                  <article class="tournament-prize-card">
+                    <img src="assets/arena/thearena-tournament-prize.png" alt="VIP final tickets and THE90 winner jersey">
+                    <div><h2>Win <em>VIP</em> tickets to UEFA final</h2><p>+ Exclusive merch</p></div>
+                  </article>
                 </section>
 
                 <section class="arena-tournament-panel" id="tournament-leaderboard" role="tabpanel" data-tournament-panel="leaderboard">
@@ -1923,6 +1923,46 @@
           </nav>
         </div>
 
+        <!-- ============ ARENA: JOIN TOURNAMENT ============ -->
+        <div class="arena-join-modal" data-arena-join-modal hidden aria-hidden="true">
+          <div class="arena-join-modal__scrim" data-arena-join-dismiss></div>
+          <section class="arena-join-modal__sheet" role="dialog" aria-modal="true" aria-labelledby="arena-join-title">
+            <div class="arena-join-modal__track" data-arena-join-track>
+              <article class="arena-join-modal__panel arena-join-modal__confirm" data-arena-join-panel="confirm">
+                <div class="arena-join-modal__cover">
+                  <img src="assets/arena/thearena-tournament-hero.png" alt="" data-arena-join-cover>
+                  <span class="thearena-tag thearena-tag--sponsored" data-arena-join-kind>Sponsored</span>
+                </div>
+                <div class="arena-join-modal__content">
+                  <div class="arena-join-modal__copy">
+                    <h2 id="arena-join-title" data-arena-join-title>DIAMOND CUP</h2>
+                    <p data-arena-join-description>Exclusive VIP tournament · 5 rounds of top matches · branded sponsor prizes</p>
+                  </div>
+                  <div class="arena-join-modal__stats">
+                    <dl>
+                      <div><dt>Participants</dt><dd><b data-arena-join-participants>15</b> <span>/ <i data-arena-join-capacity>40</i></span></dd></div>
+                      <div><dt><img src="assets/arena/thearena-timer.svg" alt="" width="12" height="12"><span>Starts in</span></dt><dd data-arena-join-time>2d 14h</dd></div>
+                      <div><dt>Rounds</dt><dd><b data-arena-join-rounds>5</b></dd></div>
+                      <div><dt>Entry</dt><dd data-arena-join-entry>Free</dd></div>
+                    </dl>
+                    <button class="btn btn--primary" type="button" data-arena-join-confirm>Join Tournament</button>
+                  </div>
+                </div>
+              </article>
+
+              <article class="arena-join-modal__panel arena-join-modal__success" data-arena-join-panel="success" aria-live="polite">
+                <div class="arena-join-success__copy">
+                  <div class="arena-join-success__art" data-arena-join-success-art aria-hidden="true"></div>
+                  <h2>You’re in!</h2>
+                  <p>You’re now a participant in <strong data-arena-join-success-title>DIAMOND CUP</strong>.</p>
+                </div>
+                <button class="btn btn--primary arena-join-success__cta" type="button" data-arena-go-tournament>Go to tournament</button>
+              </article>
+            </div>
+            <button class="arena-join-modal__close" type="button" data-arena-join-dismiss aria-label="Close join tournament"><img src="assets/icons/close.svg" alt="" width="16" height="16"></button>
+          </section>
+        </div>
+
         <!-- ============ MODAL ============ -->
         <div class="modal" data-modal hidden>
           <div class="modal__body">
@@ -1950,16 +1990,17 @@
 </main>
 
 <script src="vendor/lottie-light.min.js"></script>
-<script src="js/data.js?v=4"></script>
-<script src="js/pick-card.js?v=7"></script>
+<script src="js/data.js?v=5"></script>
+<script src="js/pick-card.js?v=17"></script>
 <script src="js/leaderboard.js?v=1"></script>
 <script src="js/app.js?v=10"></script>
-<script src="js/main.js?v=18"></script>
+<script src="js/main.js?v=22"></script>
 <script src="js/news.js?v=1"></script>
 <script src="js/live.js?v=3"></script>
 <script src="js/rankings.js?v=9"></script>
-<script src="js/thearena.js?v=6"></script>
-<script src="js/tournament.js?v=12"></script>
+<script src="js/thearena.js?v=7"></script>
+<script src="js/tournament.js?v=15"></script>
+<script src="js/arena-join.js?v=2"></script>
 <script src="js/league.js?v=10"></script>
 <script src="js/leagues.js?v=4"></script>
 <script src="js/league-create.js?v=18"></script>

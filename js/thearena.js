@@ -185,14 +185,8 @@
       var tournament = button.closest('[data-tournament-id]');
       if (button.classList.contains('is-locked') || (tournament && tournament.dataset.tournamentPhase === 'live')) return;
       if (button.classList.contains('is-joined')) return;
-      button.classList.add('is-joined');
-      button.textContent = 'Joined';
-      button.setAttribute('aria-pressed', 'true');
-      if (tournament) {
-        tournament.dataset.tournamentState = 'joined';
-        document.dispatchEvent(new CustomEvent('the90:tournamentjoined', {
-          detail: { id: tournament.dataset.tournamentId }
-        }));
+      if (tournament && window.THE90 && typeof window.THE90.openArenaJoinModal === 'function') {
+        window.THE90.openArenaJoinModal(tournament.dataset.tournamentId);
       }
     });
   });

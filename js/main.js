@@ -41,7 +41,15 @@
 
   function fmt(n) { return n.toLocaleString('en-US').replace(/,/g, ' '); }
 
-  function hasPick(p) { return T.pickCard.hasPick(p); }
+  // An outcome alone is only the first half of a daily pick. The exact score
+  // is mandatory; entering it also derives the matching outcome automatically.
+  function hasPick(p) {
+    return !!(p.score && p.score.home !== null && p.score.away !== null);
+  }
+
+  function hasSelection(p) {
+    return !!p.outcome || hasPick(p);
+  }
 
   function pickCount() {
     return matches.filter(function (m) { return hasPick(picks[m.id]); }).length;
@@ -98,6 +106,7 @@
     return T.pickCard.create(m, picks[m.id], {
       when: selectedDay.isToday ? 'Today' : selectedDay.weekday,
       editable: function () { return !accepted; },
+      isComplete: hasPick,
       onChange: function (firstAnswer) {
         // touching a confirmed pick sends it back for confirmation
         banked[m.id] = false;
@@ -117,7 +126,7 @@
   }
 
   function answeredCount() {
-    return matches.filter(function (m) { return hasPick(picks[m.id]); }).length;
+    return matches.filter(function (m) { return hasSelection(picks[m.id]); }).length;
   }
 
   // the next card still waiting to be confirmed, wrapping past the end
@@ -161,8 +170,13 @@
   function updateCta() {
     if (!winNext) return;
     var m = matches[currentIndex()];
-    var ready = hasPick(picks[m.id]) && !banked[m.id];
+    var pick = picks[m.id];
+    var ready = hasPick(pick) && !banked[m.id];
     winNext.disabled = !ready;
+    if (!hasPick(pick) && pick.outcome) {
+      winNext.textContent = 'Choose exact score';
+      return;
+    }
     winNext.textContent = bankedCount() === matches.length - 1 ? 'Accept all picks' : 'Next pick';
   }
 
@@ -181,11 +195,11 @@
     if (firstAnswer) nudgeCta();
   }
 
-  /* The confirm card belongs to the picks: it is there while you are on
-     them, and gets out of the way as soon as you scroll on. The closing card
-     carries the summary itself, so the two never show together. */
+  /* Keep the confirmation control available after the first selection. The
+     closing card still carries the finished-round summary, so both never
+     appear together. */
   function applyWinbar() {
-    showWinbar(answeredCount() > 0 && !isFinished() && atPicks);
+    showWinbar(answeredCount() > 0 && !isFinished());
   }
 
   function isFinished() {
@@ -251,27 +265,6 @@
     setTimeout(function () {
       if (!winbar.classList.contains('is-in')) winbar.hidden = true;
     }, 260);
-  }
-
-  var HIDE_AFTER = 100;        // px of page scroll before the bar steps aside
-  var atPicks = true;
-  var pageScroll = $('[data-scroll]');
-
-  /* Read straight off the scroll position rather than watched with an
-     observer: the callback would arrive on a frame, and the bar has to keep
-     up with the scroll it is reacting to. Once you have moved away from the
-     picks the bar is in the way, so it goes early. */
-  function readAtPicks() {
-    return !pageScroll || pageScroll.scrollTop <= HIDE_AFTER;
-  }
-
-  if (pageScroll) {
-    pageScroll.addEventListener('scroll', function () {
-      var now = readAtPicks();
-      if (now === atPicks) return;
-      atPicks = now;
-      applyWinbar();
-    }, { passive: true });
   }
 
   // swiping between cards re-points the button at whatever is on screen

@@ -400,12 +400,14 @@
 /* ---------- card ---------- */
 
 .mcard {
+  position: relative;
+  isolation: isolate;
   width: 358px;
   flex: 0 0 358px;
   scroll-snap-align: start;
   scroll-snap-stop: always;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, .1);
+  border: 0;
   border-radius: 24px;
   background: var(--card-surface);
   transition: border-color .3s ease, box-shadow .3s ease;
@@ -416,20 +418,22 @@
 }
 .mcard__head {
   position: relative;
+  z-index: 2;
   height: 150px;
   overflow: hidden;
 }
 .mcard__pitch {
   position: absolute;
+  z-index: 0;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: .4;
+  opacity: 1;
 }
-/* the photo fades into the card at both ends */
-.mcard__head::before,
-.mcard__head::after {
+/* The upper edge keeps a little contrast for the time badge. The lower part
+   stays clear, so the dashed stadium remains visible behind the teams. */
+.mcard__head::before {
   content: '';
   position: absolute;
   z-index: 1;
@@ -438,8 +442,7 @@
   height: 40px;
   pointer-events: none;
 }
-.mcard__head::before { top: 0; background: linear-gradient(180deg, var(--card-surface), rgba(14, 14, 14, 0)); }
-.mcard__head::after { bottom: 0; background: linear-gradient(180deg, rgba(14, 14, 14, 0), var(--card-surface)); }
+.mcard__head::before { top: 0; background: linear-gradient(180deg, rgba(6, 18, 13, .78), rgba(6, 18, 13, 0)); }
 
 .pitch {
   position: absolute;
@@ -453,6 +456,16 @@
   border: 1px dashed var(--text-primary);
   border-radius: 19px;
   opacity: .3;
+}
+.pitch::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 56px;
+  background: linear-gradient(180deg, rgba(6, 18, 13, .65), rgba(6, 18, 13, 0));
+  pointer-events: none;
 }
 .pitch__box {
   position: absolute;
@@ -502,11 +515,11 @@
   position: absolute;
   z-index: 2;
   left: 0;
-  top: calc(50% + 8px);
+  top: 46px;
   width: 100%;
+  height: 74px;
   display: flex;
   align-items: center;
-  transform: translateY(-50%);
 }
 .mcard__team {
   flex: 1 0 0;
@@ -542,29 +555,53 @@
 
 /* ---------- body ---------- */
 
-.mcard__bodywrap { padding: 0 8px 8px; }
+.mcard__bodywrap { position: relative; z-index: 2; padding: 0 8px 8px; }
 .mcard__body {
   padding: 12px;
   display: flex;
   flex-direction: column;
   gap: 12px;
   overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .2);
   border-radius: 24px 24px 16px 16px;
-  background: #f7faf8;
+  background: rgba(255, 255, 255, .1);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
 }
 .mcard__block {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
+.mcard__labelrow {
+  width: 100%;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
 .mcard__label {
   margin: 0;
-  padding: 0 8px;
-  color: #0e0e0e;
+  min-width: 0;
+  color: var(--text-primary);
   font-size: 12px;
   font-weight: 600;
   line-height: 18px;
 }
+.mcard__points {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+  white-space: nowrap;
+}
+.mcard__points b { font: inherit; }
+.mcard__points img { display: block; width: 16px; height: 16px; }
 
 /* ---------- winner / draw ---------- */
 
@@ -575,11 +612,11 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  border: 1px solid #d1d1d1;
+  border: 1px solid rgba(255, 255, 255, .2);
   border-radius: 16px;
-  background: #e1e3e2;
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
+  background: rgba(255, 255, 255, .1);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
 }
 .mcard .seg__btn {
   position: relative;
@@ -592,7 +629,7 @@
   justify-content: center;
   overflow: hidden;
   border-radius: 12px;
-  color: rgba(0, 0, 0, .5);
+  color: rgba(247, 250, 248, .5);
   font-size: 12px;
   font-weight: 400;
   line-height: 18px;
@@ -600,23 +637,11 @@
   transition: background .22s ease, color .22s ease;
 }
 .mcard .seg__btn span { display: block; }
-.mcard .seg__btn:hover:not(.is-on) { background: rgba(0, 0, 0, .05); }
+.mcard .seg__btn:hover:not(.is-on) { background: rgba(255, 255, 255, .1); }
 .mcard .seg__btn.is-on {
-  background: #0e0e0e;
-  color: var(--text-primary);
-  font-weight: 600;
-}
-/* the green bar under the chosen option */
-.mcard .seg__btn.is-on::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: 0;
-  width: 32px;
-  height: 3px;
-  transform: translateX(-50%);
-  border-radius: 3px 3px 0 0;
   background: var(--brand-primary);
+  color: var(--text-on-brand);
+  font-weight: 600;
 }
 
 /* ---------- exact score ---------- */
@@ -631,27 +656,14 @@
 }
 .exact__head:empty { display: none; }
 .exact__title {
-  color: #0e0e0e;
+  color: var(--text-primary);
   font-size: 12px;
   font-weight: 600;
   line-height: 18px;
 }
 .exact__title i { margin-left: 10px; font-style: normal; font-weight: 400; opacity: .5; }
-.exact__hot {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  line-height: 18px;
-  background: #EF2C2C;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-.exact__hot img { flex: none; }
-
 .scores {
-  padding-top: 8px;
+  padding-top: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -671,15 +683,15 @@
   align-items: center;
   justify-content: center;
   border-radius: 32px;
-  background: #13231a;
-  color: var(--text-primary);
+  background: var(--brand-primary);
+  color: var(--text-on-brand);
   font-size: 14px;
   font-weight: 600;
   line-height: 20px;
   transition: filter .16s ease, opacity .16s ease;
 }
-.scorepad__step:hover { filter: brightness(1.4); }
-.scorepad__step:disabled { opacity: .35; cursor: not-allowed; }
+.scorepad__step:hover { filter: brightness(1.08); }
+.scorepad__step:disabled { background: rgba(255, 255, 255, .4); color: var(--text-primary); opacity: 1; cursor: not-allowed; }
 
 /* the wheel: one 48px window onto a column of values */
 .drum {
@@ -688,9 +700,11 @@
   height: 48px;
   flex: none;
   overflow: hidden;
-  border: 1px solid #d1d1d1;
+  border: 1px solid rgba(255, 255, 255, .2);
   border-radius: 16px;
-  background: #e1e3e2;
+  background: rgba(255, 255, 255, .1);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
   cursor: grab;
   touch-action: none;
   -webkit-user-select: none;
@@ -704,21 +718,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(0, 0, 0, .5);
+  color: rgba(247, 250, 248, .5);
   font-size: 12px;
   line-height: 18px;
   transition: color .18s ease, font-size .18s ease;
 }
-.drum__cell.is-current { color: #0e0e0e; font-size: 16px; font-weight: 600; }
-/* "no score" is an empty state, not a value — it reads like the unpicked
-   options in the winner row above */
+.drum__cell.is-current { color: var(--text-primary); font-size: 12px; font-weight: 600; }
 .drum__cell--none.is-current {
-  color: rgba(0, 0, 0, .5);
+  color: rgba(247, 250, 248, .5);
   font-size: 12px;
   font-weight: 400;
   line-height: 18px;
 }
-.scorepad.is-set .drum { border-color: #0e0e0e; }
+.scorepad.is-set .drum { border-color: rgba(255, 255, 255, .2); }
 
 /* =========================================================
    Calendar day list — Figma › Card (678:5663)

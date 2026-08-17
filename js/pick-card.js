@@ -7,7 +7,8 @@
 
    The score is a drum: drag it like the wheel on a phone, or
    step it with the buttons — the page's own scroll never moves
-   it. Position one is "–" (no score at all), then 0 through 20.
+   it. It starts with a dash on both sides; once a score is chosen, zero is
+   the minimum and the dash cannot be restored from the score controls.
    ========================================================= */
 
 (function () {
@@ -45,23 +46,13 @@
     if (p.score[other] === null) p.score[other] = 0;
   }
 
-  /* Half a scoreline is not a scoreline. Sending one side back to "–" drops
-     the other with it — the same rule as entering one, which seeds the other
-     at 0 — along with any outcome the pair had filled in. */
-  function clearScore(p) {
-    p.score = { home: null, away: null };
-    if (!p.derived) return;
-    p.outcome = null;
-    p.derived = false;
-  }
-
   function blank() {
     return { outcome: null, score: { home: null, away: null }, derived: false };
   }
 
   function hasPick(p) { return !!p.outcome; }
 
-  // drum index 0 is "no score"; 1…21 are the goals 0…20
+  // Drum index 0 is the unselected dash. Values 0…20 live at indices 1…21.
   function toIndex(value) { return value === null ? 0 : value + 1; }
   function fromIndex(i) { return i <= 0 ? null : Math.min(MAX_GOALS, i - 1); }
 
@@ -90,19 +81,20 @@
     var opts = options || {};
     var editable = opts.editable || function () { return true; };
     var onChange = opts.onChange || function () {};
+    var isComplete = opts.isComplete || hasPick;
     var home = T.club(match.home), away = T.club(match.away);
 
     var card = el(
       '<article class="mcard" data-card="' + match.id + '">' +
+        '<img class="mcard__pitch" src="assets/img/match-card-background.png" alt="">' +
         '<div class="mcard__head">' +
-          '<img class="mcard__pitch" src="assets/img/card-pitch.jpg" alt="">' +
           '<div class="pitch">' +
             '<span class="pitch__box pitch__box--l"></span>' +
             '<span class="pitch__box pitch__box--r"></span>' +
             '<span class="pitch__mid"></span>' +
             '<span class="pitch__circle"></span>' +
           '</div>' +
-          '<span class="mcard__when">' + (opts.when || 'Today') + ' • ' + match.kickoff + '</span>' +
+          '<span class="mcard__when">' + (opts.when || 'Today') + ' · ' + match.kickoff + '</span>' +
           '<div class="mcard__teams">' +
             '<div class="mcard__team">' +
               '<img class="mcard__crest" src="' + T.logo(match.home) + '" alt="">' +
@@ -119,7 +111,10 @@
         '<div class="mcard__bodywrap">' +
           '<div class="mcard__body">' +
             '<div class="mcard__block">' +
-              '<p class="mcard__label">Choose the winner or draw:</p>' +
+              '<div class="mcard__labelrow">' +
+                '<p class="mcard__label">Choose the winner or draw:</p>' +
+                '<span class="mcard__points"><b>+ 10</b><img src="assets/icons/soccer-ball.svg" alt="" width="16" height="16"></span>' +
+              '</div>' +
               '<div class="seg" data-outcome>' +
                 '<button class="seg__btn" type="button" data-val="home"><span>' + home.name + '</span></button>' +
                 '<button class="seg__btn" type="button" data-val="draw"><span>Draw</span></button>' +
@@ -129,10 +124,8 @@
 
             '<div class="mcard__block">' +
               '<div class="exact__head">' +
-                '<span class="exact__title">Add exact score <i>(optional)</i></span>' +
-                '<span class="exact__hot">' +
-                  '<img src="assets/icons/fire.svg" alt="" width="14" height="14">Hot pick' +
-                '</span>' +
+                '<span class="exact__title">Add exact score</span>' +
+                '<span class="mcard__points"><b>+ 40</b><img src="assets/icons/soccer-ball.svg" alt="" width="16" height="16"></span>' +
               '</div>' +
               '<div class="exact__body">' +
                 '<div class="scores">' +
@@ -159,26 +152,29 @@
         cell.classList.toggle('is-current', i === index);
       });
       pad.classList.toggle('is-set', pick.score[side] !== null);
-      // a step with nowhere to go is dead: "–" is the floor, 20 the ceiling
+      // The dash is only an initial state. Once a value exists, 0 is the
+      // floor and the minus button cannot restore the dash.
       $$('.scorepad__step', pad).forEach(function (b) {
-        var atEnd = Number(b.dataset.step) < 0 ? index === 0 : index === MAX_GOALS + 1;
+        var atEnd = Number(b.dataset.step) < 0 ? index <= 1 : index === MAX_GOALS + 1;
         b.disabled = !editable() || atEnd;
       });
     }
 
     function render(animate) {
-      card.classList.toggle('is-picked', hasPick(pick));
+      card.classList.toggle('is-picked', isComplete(pick));
       $$('[data-outcome] .seg__btn', card).forEach(function (b) {
         b.classList.toggle('is-on', pick.outcome === b.dataset.val);
       });
       $$('.scorepad', card).forEach(function (pad) { paintDrum(pad, animate !== false); });
     }
 
-    var answered = false;
+    var answered = isComplete(pick);
 
-    function changed(firstAnswer) {
+    function changed() {
+      var firstAnswer = !answered && isComplete(pick);
+      answered = answered || isComplete(pick);
       render();
-      onChange(firstAnswer === true);
+      onChange(firstAnswer);
     }
 
 
@@ -197,11 +193,7 @@
           pick.derived = false;
         }
 
-        // the very first outcome on this card is the moment to point at the
-        // button; changing your mind afterwards is not
-        var first = !answered && !!pick.outcome;
-        answered = answered || !!pick.outcome;
-        changed(first);
+        changed();
       });
     });
 
@@ -209,14 +201,11 @@
     /* ---- the score drum ---- */
 
     function setIndex(side, index) {
-      var next = Math.max(0, Math.min(MAX_GOALS + 1, index));
-      if (next === 0) {
-        clearScore(pick);
-      } else {
-        pick.score[side] = fromIndex(next);
-        seedOtherSide(pick, side);
-        syncScore(pick);
-      }
+      if (pick.score[side] === null && index <= 0) return;
+      var next = Math.max(1, Math.min(MAX_GOALS + 1, index));
+      pick.score[side] = fromIndex(next);
+      seedOtherSide(pick, side);
+      syncScore(pick);
     }
 
     $$('.scorepad', card).forEach(function (pad) {
@@ -263,7 +252,10 @@
         if (drum.hasPointerCapture && event && drum.hasPointerCapture(event.pointerId)) {
           drum.releasePointerCapture(event.pointerId);
         }
-        if (!moved) { paintDrum(pad, true); return; }
+        if (!moved) {
+          paintDrum(pad, true);
+          return;
+        }
         var shift = Math.round((event.clientY - startY) / CELL);
         setIndex(side, startIndex - shift);
         changed();
