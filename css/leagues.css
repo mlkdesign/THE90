@@ -288,13 +288,6 @@
   rgba(14, 14, 14, 0) 100%
   );
 }
-.leagues-topbar .topbar__scrim {
-  background: none;
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-  -webkit-mask-image: none;
-  mask-image: none;
-}
 .leagues-topbar .iconbtn,
 .leagues-topbar .balance {
   -webkit-backdrop-filter: none;

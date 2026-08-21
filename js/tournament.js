@@ -10,18 +10,21 @@
     'diamond-cup': {
       title: 'DIAMOND CUP', kind: 'sponsored', label: 'Sponsored', joined: true, live: true, liveMinutes: 2735,
       participants: 15, capacity: 40, entry: 'Free', currentRound: 3, rounds: 5, place: '#6',
+      roundMatch: { home: 'arsenal', away: 'barcelona' },
       description: 'Exclusive VIP tournament · 5 rounds of top matches · branded sponsor prizes',
       about: 'Diamond Cup is a closed VIP tournament with 5 rounds of top matches. Predict outcomes, earn points and compete for amazing prizes from our sponsor.'
     },
     'weekend-spotlight': {
       title: 'WEEKEND CHALLENGE', kind: 'open', label: 'Open', joined: true, live: true, liveMinutes: 2735,
       participants: 40, capacity: 40, entry: 'Free', currentRound: 2, rounds: 5, place: '#12',
+      roundMatch: { home: 'real-madrid', away: 'bayern' },
       description: 'Predict top matches this weekend and compete for exclusive prizes',
       about: 'Weekend Challenge brings together the biggest matches of the week. Make your predictions, earn points and chase a place among the best predictors.'
     },
     'final-whistle': {
       title: 'FINAL WHISTLE', kind: 'sponsored', label: 'Sponsored', joined: true, live: true, liveMinutes: 2735,
       participants: 32, capacity: 40, entry: 'Free', currentRound: 1, rounds: 3, place: '#3',
+      roundMatch: { home: 'liverpool', away: 'dortmund' },
       description: 'Join the sponsor cup and make your picks before the final kickoff',
       about: 'Final Whistle is the sponsor cup for the final weekend. Every pick counts as you compete across three decisive rounds.'
     },
@@ -49,9 +52,10 @@
   var panels = Array.prototype.slice.call(screen.querySelectorAll('[data-tournament-panel]'));
   var panelScroller = screen.querySelector('[data-tournament-panels]');
   var activeIndex = 0;
-  var pendingPanelTarget = null;
-  var pendingPanelTimer = null;
+  var committedIndex = -1;
+  var desiredPanelPosition = 0;
   var panelScrollFrame = null;
+  var panelAnimationFrame = null;
   var liveCountdownTimer = null;
   var title = screen.querySelector('[data-tournament-title]');
   var kind = screen.querySelector('[data-tournament-kind]');
@@ -69,6 +73,11 @@
   var rankingList = screen.querySelector('[data-tournament-rankings-list]');
   var more = screen.querySelector('[data-tournament-more]');
   var eventItems = Array.prototype.slice.call(screen.querySelectorAll('[data-tournament-event]'));
+  var roundPickStates = {};
+  var activeRoundPick = null;
+  var pinnedWinbar = false; // when true, winbar stays visible and won't auto-hide on overlap
+  var sharedPickBar = window.THE90 && window.THE90.pickConfirmationBar;
+  var lastTournamentScrollTop = scroll ? scroll.scrollTop : 0;
   var TOURNAMENT_PLAYER_COUNT = 20;
   var rankingAvatars = [
     'assets/invite/avatar-zara.png',
@@ -242,20 +251,423 @@
     rankingList.dataset.userCount = String(TOURNAMENT_PLAYER_COUNT);
   }
 
+  /* =======================================================
+     Live-round questions
+
+     A state belongs to a tournament and its current round, not to a card
+     node. That makes the rail safe to re-render under a newly live round
+     while keeping already accepted answers read-only.
+     ======================================================= */
+
+  function liveRoundQuestions(tournament) {
+    var match = roundMatchTeams(tournament);
+    var question = {
+      question: 'Who will get the first yellow card?',
+      options: [match.home.name, match.away.name, 'No card']
+    };
+    return Array.from({ length: 5 }, function () {
+      return { question: question.question, options: question.options.slice() };
+    });
+  }
+
+  function roundMatchTeams(tournament) {
+    var match = tournament.roundMatch || { home: 'arsenal', away: 'barcelona' };
+    var data = window.THE90 || {};
+    function team(slug) {
+      var club = data.club && data.club(slug);
+      return {
+        name: club ? club.name : slug,
+        logo: data.logo ? data.logo(slug) : ''
+      };
+    }
+    return { home: team(match.home), away: team(match.away) };
+  }
+
+  function roundStateKey(tournament) {
+    return activeId + ':' + String(tournament.currentRound);
+  }
+
+  function getRoundPickState(tournament) {
+    var key = roundStateKey(tournament);
+    var questions = liveRoundQuestions(tournament);
+    if (!roundPickStates[key]) {
+      roundPickStates[key] = questions.map(function () {
+        return { selected: -1, confirmed: false };
+      });
+    }
+    return roundPickStates[key];
+  }
+
+  function currentRoundItem(round) {
+    return eventItems.find(function (item) {
+      return Number(item.dataset.tournamentEvent) === Number(round);
+    }) || null;
+  }
+
+  function selectedQuestionIndex(state) {
+    return state.findIndex(function (question) {
+      return !question.confirmed && question.selected >= 0;
+    });
+  }
+
+  function paintRoundQuestionCard(card, state) {
+    if (!card || !state) return;
+    card.classList.toggle('is-picked', state.selected >= 0);
+    Array.prototype.slice.call(card.querySelectorAll('[data-round-answer]')).forEach(function (button) {
+      var selected = Number(button.dataset.roundAnswer) === state.selected;
+      button.classList.toggle('is-selected', selected);
+      button.setAttribute('aria-pressed', String(selected));
+      button.disabled = state.confirmed;
+    });
+  }
+
+  function paintRoundQuestionStates(tournament) {
+    var state = getRoundPickState(tournament);
+    Array.prototype.slice.call(screen.querySelectorAll('[data-round-question]')).forEach(function (card) {
+      paintRoundQuestionCard(card, state[Number(card.dataset.roundQuestion)]);
+    });
+  }
+
+  function discardUnconfirmedRoundPicks(tournament) {
+    if (!tournament) return;
+    getRoundPickState(tournament).forEach(function (question) {
+      if (!question.confirmed) question.selected = -1;
+    });
+    paintRoundQuestionStates(tournament);
+    hideRoundPickBar();
+  }
+
+  function showRoundPickBar(tournament, questionIndex) {
+    if (!sharedPickBar || !sharedPickBar.element) return;
+    var state = getRoundPickState(tournament);
+    var question = state[questionIndex];
+    if (!question || question.confirmed || question.selected < 0) {
+      hideRoundPickBar();
+      return;
+    }
+
+    // Selecting an answer should clear any pinned state so the bar can
+    // behave normally (appear with animation and hide on overlap)
+    pinnedWinbar = false;
+
+    activeRoundPick = { id: activeId, round: tournament.currentRound, index: questionIndex };
+    sharedPickBar.element.classList.add('winbar--round-picks');
+    if (sharedPickBar.label) sharedPickBar.label.textContent = 'Estimated win:';
+    // Sum estimated win across all selected answers (each question = +40)
+    if (sharedPickBar.points) {
+      var totalSelected = state.reduce(function (sum, q) { return sum + (q.selected >= 0 ? 1 : 0); }, 0);
+      sharedPickBar.points.textContent = '+' + (40 * totalSelected);
+    }
+    if (sharedPickBar.next) {
+      sharedPickBar.next.textContent = 'Accept pick?';
+      // Enable only when this question has a selection and isn't confirmed
+      sharedPickBar.next.disabled = !!question.confirmed || !(question.selected >= 0);
+    }
+    sharedPickBar.show(true);
+  }
+
+  function hideRoundPickBar() {
+    activeRoundPick = null;
+    if (pinnedWinbar) return; // don't hide when pinned after Accept pick
+    if (!sharedPickBar || !sharedPickBar.element || !sharedPickBar.element.classList.contains('winbar--round-picks')) return;
+    sharedPickBar.show(false);
+  }
+
+  function restoreDailyPickBar() {
+    activeRoundPick = null;
+    if (!sharedPickBar || !sharedPickBar.element || !sharedPickBar.element.classList.contains('winbar--round-picks')) return;
+    sharedPickBar.restoreDaily();
+  }
+
+  function makeRoundQuestionCard(tournament, question, state, questionIndex) {
+    var card = document.createElement('article');
+    card.className = 'round-question-card' + (state.selected >= 0 ? ' is-picked' : '');
+    card.dataset.roundQuestion = String(questionIndex);
+
+    var pitch = document.createElement('img');
+    pitch.className = 'round-question-card__pitch';
+    pitch.src = 'assets/img/match-card-background.png';
+    pitch.alt = '';
+
+    var teams = roundMatchTeams(tournament);
+    var match = document.createElement('div');
+    match.className = 'round-question-card__match';
+    var field = document.createElement('div');
+    field.className = 'round-question-card__field';
+    ['left-box', 'right-box', 'mid', 'circle'].forEach(function (part) {
+      var line = document.createElement('span');
+      line.className = 'round-question-card__field-' + part;
+      field.appendChild(line);
+    });
+
+    var teamsRow = document.createElement('div');
+    teamsRow.className = 'round-question-card__teams';
+    function teamNode(team) {
+      var node = document.createElement('div');
+      node.className = 'round-question-card__team';
+      var crest = document.createElement('img');
+      crest.className = 'round-question-card__crest';
+      crest.src = team.logo;
+      crest.alt = '';
+      var name = document.createElement('span');
+      name.className = 'round-question-card__name';
+      name.textContent = team.name;
+      node.appendChild(crest);
+      node.appendChild(name);
+      return node;
+    }
+    var versus = document.createElement('span');
+    versus.className = 'round-question-card__vs';
+    versus.textContent = 'VS';
+    teamsRow.appendChild(teamNode(teams.home));
+    teamsRow.appendChild(versus);
+    teamsRow.appendChild(teamNode(teams.away));
+    match.appendChild(field);
+    match.appendChild(teamsRow);
+
+    var bodyWrap = document.createElement('div');
+    bodyWrap.className = 'round-question-card__bodywrap';
+    var body = document.createElement('div');
+    body.className = 'round-question-card__body';
+
+    var questionRow = document.createElement('div');
+    questionRow.className = 'round-question-card__labelrow';
+    var questionText = document.createElement('span');
+    questionText.className = 'round-question-card__question';
+    questionText.textContent = question.question;
+    questionRow.appendChild(questionText);
+
+    var answers = document.createElement('div');
+    answers.className = 'round-question-card__answers';
+    question.options.forEach(function (answer, answerIndex) {
+      var button = document.createElement('button');
+      var selected = state.selected === answerIndex;
+      button.className = 'round-question-card__answer' + (selected ? ' is-selected' : '');
+      button.type = 'button';
+      button.dataset.roundAnswer = String(answerIndex);
+      button.textContent = answer;
+      button.disabled = state.confirmed;
+      button.setAttribute('aria-pressed', String(selected));
+      button.addEventListener('click', function () {
+        if (state.confirmed) return;
+        state.selected = answerIndex;
+        // Keep the native rail in place. Rebuilding it here resets its scroll
+        // position and makes a previously selected card flash out of view.
+        paintRoundQuestionCard(card, state);
+        showRoundPickBar(tournament, questionIndex);
+      });
+      answers.appendChild(button);
+    });
+
+    card.appendChild(pitch);
+    card.appendChild(match);
+    body.appendChild(questionRow);
+    body.appendChild(answers);
+    bodyWrap.appendChild(body);
+    card.appendChild(bodyWrap);
+    return card;
+  }
+
+  function nearestQuestionCard(scroller) {
+    var cards = Array.prototype.slice.call(scroller.querySelectorAll('[data-round-question]'));
+    var midpoint = scroller.scrollLeft + scroller.clientWidth / 2;
+    var nearest = cards[0] || null;
+    var distance = Infinity;
+    cards.forEach(function (card) {
+      var cardMidpoint = card.offsetLeft + card.offsetWidth / 2;
+      var nextDistance = Math.abs(cardMidpoint - midpoint);
+      if (nextDistance < distance) {
+        nearest = card;
+        distance = nextDistance;
+      }
+    });
+    return nearest;
+  }
+
+  function wireRoundQuestionScroller(scroller, tournament) {
+    var frame = null;
+    scroller.addEventListener('scroll', function () {
+      if (frame) return;
+      frame = window.requestAnimationFrame(function () {
+        frame = null;
+        var card = nearestQuestionCard(scroller);
+        if (!card) return;
+        var questionIndex = Number(card.dataset.roundQuestion);
+        var state = getRoundPickState(tournament)[questionIndex];
+        if (state && !state.confirmed && state.selected >= 0) showRoundPickBar(tournament, questionIndex);
+        else hideRoundPickBar();
+      });
+    }, { passive: true });
+  }
+
+  /* The round closes the way Daily picks does: one more card at the end of
+     the rail carrying the tick, with nothing else on it. */
+  function makeRoundDoneCard(tournament) {
+    var card = document.createElement('article');
+    card.className = 'round-question-card round-question-card--done';
+    card.dataset.roundDone = '';
+
+    var done = document.createElement('div');
+    done.className = 'donecard';
+
+    var art = document.createElement('div');
+    art.className = 'donecard__art';
+    art.setAttribute('aria-hidden', 'true');
+
+    var title = document.createElement('p');
+    title.className = 'donecard__title';
+    title.textContent = 'All round picks accepted';
+
+    var win = document.createElement('p');
+    win.className = 'donecard__win';
+    win.appendChild(document.createTextNode('Estimated win:'));
+    var value = document.createElement('b');
+    value.textContent = '+' + (40 * getRoundPickState(tournament).length);
+    win.appendChild(value);
+
+    done.appendChild(art);
+    done.appendChild(title);
+    done.appendChild(win);
+    card.appendChild(done);
+    return { card: card, art: art };
+  }
+
+  function finishRound(tournament) {
+    var eventItem = currentRoundItem(tournament.currentRound);
+    var scroller = eventItem && eventItem.querySelector('.round-questions-scroller');
+    if (!scroller || scroller.querySelector('[data-round-done]')) return;
+
+    var done = makeRoundDoneCard(tournament);
+    scroller.appendChild(done.card);
+
+    pinnedWinbar = false;
+    hideRoundPickBar();
+
+    window.requestAnimationFrame(function () {
+      var first = scroller.querySelector('[data-round-question="0"]');
+      scroller.scrollTo({
+        left: Math.max(0, done.card.offsetLeft - (first ? first.offsetLeft : 0)),
+        behavior: 'smooth'
+      });
+      if (window.THE90 && window.THE90.playDoneTick) window.THE90.playDoneTick(done.art);
+    });
+  }
+
+  function renderRoundQuestions(tournament, eventItem) {
+    var currentRound = Number(tournament.currentRound) || 0;
+    if (!eventItem || !tournament.live || !tournament.joined || !currentRound) return;
+
+    var holder = document.createElement('div');
+    holder.className = 'tournament-events__questions';
+    var scroller = document.createElement('div');
+    scroller.className = 'round-questions-scroller';
+    scroller.setAttribute('aria-label', 'Round ' + currentRound + ' prediction questions');
+
+    var questions = liveRoundQuestions(tournament);
+    var state = getRoundPickState(tournament);
+    questions.forEach(function (question, index) {
+      scroller.appendChild(makeRoundQuestionCard(tournament, question, state[index], index));
+    });
+    holder.appendChild(scroller);
+    eventItem.appendChild(holder);
+    wireRoundQuestionScroller(scroller, tournament);
+  }
+
+  function confirmRoundPick() {
+    if (!activeRoundPick || activeRoundPick.id !== activeId) return;
+    var tournament = currentTournament();
+    if (Number(tournament.currentRound) !== Number(activeRoundPick.round)) return;
+
+    var state = getRoundPickState(tournament);
+    var question = state[activeRoundPick.index];
+    if (!question || question.confirmed || question.selected < 0) return;
+
+    question.confirmed = true;
+    var confirmedIndex = activeRoundPick.index;
+    var nextIndex = -1;
+    for (var step = 1; step < state.length; step += 1) {
+      var candidate = (confirmedIndex + step) % state.length;
+      if (!state[candidate].confirmed) {
+        nextIndex = candidate;
+        break;
+      }
+    }
+    // Keep the shared winbar visible but disable its confirm button for
+    // the newly confirmed question. Update the summed estimated win.
+    paintRoundQuestionStates(tournament);
+    if (sharedPickBar && sharedPickBar.next) {
+      var stateAll = getRoundPickState(tournament);
+      var totalSelectedAll = stateAll.reduce(function (sum, q) { return sum + (q.selected >= 0 ? 1 : 0); }, 0);
+      if (sharedPickBar.points) sharedPickBar.points.textContent = '+' + (40 * totalSelectedAll);
+      sharedPickBar.element.classList.add('winbar--round-picks');
+      sharedPickBar.next.disabled = true;
+      sharedPickBar.next.textContent = 'Select your prediction';
+      // after confirming we pin the winbar so it stays in place until the
+      // user actively selects another answer
+      pinnedWinbar = true;
+      sharedPickBar.show(true);
+    }
+
+    // Nothing left to answer — the round is done, so close it on its own card
+    if (nextIndex < 0) {
+      finishRound(tournament);
+      return;
+    }
+
+    // Move to the following unanswered card, wrapping to an earlier skipped
+    // question after the fifth card. The existing rail stays mounted, so its
+    // position and every other selected answer remain stable.
+    if (nextIndex >= 0) {
+      window.requestAnimationFrame(function () {
+        var eventItem = currentRoundItem(tournament.currentRound);
+        var scroller = eventItem && eventItem.querySelector('.round-questions-scroller');
+        var nextCard = scroller && scroller.querySelector('[data-round-question="' + nextIndex + '"]');
+        if (scroller && nextCard) {
+          var firstCard = scroller.querySelector('[data-round-question="0"]');
+          scroller.scrollTo({
+            left: Math.max(0, nextCard.offsetLeft - (firstCard ? firstCard.offsetLeft : 0)),
+            behavior: 'smooth'
+          });
+          // After moving to the next card, show the shared winbar but
+          // keep the confirm button disabled until the user selects
+          // an answer — mirror the Daily picks behaviour and update
+          // the button text to guide the user.
+          if (sharedPickBar && sharedPickBar.next) {
+            sharedPickBar.element.classList.add('winbar--round-picks');
+            sharedPickBar.next.disabled = true;
+            sharedPickBar.next.textContent = 'Select your prediction';
+            sharedPickBar.show(true);
+          }
+        }
+      });
+    }
+  }
+
   function renderTournamentEvents(tournament) {
     var currentRound = Number(tournament.currentRound) || 0;
+    var liveEventItem = null;
     eventItems.forEach(function (item) {
       var round = Number(item.dataset.tournamentEvent);
       var complete = round < currentRound;
       var current = round === currentRound && currentRound > 0;
       var marker = item.querySelector('[data-tournament-event-marker]');
       var state = item.querySelector('[data-tournament-event-state]');
+      var questions = item.querySelector('.tournament-events__questions');
 
+      if (questions) questions.remove();
       item.classList.toggle('is-complete', complete);
       item.classList.toggle('is-current', current);
       if (marker) marker.textContent = complete ? '✓' : String(round);
       if (state) state.textContent = complete ? 'Completed' : (current ? 'Live now' : (round === currentRound + 1 ? 'Next' : 'Upcoming'));
+      if (current) liveEventItem = item;
     });
+
+    renderRoundQuestions(tournament, liveEventItem);
+    var selected = tournament.live && tournament.joined && currentRound
+      ? selectedQuestionIndex(getRoundPickState(tournament))
+      : -1;
+    if (selected >= 0) showRoundPickBar(tournament, selected);
+    else hideRoundPickBar();
   }
 
   function playTournamentPodium() {
@@ -265,31 +677,9 @@
     rankingPodium.classList.add('is-entering');
   }
 
-  function moveTabIndicator(button, immediate) {
-    if (!tabs || !tabIndicator || !button) return;
-    var styles = window.getComputedStyle(button);
-    var paddingLeft = parseFloat(styles.paddingLeft) || 0;
-    var paddingRight = parseFloat(styles.paddingRight) || 0;
-    if (immediate) tabIndicator.classList.add('is-instant');
-    tabIndicator.style.width = Math.max(0, button.offsetWidth - paddingLeft - paddingRight) + 'px';
-    tabIndicator.style.transform = 'translateX(' + (button.offsetLeft + paddingLeft) + 'px)';
-    if (immediate) {
-      window.requestAnimationFrame(function () {
-        tabIndicator.classList.remove('is-instant');
-      });
-    }
-  }
-
   function updateStickyTabs() {
     if (!scroll || !tabsSticky) return;
     tabsSticky.classList.toggle('is-stuck', scroll.scrollTop >= tabsSticky.offsetTop - 78);
-  }
-
-  function syncTabMeasurements() {
-    var selectedButton = tabButtons.find(function (button) { return button.dataset.tournamentTab === activeTab; });
-    scrollTabBar(activeIndex, 'auto');
-    moveTabIndicator(selectedButton, true);
-    updateStickyTabs();
   }
 
   function nearestTabScrollPosition() {
@@ -312,32 +702,132 @@
     return tabButtons.findIndex(function (button) { return button.dataset.tournamentTab === value; });
   }
 
-  function scrollTabBar(index, behavior) {
-    if (!tabs || tabButtons.length < 2) return;
-    var progress = index / (tabButtons.length - 1);
-    var maxScroll = Math.max(0, tabs.scrollWidth - tabs.clientWidth);
-    tabs.scrollTo({ left: progress * maxScroll, behavior: behavior || 'smooth' });
+  function clamp(value, minimum, maximum) {
+    return Math.max(minimum, Math.min(maximum, value));
   }
 
-  function clearPendingPanelTarget() {
-    pendingPanelTarget = null;
-    if (pendingPanelTimer) window.clearTimeout(pendingPanelTimer);
-    pendingPanelTimer = null;
+  function panelWidth() {
+    return panelScroller ? panelScroller.clientWidth : 0;
   }
 
-  function scrollPanelContent(index, behavior) {
-    if (!panelScroller) return;
-    var target = index * panelScroller.clientWidth;
-    if (Math.abs(panelScroller.scrollLeft - target) <= 1) return;
-    if (behavior === 'auto') {
-      clearPendingPanelTarget();
-      panelScroller.scrollTo({ left: target, behavior: 'auto' });
+  function panelPosition() {
+    var width = panelWidth();
+    return width ? panelScroller.scrollLeft / width : activeIndex;
+  }
+
+  function tabGeometry(index) {
+    var button = tabButtons[index];
+    if (!button) return { left: 0, width: 0 };
+    var styles = window.getComputedStyle(button);
+    var paddingLeft = parseFloat(styles.paddingLeft) || 0;
+    var paddingRight = parseFloat(styles.paddingRight) || 0;
+    return {
+      left: button.offsetLeft + paddingLeft,
+      width: Math.max(0, button.offsetWidth - paddingLeft - paddingRight)
+    };
+  }
+
+  function commitTab(index) {
+    var next = clamp(Math.round(index), 0, tabButtons.length - 1);
+    if (next === committedIndex) return;
+    var nextTab = tabButtons[next].dataset.tournamentTab;
+    if (activeTab === 'events' && nextTab !== 'events') discardUnconfirmedRoundPicks(currentTournament());
+    committedIndex = next;
+    activeIndex = next;
+    activeTab = nextTab;
+    tabButtons.forEach(function (button, buttonIndex) {
+      var selected = buttonIndex === next;
+      button.classList.toggle('is-active', selected);
+      button.setAttribute('aria-selected', String(selected));
+    });
+    panels.forEach(function (panel) {
+      var selected = panel.dataset.tournamentPanel === activeTab;
+      panel.hidden = false;
+      panel.classList.toggle('is-active', selected);
+      panel.setAttribute('aria-hidden', String(!selected));
+    });
+    if (activeTab === 'leaderboard') {
+      window.requestAnimationFrame(playTournamentPodium);
+    }
+  }
+
+  // This is the shared visual state for the entire control. `position` may
+  // sit between tabs (for example 1.35): content, text, indicator and the
+  // tab ribbon all use that same number, so none of them can drift apart.
+  function renderTabPosition(position) {
+    var last = tabButtons.length - 1;
+    var value = clamp(position, 0, last);
+    var leftIndex = Math.floor(value);
+    var rightIndex = Math.min(last, leftIndex + 1);
+    var progress = value - leftIndex;
+    var left = tabGeometry(leftIndex);
+    var right = tabGeometry(rightIndex);
+
+    if (tabIndicator) {
+      var indicatorLeft = left.left + (right.left - left.left) * progress;
+      var indicatorWidth = left.width + (right.width - left.width) * progress;
+      tabIndicator.style.width = indicatorWidth + 'px';
+      tabIndicator.style.transform = 'translate3d(' + indicatorLeft + 'px, 0, 0)';
+    }
+
+    tabButtons.forEach(function (button, index) {
+      var emphasis = Math.max(0, 1 - Math.abs(value - index));
+      button.style.opacity = String(.5 + emphasis * .5);
+      button.style.color = 'rgba(247, 250, 248, ' + (.5 + emphasis * .5).toFixed(3) + ')';
+    });
+
+    if (tabs && last > 0) {
+      var ribbonProgress = value / last;
+      var maxRibbonScroll = Math.max(0, tabs.scrollWidth - tabs.clientWidth);
+      tabs.scrollLeft = ribbonProgress * maxRibbonScroll;
+    }
+    commitTab(value);
+  }
+
+  function renderPanelPosition(position) {
+    var width = panelWidth();
+    var value = clamp(position, 0, tabButtons.length - 1);
+    desiredPanelPosition = value;
+    if (!width) {
+      renderTabPosition(value);
       return;
     }
-    pendingPanelTarget = target;
-    if (pendingPanelTimer) window.clearTimeout(pendingPanelTimer);
-    pendingPanelTimer = window.setTimeout(clearPendingPanelTarget, 560);
-    panelScroller.scrollTo({ left: target, behavior: behavior || 'smooth' });
+    panelScroller.scrollLeft = value * width;
+    renderTabPosition(value);
+  }
+
+  function stopPanelAnimation() {
+    if (!panelAnimationFrame) return;
+    window.cancelAnimationFrame(panelAnimationFrame);
+    panelAnimationFrame = null;
+  }
+
+  function animateToTab(index) {
+    var target = clamp(index, 0, tabButtons.length - 1);
+    var start = panelPosition();
+    var distance = target - start;
+    stopPanelAnimation();
+    if (Math.abs(distance) < .001) {
+      renderPanelPosition(target);
+      return;
+    }
+
+    var startedAt = performance.now();
+    var duration = Math.min(420, Math.max(230, 230 + Math.abs(distance) * 95));
+    function frame(now) {
+      var elapsed = clamp((now - startedAt) / duration, 0, 1);
+      // ease-out keeps the release soft without decoupling any sub-element.
+      var eased = 1 - Math.pow(1 - elapsed, 4);
+      renderPanelPosition(start + distance * eased);
+      if (elapsed < 1) panelAnimationFrame = window.requestAnimationFrame(frame);
+      else panelAnimationFrame = null;
+    }
+    panelAnimationFrame = window.requestAnimationFrame(frame);
+  }
+
+  function syncTabMeasurements() {
+    renderPanelPosition(desiredPanelPosition);
+    updateStickyTabs();
   }
 
   function renderTournament() {
@@ -364,30 +854,17 @@
     var index = tabIndex(value);
     if (index < 0) return;
     var settings = typeof options === 'string' ? { behavior: options } : (options || {});
-    var selectedButton = tabButtons[index];
-    var name = selectedButton.dataset.tournamentTab;
-
-    activeIndex = index;
-    activeTab = name;
-    tabButtons.forEach(function (button) {
-      var selected = button.dataset.tournamentTab === name;
-      button.classList.toggle('is-active', selected);
-      button.setAttribute('aria-selected', String(selected));
-    });
-    scrollTabBar(index, settings.behavior);
-    moveTabIndicator(selectedButton, settings.behavior === 'auto');
-    panels.forEach(function (panel) {
-      var selected = panel.dataset.tournamentPanel === name;
-      panel.hidden = false;
-      panel.classList.toggle('is-active', selected);
-      panel.setAttribute('aria-hidden', String(!selected));
-    });
-    if (!settings.fromPanel) scrollPanelContent(index, settings.behavior);
-    if (name === 'leaderboard') {
-      window.requestAnimationFrame(function () {
-        playTournamentPodium();
-      });
+    // A tap has an explicit destination, so clear the draft immediately
+    // instead of leaving the confirmation surface visible during the slide.
+    if (activeTab === 'events' && tabButtons[index].dataset.tournamentTab !== 'events') {
+      discardUnconfirmedRoundPicks(currentTournament());
     }
+    stopPanelAnimation();
+    if (settings.behavior === 'auto') {
+      renderPanelPosition(index);
+      return;
+    }
+    animateToTab(index);
   }
 
   function openTournament(id) {
@@ -401,6 +878,7 @@
     renderTournament();
     setActiveTab('events', 'auto');
     if (scroll) scroll.scrollTop = 0;
+    lastTournamentScrollTop = scroll ? scroll.scrollTop : 0;
     updateStickyTabs();
     if (window.THE90 && window.THE90.go) window.THE90.go('arena-tournament');
   }
@@ -462,6 +940,41 @@
     }, { passive: false });
   }
 
+  // Hide the shared pick bar when it overlaps the active question card
+  // by 50% on vertical scroll, and show it again when scrolled back.
+  function checkWinbarOverlap() {
+    if (!sharedPickBar || !sharedPickBar.element) return;
+    if (pinnedWinbar) return; // don't auto-hide/show while pinned
+    var scroller = screen.querySelector('.round-questions-scroller');
+    if (!scroller) return;
+    var card = nearestQuestionCard(scroller);
+    if (!card) return;
+    var winRect = sharedPickBar.element.getBoundingClientRect();
+    var cardRect = card.getBoundingClientRect();
+    var overlap = Math.max(0, cardRect.bottom - winRect.top);
+    var percent = overlap / cardRect.height;
+    if (percent >= 0.5) {
+      // hide visually but keep state
+      sharedPickBar.show(false);
+    } else {
+      // if there's an active selected question, restore bar
+      var tournament = currentTournament();
+      var idx = selectedQuestionIndex(getRoundPickState(tournament));
+      if (idx >= 0) showRoundPickBar(tournament, idx);
+    }
+  }
+
+  if (scroll) {
+    scroll.addEventListener('scroll', function () { checkWinbarOverlap(); }, { passive: true });
+  }
+
+  if (sharedPickBar && sharedPickBar.next) {
+    sharedPickBar.next.addEventListener('click', function () {
+      if (!sharedPickBar.element.classList.contains('winbar--round-picks')) return;
+      confirmRoundPick();
+    });
+  }
+
   if (join) {
     join.addEventListener('click', function () {
       var tournament = currentTournament();
@@ -486,37 +999,104 @@
   }
 
   if (panelScroller) {
-    var panelDrag = { pointerId: null, startX: 0, startScroll: 0, moved: false };
+    var panelDrag = {
+      pointerId: null,
+      axis: null,
+      startX: 0,
+      startY: 0,
+      startScroll: 0,
+      startPosition: 0,
+      lastScroll: 0,
+      lastTime: 0,
+      velocity: 0,
+      moved: false
+    };
+    var suppressPanelClick = false;
+
+    function setEdgeResistance(offset, animateBack) {
+      panelScroller.style.transition = animateBack ? 'transform .34s cubic-bezier(.22, 1, .36, 1)' : 'none';
+      panelScroller.style.transform = offset ? 'translate3d(' + offset + 'px, 0, 0)' : '';
+    }
+
     panelScroller.addEventListener('pointerdown', function (event) {
-      if (event.pointerType !== 'mouse' || event.button !== 0) return;
+      if (event.pointerType === 'mouse' && event.button !== 0) return;
+      stopPanelAnimation();
       panelDrag.pointerId = event.pointerId;
+      panelDrag.axis = null;
       panelDrag.startX = event.clientX;
+      panelDrag.startY = event.clientY;
       panelDrag.startScroll = panelScroller.scrollLeft;
+      panelDrag.startPosition = panelPosition();
+      panelDrag.lastScroll = panelScroller.scrollLeft;
+      panelDrag.lastTime = event.timeStamp || performance.now();
+      panelDrag.velocity = 0;
       panelDrag.moved = false;
-      panelScroller.setPointerCapture(event.pointerId);
-      panelScroller.classList.add('is-dragging');
     });
+
     panelScroller.addEventListener('pointermove', function (event) {
       if (event.pointerId !== panelDrag.pointerId) return;
-      var delta = event.clientX - panelDrag.startX;
-      if (Math.abs(delta) > 4) panelDrag.moved = true;
-      panelScroller.scrollLeft = panelDrag.startScroll - delta;
+      var deltaX = event.clientX - panelDrag.startX;
+      var deltaY = event.clientY - panelDrag.startY;
+      if (!panelDrag.axis) {
+        if (Math.max(Math.abs(deltaX), Math.abs(deltaY)) < 6) return;
+        if (Math.abs(deltaY) > Math.abs(deltaX)) {
+          panelDrag.axis = 'y';
+          return;
+        }
+        panelDrag.axis = 'x';
+        panelDrag.moved = true;
+        if (panelScroller.setPointerCapture) panelScroller.setPointerCapture(event.pointerId);
+        panelScroller.classList.add('is-dragging');
+      }
+      if (panelDrag.axis !== 'x') return;
+
+      event.preventDefault();
+      var maxScroll = Math.max(0, panelScroller.scrollWidth - panelScroller.clientWidth);
+      var desired = panelDrag.startScroll - deltaX;
+      var clampedScroll = clamp(desired, 0, maxScroll);
+      var overflow = desired - clampedScroll;
+      // Scroll space is the inverse of finger movement, so the visual
+      // resistance needs the opposite sign to keep following the finger.
+      setEdgeResistance(-overflow * .34, false);
+      panelScroller.scrollLeft = clampedScroll;
+      renderTabPosition(panelPosition());
+
+      var now = event.timeStamp || performance.now();
+      var elapsed = Math.max(1, now - panelDrag.lastTime);
+      panelDrag.velocity = (clampedScroll - panelDrag.lastScroll) / elapsed;
+      panelDrag.lastScroll = clampedScroll;
+      panelDrag.lastTime = now;
     });
+
     function endPanelDrag(event) {
       if (event.pointerId !== panelDrag.pointerId) return;
-      if (panelScroller.hasPointerCapture(event.pointerId)) panelScroller.releasePointerCapture(event.pointerId);
+      var draggedHorizontally = panelDrag.axis === 'x';
+      if (panelScroller.hasPointerCapture && panelScroller.hasPointerCapture(event.pointerId)) {
+        panelScroller.releasePointerCapture(event.pointerId);
+      }
       panelDrag.pointerId = null;
+      panelDrag.axis = null;
       panelScroller.classList.remove('is-dragging');
-      panelScroller.scrollTo({
-        left: Math.round(panelScroller.scrollLeft / panelScroller.clientWidth) * panelScroller.clientWidth,
-        behavior: 'smooth'
-      });
+      setEdgeResistance(0, true);
+      if (!draggedHorizontally) return;
+
+      suppressPanelClick = panelDrag.moved;
+      var current = panelPosition();
+      var direction = panelDrag.velocity === 0 ? 0 : (panelDrag.velocity > 0 ? 1 : -1);
+      var distance = current - panelDrag.startPosition;
+      var target = Math.round(current);
+      if (Math.abs(distance) >= .18) {
+        target = Math.round(panelDrag.startPosition) + (distance > 0 ? 1 : -1);
+      } else if (Math.abs(panelDrag.velocity) >= .55) {
+        target = Math.round(panelDrag.startPosition) + direction;
+      }
+      animateToTab(clamp(target, 0, tabButtons.length - 1));
     }
     panelScroller.addEventListener('pointerup', endPanelDrag);
     panelScroller.addEventListener('pointercancel', endPanelDrag);
     panelScroller.addEventListener('click', function (event) {
-      if (!panelDrag.moved) return;
-      panelDrag.moved = false;
+      if (!suppressPanelClick) return;
+      suppressPanelClick = false;
       event.preventDefault();
       event.stopPropagation();
     }, true);
@@ -525,25 +1105,28 @@
       panelScrollFrame = window.requestAnimationFrame(function () {
         panelScrollFrame = null;
         if (!panelScroller.clientWidth) return;
-        if (pendingPanelTarget !== null) {
-          if (Math.abs(panelScroller.scrollLeft - pendingPanelTarget) <= 1) clearPendingPanelTarget();
-          else return;
-        }
-        var index = Math.round(panelScroller.scrollLeft / panelScroller.clientWidth);
-        index = Math.max(0, Math.min(tabButtons.length - 1, index));
-        if (index !== activeIndex) setActiveTab(index, { fromPanel: true });
+        desiredPanelPosition = panelPosition();
+        renderTabPosition(desiredPanelPosition);
       });
     }, { passive: true });
   }
 
   if (scroll) {
-    scroll.addEventListener('scroll', updateStickyTabs, { passive: true });
+    scroll.addEventListener('scroll', function () {
+      updateStickyTabs();
+      var currentScrollTop = scroll.scrollTop;
+      if (currentScrollTop < lastTournamentScrollTop - 2) hideRoundPickBar();
+      lastTournamentScrollTop = currentScrollTop;
+    }, { passive: true });
   }
   window.addEventListener('resize', function () {
     syncTabMeasurements();
   });
   window.addEventListener('the90:screen', function (event) {
-    if (!event.detail || event.detail !== 'arena-tournament') return;
+    if (!event.detail || event.detail !== 'arena-tournament') {
+      restoreDailyPickBar();
+      return;
+    }
     window.requestAnimationFrame(syncTabMeasurements);
   });
 

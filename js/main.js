@@ -17,6 +17,7 @@
   var TOTAL_PICKS  = 10;
 
   var BASE_BALANCE = 10000;
+  var DAILY_REWARD = 5;
 
   var calendar   = T.buildCalendar();
   var today      = calendar.filter(function (d) { return d.isToday; })[0];
@@ -25,6 +26,8 @@
   var matches    = today.matches;                    // the 10 daily picks
   var picks      = {};                               // matchId -> { outcome, score, derived }
   var accepted   = false;                            // the whole slip has been confirmed
+  var currentBalance = BASE_BALANCE;
+  var rewardGranted = false;
 
   matches.forEach(function (m) { picks[m.id] = T.pickCard.blank(); });
 
@@ -84,6 +87,7 @@
 
   var picksWrap = $('[data-picks]');
   var winbar    = $('[data-winbar]');
+  var winLabel  = $('[data-win-label]');
   var winPoints = $('[data-win-points]');
   var winNext   = $('[data-win-next]');
   var winClose  = $('[data-win-close]');
@@ -97,19 +101,21 @@
   var donePoints = $('[data-done-points]');
   var doneEdit  = $('[data-done-edit]');
   var doneArt   = $('[data-done-art]');
-  var doneAnim  = null;
   var stillness = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var winbarDismissed = false;
 
   T.pickCard.countdown($('[data-picks-deadline]'));
 
   function build(m) {
     return T.pickCard.create(m, picks[m.id], {
       when: selectedDay.isToday ? 'Today' : selectedDay.weekday,
+      daily: true,
       editable: function () { return !accepted; },
       isComplete: hasPick,
       onChange: function (firstAnswer) {
         // touching a confirmed pick sends it back for confirmation
         banked[m.id] = false;
+        winbarDismissed = false;
         refresh(firstAnswer);
       }
     });
@@ -177,7 +183,17 @@
       winNext.textContent = 'Choose exact score';
       return;
     }
-    winNext.textContent = bankedCount() === matches.length - 1 ? 'Accept all picks' : 'Next pick';
+    winNext.textContent = 'Accept pick';
+  }
+
+  function renderBalance(animate) {
+    $$('.balance__value').forEach(function (cell) {
+      cell.textContent = fmt(currentBalance);
+      if (!animate) return;
+      cell.classList.remove('is-bump');
+      void cell.offsetWidth;
+      cell.classList.add('is-bump');
+    });
   }
 
   function refresh(firstAnswer) {
@@ -187,8 +203,8 @@
     if (doneCell) doneCell.textContent = done;
     if (totalCell) totalCell.textContent = '/' + total;
     if (meter) meter.style.width = (done / total * 100) + '%';
-    if (winPoints) winPoints.textContent = fmt(totalPoints());
-    if (donePoints) donePoints.textContent = fmt(totalPoints());
+    if (winPoints) winPoints.textContent = '+' + fmt(totalPoints());
+    if (donePoints) donePoints.textContent = '+ ' + DAILY_REWARD;
 
     updateCta();
     applyWinbar();
@@ -199,7 +215,7 @@
      closing card still carries the finished-round summary, so both never
      appear together. */
   function applyWinbar() {
-    showWinbar(answeredCount() > 0 && !isFinished());
+    showWinbar(answeredCount() > 0 && !isFinished() && !winbarDismissed);
   }
 
   function isFinished() {
@@ -210,27 +226,16 @@
      border, just the tick, the total and a way back in. */
   function finish() {
     if (!doneCard) return;
+    if (!rewardGranted) {
+      rewardGranted = true;
+      currentBalance += DAILY_REWARD;
+      renderBalance(true);
+    }
     doneCard.hidden = false;
     refresh();
     slideTo(-1);
 
-    if (!doneArt || typeof lottie === 'undefined') return;
-    if (doneAnim) { doneAnim.goToAndPlay(0, true); return; }
-
-    /* Fetched as a script rather than handed to lottie as a `path`: an XHR
-       for the JSON is blocked when the prototype is opened straight from
-       disk, and the tick would silently never appear. Still lazy — the file
-       only loads once a round is actually finished. */
-    withDoneData(function (data) {
-      if (doneAnim || !data) return;
-      doneAnim = lottie.loadAnimation({
-        container: doneArt,
-        renderer: 'svg',
-        loop: false,
-        autoplay: true,
-        animationData: data
-      });
-    });
+    playDoneTick(doneArt);
   }
 
   function withDoneData(then) {
@@ -241,6 +246,29 @@
     tag.onerror = function () { then(null); };
     document.head.appendChild(tag);
   }
+
+  /* Fetched as a script rather than handed to lottie as a `path`: an XHR for
+     the JSON is blocked when the prototype is opened straight from disk, and
+     the tick would silently never appear. Still lazy — the file only loads
+     once a round is actually finished. The animation is cached on the
+     container, so replaying costs nothing.
+
+     Shared with the tournament round, which ends on the same tick. */
+  function playDoneTick(container) {
+    if (!container || typeof lottie === 'undefined') return;
+    if (container.tickAnimation) { container.tickAnimation.goToAndPlay(0, true); return; }
+    withDoneData(function (data) {
+      if (container.tickAnimation || !data) return;
+      container.tickAnimation = lottie.loadAnimation({
+        container: container,
+        renderer: 'svg',
+        loop: false,
+        autoplay: true,
+        animationData: data
+      });
+    });
+  }
+  if (T) T.playDoneTick = playDoneTick;
 
   if (doneEdit) {
     doneEdit.addEventListener('click', function () {
@@ -267,6 +295,24 @@
     }, 260);
   }
 
+  // The tournament round reuses this exact surface instead of introducing a
+  // second fixed bar. Its own state and copy are supplied by tournament.js.
+  T.pickConfirmationBar = {
+    element: winbar,
+    label: winLabel,
+    points: winPoints,
+    next: winNext,
+    close: winClose,
+    show: showWinbar,
+    isReducedMotion: function () { return stillness.matches; },
+    restoreDaily: function () {
+      if (winbar) winbar.classList.remove('winbar--round-picks');
+      if (winLabel) winLabel.textContent = 'Potential win:';
+      if (winNext) winNext.textContent = 'Accept pick';
+      refresh();
+    }
+  };
+
   // swiping between cards re-points the button at whatever is on screen
   var scrollFrame;
   picksWrap.addEventListener('scroll', function () {
@@ -276,6 +322,7 @@
 
   if (winNext) {
     winNext.addEventListener('click', function () {
+      if (winbar && winbar.classList.contains('winbar--round-picks')) return;
       var here = currentIndex();
       var m = matches[here];
       if (!hasPick(picks[m.id]) || banked[m.id]) return;
@@ -290,20 +337,13 @@
 
   if (winClose) {
     winClose.addEventListener('click', function () {
-      if (doneCard) doneCard.hidden = true;
-      matches.forEach(function (m) {
-        picks[m.id] = T.pickCard.blank();
-        banked[m.id] = false;
-        var card = build(m);
-        picksWrap.replaceChild(card, cards[m.id]);
-        cards[m.id] = card;
-      });
-      picksWrap.scrollTo({ left: 0, behavior: stillness.matches ? 'auto' : 'smooth' });
-      if (winNext) winNext.classList.remove('is-nudging');
-      refresh();
+      if (winbar && winbar.classList.contains('winbar--round-picks')) return;
+      winbarDismissed = true;
+      showWinbar(false);
     });
   }
 
+  renderBalance(false);
   refresh();
 
 
@@ -396,6 +436,37 @@
   $('[data-modal-close]').addEventListener('click', closeModal);
   $('[data-modal-cta]').addEventListener('click', closeModal);
   modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+
+
+  /* =======================================================
+     Daily pick points guide
+     ======================================================= */
+
+  var pointsModal = $('[data-points-modal]');
+  var pointsModalClose = $$('[data-points-modal-close]');
+  var pointsModalTrigger = null;
+
+  function closePointsModal() {
+    if (!pointsModal) return;
+    pointsModal.hidden = true;
+    if (pointsModalTrigger) {
+      pointsModalTrigger.setAttribute('aria-expanded', 'false');
+      pointsModalTrigger = null;
+    }
+  }
+
+  function openPointsModal(event) {
+    if (!pointsModal) return;
+    if (pointsModalTrigger) pointsModalTrigger.setAttribute('aria-expanded', 'false');
+    pointsModalTrigger = event.detail && event.detail.trigger;
+    if (pointsModalTrigger) pointsModalTrigger.setAttribute('aria-expanded', 'true');
+    pointsModal.hidden = false;
+  }
+
+  window.addEventListener('the90:open-points-info', openPointsModal);
+  pointsModalClose.forEach(function (control) {
+    control.addEventListener('click', closePointsModal);
+  });
 
 
   /* =======================================================

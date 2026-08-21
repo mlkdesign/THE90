@@ -16,13 +16,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="css/style.css?v=4">
-<link rel="stylesheet" href="css/main.css?v=32">
-<link rel="stylesheet" href="css/rankings.css?v=12">
-    <link rel="stylesheet" href="css/leagues.css?v=15">
-    <link rel="stylesheet" href="css/arena.css?v=39">
+<link rel="stylesheet" href="css/main.css?v=40">
+<link rel="stylesheet" href="css/rankings.css?v=13">
+    <link rel="stylesheet" href="css/leagues.css?v=16">
+  <link rel="stylesheet" href="css/arena.css?v=50">
 <link rel="stylesheet" href="css/live.css?v=4">
 <link rel="stylesheet" href="css/league.css?v=10">
-<link rel="stylesheet" href="css/my-zone.css?v=6">
+<link rel="stylesheet" href="css/my-zone.css?v=7">
 <link rel="stylesheet" href="css/ranks.css?v=1">
 <link rel="stylesheet" href="css/notifications.css">
 <link rel="stylesheet" href="css/community.css?v=8">
@@ -323,9 +323,11 @@
                     <img src="assets/icons/timer.svg" alt="" width="16" height="16">
                     <b data-picks-deadline>Closes in 12:15:38</b>
                   </span>
+                </div>
+                <div class="picksbar__progress">
+                  <div class="picksbar__meter"><i data-picks-meter></i></div>
                   <span class="picksbar__count"><b data-picks-done>0</b><small data-picks-total>/10</small></span>
                 </div>
-                <div class="picksbar__meter"><i data-picks-meter></i></div>
               </div>
 
               <div class="picks" data-picks>
@@ -334,8 +336,8 @@
                     <div class="donecard__art" data-done-art aria-hidden="true"></div>
                     <p class="donecard__title">Congratulations! All 10 picks are in.</p>
                     <p class="donecard__win">
-                      Expected win:
-                      <b><img src="assets/icons/points.svg" alt="" width="16" height="16"><span data-done-points>0</span></b>
+                      Rating reward:
+                      <b><span data-done-points>+ 5</span><img src="assets/icons/soccer-ball.svg" alt="" width="16" height="16"></b>
                     </p>
                     <button class="donecard__edit" type="button" data-done-edit>Edit picks</button>
                   </div>
@@ -735,7 +737,7 @@
                       <div class="thearena-tournament__art"><img src="assets/arena/thearena-bronze-cup.png" alt="Tournament statue"></div>
                       <div class="thearena-tournament__body">
                         <div class="thearena-tournament__topline"><span class="thearena-tag thearena-tag--ranked">Ranked</span><span class="thearena-time"><img src="assets/arena/thearena-timer.svg" alt="">2d 14h</span></div>
-                        <div class="thearena-tournament__copy"><h3>Weekend challenge</h3><p>Guess the outcomes of top matches and win cool prizes</p></div>
+                        <div class="thearena-tournament__copy"><h3>Ranked rush</h3><p>A ranked tournament for players ready to climb the leaderboard</p></div>
                         <div class="thearena-tournament__bottom"><dl><div><dt>40</dt><dd>Slots</dd></div><div><dt>5</dt><dd>Rounds</dd></div></dl><button type="button" class="thearena-join" data-arena-join>Join for 3€</button></div>
                       </div>
                     </article>
@@ -743,8 +745,8 @@
                       <div class="thearena-tournament__art"><img src="assets/arena/thearena-football.png" alt="Silver football trophy"></div>
                       <div class="thearena-tournament__body">
                         <div class="thearena-tournament__topline"><span class="thearena-tag thearena-tag--sponsored">Sponsored</span><span class="thearena-time"><img src="assets/arena/thearena-timer.svg" alt="">2d 14h</span></div>
-                        <div class="thearena-tournament__copy"><h3>Weekend challenge</h3><p>Guess the outcomes of top matches and win cool prizes</p></div>
-                        <div class="thearena-tournament__bottom"><dl><div><dt>40</dt><dd>Slots</dd></div><div><dt>5</dt><dd>Rounds</dd></div></dl><button type="button" class="thearena-join is-locked" data-arena-join aria-label="Tournament is locked"><img src="assets/arena/thearena-lock.svg" alt=""></button></div>
+                        <div class="thearena-tournament__copy"><h3>Sponsored finals</h3><p>The closing sponsor cup — unlocks once the group stage is over</p></div>
+                        <div class="thearena-tournament__bottom"><dl><div><dt>40</dt><dd>Slots</dd></div><div><dt>3</dt><dd>Rounds</dd></div></dl><button type="button" class="thearena-join is-locked" data-arena-join aria-label="Tournament is locked"><img src="assets/arena/thearena-lock.svg" alt=""></button></div>
                       </div>
                     </article>
                   </div>
@@ -759,14 +761,6 @@
                   </div>
                 </section>
               </main>
-              <div class="arena-content">
-                <div class="arena-soon">
-                  <span class="arena-soon__badge" aria-hidden="true"><svg class="arena-soon__glyph" viewBox="-0.625 -3.125 20 20" width="34" height="34" aria-hidden="true"><path d="M17.5 1.875H15.625V0.625C15.625 0.45924 15.5592 0.300269 15.4419 0.183058C15.3247 0.0658481 15.1658 0 15 0H3.75C3.58424 0 3.42527 0.0658481 3.30806 0.183058C3.19085 0.300269 3.125 0.45924 3.125 0.625V1.875H1.25C0.918479 1.875 0.600537 2.0067 0.366117 2.24112C0.131696 2.47554 0 2.79348 0 3.125V4.375C0 5.2038 0.32924 5.99866 0.915291 6.58471C1.20547 6.87489 1.54997 7.10508 1.92911 7.26212C2.30826 7.41917 2.71462 7.5 3.125 7.5H3.41016C3.77832 8.66673 4.48029 9.70001 5.4293 10.4721C6.37831 11.2443 7.53277 11.7214 8.75 11.8445V13.75H6.875C6.70924 13.75 6.55027 13.8158 6.43306 13.9331C6.31585 14.0503 6.25 14.2092 6.25 14.375C6.25 14.5408 6.31585 14.6997 6.43306 14.8169C6.55027 14.9342 6.70924 15 6.875 15H11.875C12.0408 15 12.1997 14.9342 12.3169 14.8169C12.4342 14.6997 12.5 14.5408 12.5 14.375C12.5 14.2092 12.4342 14.0503 12.3169 13.9331C12.1997 13.8158 12.0408 13.75 11.875 13.75H10V11.8422C12.4953 11.5898 14.5656 9.83906 15.3188 7.5H15.625C16.4538 7.5 17.2487 7.17076 17.8347 6.58471C18.4208 5.99866 18.75 5.2038 18.75 4.375V3.125C18.75 2.79348 18.6183 2.47554 18.3839 2.24112C18.1495 2.0067 17.8315 1.875 17.5 1.875ZM3.125 6.25C2.62772 6.25 2.15081 6.05246 1.79917 5.70083C1.44754 5.34919 1.25 4.87228 1.25 4.375V3.125H3.125V5.625C3.125 5.83333 3.13516 6.04167 3.15547 6.25H3.125ZM17.5 4.375C17.5 4.87228 17.3025 5.34919 16.9508 5.70083C16.5992 6.05246 16.1223 6.25 15.625 6.25H15.5859C15.6116 6.01911 15.6246 5.787 15.625 5.55469V3.125H17.5V4.375Z" fill="currentColor"/></svg></span>
-                  <h1>The Arena is warming up</h1>
-                  <p>Head-to-head duels, knockout brackets and sponsor cups will live here. The screen arrives with the next design drop.</p>
-                  <span class="arena-soon__tag">Coming soon</span>
-                </div>
-              </div>
             </div>
 
             <div class="topbar arena-topbar">
@@ -1214,24 +1208,27 @@
 
         <!-- ============ SCREEN: MY ZONE ============ -->
         <section class="screen screen--myzone" data-screen="my-zone">
+          <!-- pinned: the wordmark and the two buttons stay put, the page
+               dissolves under them -->
+          <div class="topbar myzone-topbar">
+            <div class="topbar__scrim"></div>
+            <div class="topbar__row">
+              <div class="wordmark wordmark--sm">THE<span>90</span></div>
+              <div class="topbar__actions">
+                <button class="iconbtn" type="button" aria-label="Notifications, 3 unread" data-go="notifications" data-notification-button>
+                  <img src="assets/icons/bell.svg" alt="" width="12" height="13">
+                  <span class="iconbtn__badge" data-notification-badge>3</span>
+                </button>
+                <button class="iconbtn" type="button" aria-label="Settings" data-go="settings">
+                  <img src="assets/my-zone/gear.svg" alt="" width="18" height="17">
+                </button>
+              </div>
+            </div>
+          </div>
+
           <div class="myzone-scroll" data-myzone-scroll>
             <div class="myzone-ambient" aria-hidden="true"></div>
             <div class="myzone-scroll__inner">
-
-              <div class="myzone-topbar">
-                <div class="myzone-topbar__row">
-                  <div class="wordmark wordmark--sm">THE<span>90</span></div>
-                  <div class="topbar__actions">
-                    <button class="iconbtn" type="button" aria-label="Notifications, 3 unread" data-go="notifications" data-notification-button>
-                      <img src="assets/icons/bell.svg" alt="" width="12" height="13">
-                      <span class="iconbtn__badge" data-notification-badge>3</span>
-                    </button>
-                    <button class="iconbtn" type="button" aria-label="Settings" data-go="settings">
-                      <img src="assets/my-zone/gear.svg" alt="" width="18" height="17">
-                    </button>
-                  </div>
-                </div>
-              </div>
 
               <section class="mz-profile" aria-label="Profile summary">
                 <div class="mz-avatar">
@@ -1881,14 +1878,18 @@
             <div class="winbar__card">
               <div class="winbar__row">
                 <span class="winbar__points">
-                  Potential win:
-                  <b><img src="assets/icons/points.svg" alt="" width="16" height="16"><span data-win-points>0</span></b>
+                  <span data-win-label>Potential win:</span>
+                  <b><span data-win-points>+0</span><img src="assets/icons/soccer-ball.svg" alt="" width="16" height="16"></b>
                 </span>
-                <button class="winbar__close" type="button" data-win-close aria-label="Discard all picks">
+                <button class="winbar__close" type="button" data-win-close aria-label="Close potential win">
                   <img src="assets/icons/cross-sm.svg" alt="" width="10" height="10">
                 </button>
               </div>
-              <button class="winbar__cta" type="button" data-win-next>Next pick</button>
+              <button class="winbar__cta" type="button" data-win-next>Accept pick</button>
+              <p class="winbar__reward">
+                <span>Complete all 10 picks and get reward:</span>
+                <b>+ 5 <img src="assets/icons/soccer-ball.svg" alt="" width="16" height="16"></b>
+              </p>
             </div>
           </div>
           <div class="rankings-pin" data-rankings-pin>
@@ -1978,6 +1979,34 @@
           </div>
         </div>
 
+        <!-- ============ DAILY PICKS: POINTS GUIDE ============ -->
+        <div class="points-modal" id="points-info-modal" data-points-modal hidden>
+          <div class="points-modal__scrim" data-points-modal-close></div>
+          <section class="points-modal__body" role="dialog" aria-modal="true" aria-labelledby="points-modal-title">
+            <button class="points-modal__close" type="button" data-points-modal-close aria-label="Close points guide">
+              <img src="assets/icons/close.svg" alt="" width="16" height="16">
+            </button>
+            <div class="points-modal__content">
+              <h2 class="points-modal__title" id="points-modal-title">How points work</h2>
+              <div class="points-modal__rules">
+                <p><b>Exact score — +40 pts</b><span>Correct score for both teams.</span></p>
+                <p><b>Correct result — +10 pts</b><span>Correct winner or draw, but not the exact score.</span></p>
+                <p><b>One team’s score — +5 pts</b><span>Correct number of goals for one team only.</span></p>
+              </div>
+              <section class="points-modal__example" aria-label="Points example">
+                <strong>Example: Your pick is Arsenal 3–2</strong>
+                <ul>
+                  <li><span>3–2</span><b>+40 pts</b></li>
+                  <li><span>3–1</span><b>+10 pts</b></li>
+                  <li><span>3–3</span><b>+5 pts</b></li>
+                  <li><span>2–2</span><b>+5 pts</b></li>
+                  <li><span>1–3</span><b>0 pts</b></li>
+                </ul>
+              </section>
+            </div>
+          </section>
+        </div>
+
         <!-- home indicator -->
         <div class="home-indicator"><span></span></div>
 
@@ -1991,15 +2020,15 @@
 
 <script src="vendor/lottie-light.min.js"></script>
 <script src="js/data.js?v=5"></script>
-<script src="js/pick-card.js?v=17"></script>
+<script src="js/pick-card.js?v=20"></script>
 <script src="js/leaderboard.js?v=1"></script>
-<script src="js/app.js?v=10"></script>
-<script src="js/main.js?v=22"></script>
+<script src="js/app.js?v=11"></script>
+<script src="js/main.js?v=27"></script>
 <script src="js/news.js?v=1"></script>
 <script src="js/live.js?v=3"></script>
 <script src="js/rankings.js?v=9"></script>
 <script src="js/thearena.js?v=7"></script>
-<script src="js/tournament.js?v=15"></script>
+<script src="js/tournament.js?v=23"></script>
 <script src="js/arena-join.js?v=2"></script>
 <script src="js/league.js?v=10"></script>
 <script src="js/leagues.js?v=4"></script>

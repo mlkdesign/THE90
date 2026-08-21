@@ -35,7 +35,7 @@
   z-index: 1;
   width: 390px;
   min-height: 1580px;
-  padding: 62px 16px 140px;
+  padding: var(--topbar-h) 16px 140px;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -527,22 +527,11 @@ button.mz-showcase__item:active { transform: scale(.94); }
 }
 
 /* --- app bar scrolls with the profile content --- */
-.myzone-topbar {
-  position: relative;
-  width: 358px;
-  height: 56px;
-  margin-bottom: -24px;
-  flex: none;
-}
-.myzone-topbar__row {
-  position: relative;
-  width: 100%;
-  height: 56px;
-  padding: 8px 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+/* Pinned over the scroller: the wordmark, the bell and the gear stay where
+   they are while everything else dissolves into the blur underneath. It uses
+   the shared .topbar, so it behaves like the bar on Main and THEARENA. */
+.myzone-topbar { z-index: 40; }
+.myzone-topbar .topbar__row { padding: 8px 16px; }
 
 .myzone-footer { gap: 0; }
 

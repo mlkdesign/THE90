@@ -31,6 +31,12 @@
     rgba(14, 14, 14, .55) 52%,
     rgba(14, 14, 14, .18) 76%,
     rgba(14, 14, 14, 0) 100%);
+  /* the podium and the ranks blur as they pass under it, the same as the
+     bar on Main; masked so the blur fades out with the gradient */
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 58%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 58%, transparent 100%);
   pointer-events: none;
 }
 

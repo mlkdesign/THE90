@@ -83,9 +83,25 @@
     var onChange = opts.onChange || function () {};
     var isComplete = opts.isComplete || hasPick;
     var home = T.club(match.home), away = T.club(match.away);
+    var isDaily = !!opts.daily;
+    var resultCopy = isDaily
+      ? '<p class="mcard__label">Match result</p>' +
+        '<span class="mcard__hint">(correct result +10 <img src="assets/icons/soccer-ball.svg" alt="" width="16" height="16">)</span>'
+      : '<p class="mcard__label">Choose the winner or draw:</p>' +
+        '<span class="mcard__points"><b>+ 10</b><img src="assets/icons/soccer-ball.svg" alt="" width="16" height="16"></span>';
+    var scoreCopy = isDaily
+      ? '<span class="exact__title">Exact score</span>' +
+        '<span class="mcard__hint">(exact score +40 <img src="assets/icons/soccer-ball.svg" alt="" width="16" height="16">)</span>'
+      : '<span class="exact__title">Add exact score</span>' +
+        '<span class="mcard__points"><b>+ 40</b><img src="assets/icons/soccer-ball.svg" alt="" width="16" height="16"></span>';
+    var infoCopy = isDaily
+      ? '<button class="mcard__info" type="button" data-points-info aria-label="How points work" aria-controls="points-info-modal" aria-expanded="false">' +
+          '<img src="assets/icons/info.svg" alt="" width="20" height="20">' +
+        '</button>'
+      : '';
 
     var card = el(
-      '<article class="mcard" data-card="' + match.id + '">' +
+      '<article class="mcard' + (isDaily ? ' mcard--daily' : '') + '" data-card="' + match.id + '">' +
         '<img class="mcard__pitch" src="assets/img/match-card-background.png" alt="">' +
         '<div class="mcard__head">' +
           '<div class="pitch">' +
@@ -110,10 +126,10 @@
 
         '<div class="mcard__bodywrap">' +
           '<div class="mcard__body">' +
+            infoCopy +
             '<div class="mcard__block">' +
               '<div class="mcard__labelrow">' +
-                '<p class="mcard__label">Choose the winner or draw:</p>' +
-                '<span class="mcard__points"><b>+ 10</b><img src="assets/icons/soccer-ball.svg" alt="" width="16" height="16"></span>' +
+                resultCopy +
               '</div>' +
               '<div class="seg" data-outcome>' +
                 '<button class="seg__btn" type="button" data-val="home"><span>' + home.name + '</span></button>' +
@@ -124,8 +140,7 @@
 
             '<div class="mcard__block">' +
               '<div class="exact__head">' +
-                '<span class="exact__title">Add exact score</span>' +
-                '<span class="mcard__points"><b>+ 40</b><img src="assets/icons/soccer-ball.svg" alt="" width="16" height="16"></span>' +
+                scoreCopy +
               '</div>' +
               '<div class="exact__body">' +
                 '<div class="scores">' +
@@ -141,6 +156,16 @@
 
 
     /* ---- rendering ---- */
+
+    var infoButton = $('[data-points-info]', card);
+    if (infoButton) {
+      infoButton.addEventListener('click', function (event) {
+        event.stopPropagation();
+        window.dispatchEvent(new CustomEvent('the90:open-points-info', {
+          detail: { trigger: infoButton }
+        }));
+      });
+    }
 
     function paintDrum(pad, animate) {
       var side = pad.dataset.side;

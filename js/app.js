@@ -107,6 +107,7 @@
       shellFooter.classList.toggle('is-settings', isSettings);
       shellFooter.classList.toggle('is-rankings', name === 'rankings');
       shellFooter.classList.toggle('is-arena', name === 'arena' || isArenaTournament);
+      shellFooter.classList.toggle('is-arena-tournament', isArenaTournament);
       shellFooter.classList.toggle('is-leagues', name === 'leagues');
       shellFooter.classList.toggle('is-league', name === 'league');
       shellFooter.classList.toggle('is-league-chat', name === 'league-chat');

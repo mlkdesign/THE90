@@ -13,13 +13,11 @@
   scrollbar-width: none;
 }
 .arena-scroll::-webkit-scrollbar { display: none; }
-/* Retained only as a fallback for the prior placeholder markup. */
-.arena-content { display: none; }
 
 .thearena-content {
   width: 390px;
   min-height: 100%;
-  padding: var(--topbar-h) 16px calc(var(--navbar-h) + 48px);
+  padding: var(--topbar-h) 16px calc(var(--navbar-h) + 16px);
   color: var(--text-primary);
 }
 
@@ -608,7 +606,7 @@
   height: 2px;
   background: var(--brand-primary);
   pointer-events: none;
-  transition: transform .32s cubic-bezier(.22, 1, .36, 1), width .32s cubic-bezier(.22, 1, .36, 1);
+  will-change: transform, width;
 }
 .arena-tournament-tabs__indicator.is-instant,
 .arena-tournament-tabs.is-dragging .arena-tournament-tabs__indicator { transition: none; }
@@ -623,11 +621,15 @@
   overflow-x: auto;
   overflow-y: clip;
   scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
+  /* Motion is driven by the shared JS position, not independent browser
+     smooth-scroll animations that would make the indicator lag behind. */
+  scroll-behavior: auto;
   scroll-snap-stop: always;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
   cursor: grab;
+  touch-action: pan-y;
+  will-change: transform;
 }
 .arena-tournament-panels::-webkit-scrollbar { display: none; }
 .arena-tournament-panels.is-dragging { cursor: grabbing; scroll-snap-type: none; user-select: none; }
@@ -734,6 +736,264 @@
 .tournament-events i { flex: none; color: rgba(247, 250, 248, .5); font-size: 10px; font-style: normal; font-weight: 600; }
 .tournament-events li.is-current i { color: var(--brand-primary); }
 .tournament-events li.is-complete i { color: rgba(36, 255, 0, .72); }
+
+/* The live round owns a second grid row. Keeping it inside the same timeline
+   item lets the vertical connector follow its real height rather than a
+   fixed estimate. */
+.tournament-events > li.is-current {
+  grid-template-areas:
+    'step card'
+    '. questions';
+  grid-template-rows: auto auto;
+  align-items: start;
+  row-gap: 12px;
+}
+.tournament-events > li.is-current .tournament-events__step {
+  grid-area: step;
+  align-self: start;
+  margin-top: 20px;
+}
+.tournament-events > li.is-current .tournament-events__card { grid-area: card; }
+.tournament-events > li.is-current:not(:last-child)::before {
+  top: 36px;
+  bottom: -48px;
+}
+.tournament-events__questions {
+  grid-area: questions;
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  /* The rail itself reaches both device edges. Its inner left inset keeps
+     the resting first card aligned to the round card, while a swipe can
+     travel over the timeline instead of being clipped by this grid column. */
+  width: calc(100% + 76px);
+  margin-left: -60px;
+}
+.round-questions-scroller {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 16px 22px 60px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-snap-stop: always;
+  scroll-behavior: smooth;
+  scroll-padding-left: 60px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+.round-questions-scroller::-webkit-scrollbar { display: none; }
+.round-question-card {
+  position: relative;
+  box-sizing: border-box;
+  flex: 0 0 100%;
+  overflow: hidden;
+  isolation: isolate;
+  scroll-snap-align: start;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 24px;
+  background: #101a15;
+  transition: border-color .3s ease, box-shadow .3s ease;
+}
+/* the last card in the rail once every question is answered: no surface,
+   no border, just the tick and the total — the Daily picks ending */
+.round-question-card--done {
+  border-color: transparent;
+  background: none;
+}
+.round-question-card--done .donecard { min-height: 300px; }
+
+.round-question-card.is-picked {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 1px rgba(36, 255, 0, .25), 0 10px 30px -14px rgba(36, 255, 0, .45);
+}
+.round-question-card__pitch {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.round-question-card__match {
+  position: relative;
+  z-index: 2;
+  height: 150px;
+  overflow: hidden;
+}
+.round-question-card__match::before {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  background: linear-gradient(180deg, rgba(6, 18, 13, .78), rgba(6, 18, 13, 0));
+  pointer-events: none;
+}
+.round-question-card__field {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 5px;
+  width: calc(100% - 10px);
+  height: 174px;
+  transform: translateX(-50%);
+  overflow: hidden;
+  border: 1px dashed var(--text-primary);
+  border-radius: 19px;
+  opacity: .3;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 64%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 64%, transparent 100%);
+}
+.round-question-card__field-left-box,
+.round-question-card__field-right-box {
+  position: absolute;
+  top: calc(50% - 9.5px);
+  width: 48px;
+  height: 69px;
+  transform: translateY(-50%);
+  border: 1px dashed var(--text-primary);
+}
+.round-question-card__field-left-box { left: -1px; border-left: 0; }
+.round-question-card__field-right-box { right: -1px; border-right: 0; }
+.round-question-card__field-mid {
+  position: absolute;
+  left: 50%;
+  top: 3px;
+  bottom: 3px;
+  width: 0;
+  border-left: 1px dashed var(--text-primary);
+}
+.round-question-card__field-circle {
+  position: absolute;
+  left: 50%;
+  top: calc(50% - 9px);
+  width: 68px;
+  height: 68px;
+  transform: translate(-50%, -50%);
+  border: 1px dashed var(--text-primary);
+  border-radius: 50%;
+}
+.round-question-card__teams {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  top: 46px;
+  width: 100%;
+  height: 74px;
+  display: flex;
+  align-items: center;
+}
+.round-question-card__team {
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.round-question-card__crest {
+  width: auto;
+  height: 50px;
+  flex: none;
+  object-fit: contain;
+  filter: drop-shadow(0 0 30px rgba(36, 255, 0, .7));
+}
+.round-question-card__name {
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  text-align: center;
+  white-space: nowrap;
+}
+.round-question-card__vs {
+  width: 23px;
+  flex: none;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+  text-align: center;
+}
+.round-question-card__bodywrap {
+  position: relative;
+  z-index: 2;
+  padding: 0 8px 8px;
+}
+.round-question-card__body {
+  position: relative;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 24px 24px 16px 16px;
+  background: rgba(255, 255, 255, .1);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+.round-question-card__labelrow {
+  width: 100%;
+  min-height: 20px;
+  padding: 0 8px;
+  display: flex;
+  align-items: flex-start;
+}
+.round-question-card__question {
+  min-width: 0;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+}
+.round-question-card__block { display: flex; flex-direction: column; gap: 8px; }
+.round-question-card__answers {
+  width: 100%;
+  min-height: 60px;
+  padding: 4px;
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .1);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+.round-question-card__answer {
+  min-width: 0;
+  flex: 1 0 0;
+  min-height: 50px;
+  padding: 8px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 0;
+  border-radius: 12px;
+  color: rgba(247, 250, 248, .5);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  text-align: center;
+  transition: background .22s ease, color .22s ease;
+}
+.round-question-card__answer:hover:not(:disabled):not(.is-selected) { background: rgba(255, 255, 255, .1); }
+.round-question-card__answer.is-selected,
+.round-question-card__answer:disabled.is-selected {
+  background: var(--brand-primary);
+  color: var(--text-on-brand);
+  font-weight: 600;
+  opacity: 1;
+}
+.round-question-card__answer:disabled { cursor: default; }
+.round-question-card__answer:disabled:not(.is-selected) { opacity: .5; }
 
 .tournament-rules { counter-reset: rule; gap: 12px; }
 .tournament-rules li { position: relative; display: flex; flex-direction: column; gap: 4px; padding: 0 0 12px 44px; border-bottom: 1px solid rgba(255, 255, 255, .1); counter-increment: rule; }
