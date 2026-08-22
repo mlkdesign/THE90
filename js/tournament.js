@@ -580,6 +580,7 @@
 
     var done = makeRoundDoneCard(tournament);
     scroller.appendChild(done.card);
+    fitPanelHeight();
 
     hideRoundPickBar();
 
@@ -611,6 +612,7 @@
     holder.appendChild(scroller);
     eventItem.appendChild(holder);
     wireRoundQuestionScroller(scroller, tournament);
+    fitPanelHeight();
   }
 
   function confirmRoundPick() {
@@ -705,6 +707,26 @@
   /* Every panel is a flex item in one horizontal strip, so the strip is as
      tall as its tallest tab and a short tab left a screenful of nothing under
      it. Measure the one on show and let the page end where it ends. */
+  /* Every tab is a flex item in one horizontal strip, so the strip is as tall
+     as its tallest tab and a short one sits above a screenful of nothing.
+     align-items keeps each tab at its own height; this then sizes the strip
+     to whichever one is under the finger. */
+  function panelHeightAt(position) {
+    var last = panels.length - 1;
+    var value = clamp(position, 0, last);
+    var index = Math.floor(value);
+    var left = panels[index];
+    if (!left) return 0;
+    var right = panels[Math.min(last, index + 1)] || left;
+    return left.offsetHeight + (right.offsetHeight - left.offsetHeight) * (value - index);
+  }
+
+  function fitPanelHeight() {
+    if (!panelScroller) return;
+    var height = panelHeightAt(panelPosition());
+    if (height) panelScroller.style.height = Math.round(height) + 'px';
+  }
+
   function nearestTabScrollPosition() {
     if (!tabs) return 0;
     var nearest = 0;
@@ -1111,6 +1133,14 @@
         renderTabPosition(desiredPanelPosition);
       });
     }, { passive: true });
+  }
+
+  if (panelScroller) {
+    /* Called straight from the scroll event rather than behind a
+       requestAnimationFrame latch: a latch that is set but never cleared —
+       which happens whenever frames stop being produced — would wedge this
+       shut for good. It is two height reads and one style write. */
+    panelScroller.addEventListener('scroll', fitPanelHeight, { passive: true });
   }
 
   if (scroll) {
