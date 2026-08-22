@@ -152,7 +152,7 @@
     var card = el('article', 'theleagues-card');
     var open = el('button', 'theleagues-card__open');
     open.type = 'button';
-    open.dataset.go = 'league';
+    open.dataset.go = 'league-chat';
     open.dataset.leagueJoined = 'true';
     open.dataset.leagueOwn = 'true';
     open.setAttribute('aria-label', 'Open ' + league.name);
@@ -494,7 +494,9 @@
   var viewing = { joined: true, own: false };
 
   document.addEventListener('click', function (event) {
-    var card = event.target.closest('[data-go="league"]');
+    // both kinds of card carry the flag; the seeded ones are markup, the
+    // ones you made yourself are built above
+    var card = event.target.closest('[data-league-joined]');
     if (!card) return;
     viewing = {
       joined: card.dataset.leagueJoined !== 'false',

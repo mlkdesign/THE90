@@ -1,15 +1,16 @@
 /* =========================================================
-   THE90 — league ⇄ league chat
+   THE90 — league chat ⇄ league info
 
-   The chat is the screen one step to the right of a league.
-   You get there by dragging the league across or by tapping the
-   mirrored back button in the top right corner, which carries an
-   unread count in the same red plate the notifications bell uses.
+   The chat is where a league opens; its info is the screen one
+   step to the right. You get there by dragging the chat across
+   or by tapping the i in the top right corner, and back the
+   same way.
 
    The drag is a real pager: both screens are laid side by side and
    follow the pointer, and only once you let go does the router
-   take over. Nothing here runs until you have joined the league —
-   there is no chat to swipe to before that.
+   take over. On the info side it only answers to the top block —
+   below the tabs the sideways gesture belongs to the tabs
+   themselves (js/league-tabs.js).
    ========================================================= */
 
 (function () {
@@ -27,44 +28,21 @@
 
 
   /* =======================================================
-     Unread messages
-     ======================================================= */
-
-  var badge = document.querySelector('[data-league-chat-badge]');
-  var unread = 2;
-
-  function paintBadge() {
-    if (!badge) return;
-    badge.textContent = unread;
-    badge.hidden = unread === 0;
-  }
-  paintBadge();
-
-
-  /* =======================================================
-     Where we are, and whether the chat exists at all
+     Where we are
      ======================================================= */
 
   var here = '';
-  var joined = true;
 
   window.addEventListener('the90:screen', function (event) {
     here = event.detail;
-    if (here !== 'league-chat' || !unread) return;
-    unread = 0;
-    paintBadge();
-  });
-
-  document.addEventListener('the90:league-membership', function (event) {
-    joined = event.detail.joined;
   });
 
 
   /* =======================================================
      The drag
 
-     Progress runs 0 → 1: at 0 the league fills the frame, at 1
-     the chat does. Everything else is that one number painted
+     Progress runs 0 → 1: at 0 the chat fills the frame, at 1
+     the info does. Everything else is that one number painted
      onto both screens.
      ======================================================= */
 
@@ -75,20 +53,21 @@
     chat.classList.add('is-paging');
     league.classList.toggle('is-settling', !!settling);
     chat.classList.toggle('is-settling', !!settling);
-    league.style.transform = 'translateX(' + (-p * WIDTH) + 'px)';
-    chat.style.transform = 'translateX(' + ((1 - p) * WIDTH) + 'px)';
+    chat.style.transform = 'translateX(' + (-p * WIDTH) + 'px)';
+    league.style.transform = 'translateX(' + ((1 - p) * WIDTH) + 'px)';
   }
 
   /* Hand over to the router only once the slide has finished, and let the
      screens keep their transform while the router cross-fades them — wiping
      it any earlier snaps the outgoing screen back into view mid-fade. */
-  function land(p) {
+  function land(p, done) {
     paint(p, true);
-    var target = p >= .5 ? 'league-chat' : 'league';
+    var target = p >= .5 ? 'league' : 'league-chat';
     window.setTimeout(function () {
       T.go(target);
       league.classList.remove('is-paging', 'is-settling');
       chat.classList.remove('is-paging', 'is-settling');
+      if (done) done();
       window.setTimeout(function () {
         league.style.transform = '';
         chat.style.transform = '';
@@ -96,10 +75,31 @@
     }, SETTLE);
   }
 
+  /* The i in the chat, the back button on the info, the round block: the same
+     journey the drag makes, so the two screens always arrive the same way. */
+  function slideTo(name, done) {
+    if (from || here === name) return;
+    var to = name === 'league' ? 1 : 0;
+    paint(1 - to, false);
+    // a frame at the starting position, or there is nothing to animate from
+    window.requestAnimationFrame(function () { land(to, done); });
+  }
+
+  T.leaguePage = { go: slideTo };
+
+  document.addEventListener('click', function (event) {
+    var trigger = event.target.closest('[data-league-page]');
+    if (!trigger) return;
+    event.preventDefault();
+    slideTo(trigger.dataset.leaguePage);
+  });
+
   function canStart(event, name) {
     if (here !== name || from) return false;
-    if (name === 'league' && !joined) return false;
     if (event.pointerType === 'mouse' && event.button !== 0) return false;
+    // The tabs and everything under them own the sideways gesture on the info
+    // side; the way back to the chat is the block above them.
+    if (name === 'league' && event.target.closest('.league-tabs-sticky, .league-panels')) return false;
     // controls keep their clicks, and the picks rail keeps its own sideways scroll
     return !event.target.closest('button, a, input, textarea, .picks-track');
   }
@@ -110,7 +110,7 @@
     from = name;
     startX = event.clientX;
     startY = event.clientY;
-    startP = name === 'league' ? 0 : 1;
+    startP = name === 'league-chat' ? 0 : 1;
     axis = '';
     // the mockup is scaled to fit the window, so pointer px are not design px
     scale = league.getBoundingClientRect().width / WIDTH || 1;

@@ -48,25 +48,52 @@
   top: 62px;
   left: 16px;
 }
-
-/* Its mirror image on the right: same button, chevron pointing the other
-   way, because the chat is the screen on that side. */
-.league-chatbtn {
+/* its mirror image, and the only thing in the top block that is not about
+   the league itself: what you can do to it */
+.league-menu {
+  position: absolute;
   z-index: 8;
   top: 62px;
   right: 16px;
   left: auto;
-  overflow: visible;
 }
-.league-chatbtn img { transform: rotate(-90deg); }
-.league-chatbtn .iconbtn__badge {
-  top: -5px;
-  right: -5px;
-  border: 2px solid var(--bg-primary);
-  width: 18px;
-  height: 18px;
-  border-radius: 9px;
+.league-menu img { transform: none; opacity: .9; }
+
+/* the sheet it opens, anchored under the button */
+.league-sheet {
+  position: absolute;
+  z-index: 9;
+  top: 110px;
+  right: 16px;
+  min-width: 176px;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 16px;
+  background: rgba(20, 20, 20, .92);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .45);
+  animation: league-sheet-in .16s ease;
 }
+@keyframes league-sheet-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: none; }
+}
+.league-sheet button {
+  height: 40px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 18px;
+  text-align: left;
+}
+.league-sheet button:hover { background: rgba(255, 255, 255, .08); }
+.league-sheet button.is-danger { color: #ff6b6b; }
 
 .league-hero {
   position: absolute;
@@ -181,6 +208,9 @@
   display: flex;
   gap: 8px;
 }
+/* the only action in the block, and not the loudest thing on the screen:
+   the league itself is */
+.league-actions__invite { width: 100%; }
 .league-actions button,
 .league-join {
   height: 44px;
@@ -194,17 +224,13 @@
   line-height: 18px;
   transition: filter .18s ease, transform .12s ease;
 }
-.league-actions__chat,
 .league-join {
   background: var(--brand-primary);
   color: var(--text-on-brand);
   font-size: 15px !important;
   font-weight: 600;
 }
-/* the pair share a look — they are two ways into the same league, not a
-   primary action and a secondary one */
-.league-actions__invite,
-.league-actions__rules { background: rgba(255, 255, 255, .1); color: var(--text-primary); }
+.league-actions__invite { background: rgba(255, 255, 255, .1); color: var(--text-primary); }
 .league-actions button:active,
 .league-join:active { transform: scale(.97); }
 .league-actions button:hover,
@@ -281,25 +307,42 @@
   transition: transform .24s cubic-bezier(.2, .8, .3, 1), width .24s cubic-bezier(.2, .8, .3, 1);
 }
 
-/* A tab needs a screenful underneath the strip before the strip can reach the
-   top of the screen — 852 of screen, less the 119 the sticky block occupies
-   and the 188 the column already pads at the foot. Short tabs run out of
-   content first, and then the hero can never scroll away and the strip never
-   covers what is above it. This buys them the room. */
+/* One strip of tabs laid side by side, full-bleed so a tab leaves by the edge
+   of the screen rather than by the column's margin. The height is set from the
+   tab on show (js/league-tabs.js); align-items keeps each one at its own. */
 .league-panels {
-  display: block;
-  min-height: 545px;
+  display: flex;
+  align-items: flex-start;
+  width: calc(100% + 32px);
+  margin: 0 -16px;
+  overflow-x: auto;
+  overflow-y: clip;
+  scroll-snap-type: x mandatory;
+  /* motion is driven by the shared JS position, not by the browser's own
+     smooth scrolling, which would leave the indicator trailing behind */
+  scroll-behavior: auto;
+  scroll-snap-stop: always;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  cursor: grab;
+  touch-action: pan-y;
 }
+.league-panels::-webkit-scrollbar { display: none; }
+.league-panels.is-dragging { cursor: grabbing; scroll-snap-type: none; user-select: none; }
 .league-panel {
+  min-width: 0;
+  flex: 0 0 100%;
+  /* A tab needs a screenful underneath the strip before the strip can reach
+     the top of the screen — 852 of screen, less the 119 the sticky block
+     occupies and the 188 the column already pads at the foot. Short tabs run
+     out of content first, and then the hero can never scroll away and the
+     strip never covers what is above it. This buys them the room. */
+  min-height: 545px;
+  padding: 0 16px;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  animation: league-panel-in .22s ease;
-}
-.league-panel[hidden] { display: none; }
-@keyframes league-panel-in {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: none; }
+  scroll-snap-align: start;
 }
 .league-about { display: flex; flex-direction: column; gap: 8px; }
 .league-about h2 {
@@ -313,26 +356,6 @@
   margin: 0;
   color: var(--text-muted);
   font-size: 12px;
-  line-height: 18px;
-}
-
-/* Chat took the place Rules used to hold, and carries its unread count */
-.league-actions__chat {
-  position: relative;
-  gap: 8px;
-}
-.league-actions__badge {
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 9px;
-  background: var(--input-border-error);
-  color: #fff;
-  font-size: 10px;
-  font-weight: 600;
   line-height: 18px;
 }
 
@@ -727,6 +750,8 @@
 .shell-footer.is-league-participants .league-join { display: none !important; }
 .shell-footer.is-league .league-join { display: flex; width: 100%; flex: none; }
 .shell-footer.is-league-chat .league-chat-input { display: flex; }
+/* the chat owns the whole screen down to the message field */
+.shell-footer.is-league-chat .navbar { display: none; }
 
 .league-chat-input {
   width: 100%;
@@ -792,13 +817,15 @@
   grid-template-columns: 40px 1fr 40px;
   align-items: center;
 }
-.league-chat-head > button:first-child {
-  width: 20px;
-  height: 40px;
-  display: grid;
-  place-items: center;
+/* the two buttons are the app's own back button, one of them carrying a
+   letter instead of the chevron */
+.league-chat-head .setup-back { position: static; }
+.league-chat-info b {
+  color: var(--text-primary);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1;
 }
-.league-chat-head > button:first-child img { transform: rotate(90deg); }
 .league-chat-head > div {
   display: flex;
   flex-direction: column;
@@ -809,20 +836,60 @@
 .league-chat-head strong { color: var(--text-primary); font-size: 14px; font-weight: 400; line-height: 20px; }
 .league-chat-head span { display: flex; align-items: center; gap: 6px; color: var(--text-dim); font-size: 12px; line-height: 14px; }
 .league-chat-head span img { opacity: .9; }
-.league-chat-menu {
-  width: 40px;
-  height: 40px;
+/* Pinned under the header — 8 below it, 8 from either edge — and wearing the
+   message field's own surface: it belongs to the room rather than to the
+   conversation. Tapping it goes through to the picks the round is about. */
+.league-round {
+  position: absolute;
+  z-index: 11;
+  top: 110px;
+  right: 8px;
+  left: 8px;
+  height: 56px;
+  padding: 6px 6px 6px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 28px;
+  background: var(--bg-surface);
+  transition: background .18s ease, transform .12s ease;
+}
+.league-round:hover { background: rgba(255, 255, 255, .08); }
+.league-round:active { transform: scale(.99); }
+.league-round__copy { color: var(--text-primary); font-size: 14px; line-height: 20px; }
+.league-round__copy b { font-weight: 600; }
+.league-round__dial {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  flex: none;
   display: grid;
   place-items: center;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, .1);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
+}
+/* the ring starts at twelve o'clock and fills as the wait runs down */
+.league-round__dial svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+.league-round__dial circle { fill: none; stroke-width: 3; }
+.league-round__track { stroke: rgba(255, 255, 255, .12); }
+.league-round__fill {
+  stroke: var(--brand-primary);
+  stroke-linecap: round;
+  transition: stroke-dashoffset .5s linear;
+}
+.league-round__dial b {
+  position: relative;
+  color: var(--text-primary);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .league-chat-scroll {
   position: absolute;
-  inset: 118px 0 168px;
+  /* under the round block, and down to the message field: the app's own tab
+     bar is not on this screen */
+  inset: 174px 0 96px;
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;

@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="css/leagues.css?v=16">
   <link rel="stylesheet" href="css/arena.css?v=59">
 <link rel="stylesheet" href="css/live.css?v=4">
-<link rel="stylesheet" href="css/league.css?v=17">
+<link rel="stylesheet" href="css/league.css?v=19">
 <link rel="stylesheet" href="css/my-zone.css?v=7">
 <link rel="stylesheet" href="css/ranks.css?v=1">
 <link rel="stylesheet" href="css/notifications.css">
@@ -522,7 +522,7 @@
               <!-- leagues you were invited into -->
               <div class="leagues-stack" role="tabpanel" data-leagues-panel="joined">
                 <article class="lcard">
-                  <button class="lcard__open" type="button" data-go="league" data-league-joined="true" aria-label="Open Office League">
+                  <button class="lcard__open" type="button" data-go="league-chat" data-league-joined="true" aria-label="Open Office League">
                     <span class="lcard__cover">
                       <img class="lcard__banner" src="assets/league/card-cover-cup.jpg" alt="">
                     </span>
@@ -544,7 +544,7 @@
                   </button>
                 </article>
                 <article class="lcard">
-                  <button class="lcard__open" type="button" data-go="league" data-league-joined="true" aria-label="Open Arsenal Fans">
+                  <button class="lcard__open" type="button" data-go="league-chat" data-league-joined="true" aria-label="Open Arsenal Fans">
                     <span class="lcard__cover">
                       <img class="lcard__banner" src="assets/league/card-cover-ball.jpg" alt="">
                     </span>
@@ -566,7 +566,7 @@
                   </button>
                 </article>
                 <article class="lcard">
-                  <button class="lcard__open" type="button" data-go="league" data-league-joined="true" aria-label="Open Sunday Derby">
+                  <button class="lcard__open" type="button" data-go="league-chat" data-league-joined="true" aria-label="Open Sunday Derby">
                     <span class="lcard__cover">
                       <img class="lcard__banner" src="assets/league/card-cover-cup.jpg" alt="">
                     </span>
@@ -588,7 +588,7 @@
                   </button>
                 </article>
                 <article class="lcard">
-                  <button class="lcard__open" type="button" data-go="league" data-league-joined="true" aria-label="Open Chelsea Crew">
+                  <button class="lcard__open" type="button" data-go="league-chat" data-league-joined="true" aria-label="Open Chelsea Crew">
                     <span class="lcard__cover">
                       <img class="lcard__banner" src="assets/league/card-cover-ball.jpg" alt="">
                     </span>
@@ -943,8 +943,11 @@
             </div>
 
             <main class="league-content">
-              <button class="setup-back league-back" type="button" data-go="leagues" aria-label="Back">
+              <button class="setup-back league-back" type="button" data-league-page="league-chat" aria-label="Back to the league chat">
                 <img src="assets/icons/chevron-down.svg" alt="" width="20" height="20">
+              </button>
+              <button class="setup-back league-menu" type="button" data-league-menu aria-haspopup="menu" aria-expanded="false" aria-label="League options">
+                <img src="assets/DotsThreeOutline.svg" alt="" width="20" height="20">
               </button>
               <header class="league-summary">
                 <h1>DIAMOND CUP</h1>
@@ -958,10 +961,6 @@
               </div>
 
               <div class="league-actions">
-                <button class="league-actions__chat" type="button" data-go="league-chat" data-league-chat-entry hidden>
-                  Chat
-                  <span class="league-actions__badge" data-league-chat-badge hidden>2</span>
-                </button>
                 <button class="league-actions__invite" type="button" data-share-league aria-label="Share invite link for this league">Invite friend</button>
               </div>
 
@@ -975,7 +974,7 @@
                   </div>
                 </div>
 
-                <div class="league-panels">
+                <div class="league-panels" data-league-panels>
                   <section class="league-panel" role="tabpanel" data-league-panel="picks">
                 <!-- the round's picks — only once you are in the league -->
                 <section class="league-picks" data-league-picks hidden aria-label="Daily picks">
@@ -994,7 +993,7 @@
                     </div>
                   </section>
 
-                  <section class="league-panel" role="tabpanel" data-league-panel="participants" hidden>
+                  <section class="league-panel" role="tabpanel" data-league-panel="participants">
                 <section class="league-participants" aria-labelledby="league-participants-title">
                   <h2 id="league-participants-title" data-league-participants-title>Top Participants</h2>
                   <div class="league-participants__top" data-league-top>
@@ -1027,7 +1026,7 @@
                 </section>
                   </section>
 
-                  <section class="league-panel" role="tabpanel" data-league-panel="prizes" hidden>
+                  <section class="league-panel" role="tabpanel" data-league-panel="prizes">
                     <article class="arena-prize arena-prize--grand">
                       <img class="arena-prize__stadium" src="assets/arena/thearena-prize-stadium.png" alt="">
                       <div class="arena-prize__copy">
@@ -1067,7 +1066,7 @@
                     </article>
                   </section>
 
-                  <section class="league-panel" role="tabpanel" data-league-panel="rules" hidden>
+                  <section class="league-panel" role="tabpanel" data-league-panel="rules">
                 <div class="rules-card">
                   <div class="rule">
                     <span class="rule__icon" aria-hidden="true">
@@ -1227,10 +1226,29 @@
 
 <section class="screen screen--league-chat" data-screen="league-chat">
           <header class="league-chat-head">
-            <button type="button" data-go="league" aria-label="Back to league"><img src="assets/league/chat-chevron.svg" alt="" width="20" height="20"></button>
-            <div><strong>DIAMOND CUP</strong><span><img src="assets/league/chat-users.svg" alt="" width="12" height="12">128 Participants</span></div>
-            <button class="league-chat-menu" type="button" aria-label="Chat options"><img src="assets/DotsThreeOutline.svg" alt="" width="20" height="20"></button>
+            <button class="setup-back" type="button" data-go="leagues" aria-label="Back to leagues">
+              <img src="assets/icons/chevron-down.svg" alt="" width="20" height="20">
+            </button>
+            <div>
+              <strong data-league-chat-title>DIAMOND CUP</strong>
+              <span><img src="assets/league/chat-users.svg" alt="" width="12" height="12">128 members</span>
+            </div>
+            <button class="setup-back league-chat-info" type="button" data-league-page="league" aria-label="League info"><b>i</b></button>
           </header>
+
+          <!-- the round, pinned under the header: where the league is up to,
+               and the way through to the picks it belongs to -->
+          <button class="league-round" type="button" data-league-round>
+            <span class="league-round__copy">Round <b data-league-round-current>3</b>/<span data-league-round-total>5</span></span>
+            <span class="league-round__dial">
+              <svg viewBox="0 0 44 44" width="44" height="44" aria-hidden="true">
+                <circle class="league-round__track" cx="22" cy="22" r="19"></circle>
+                <circle class="league-round__fill" cx="22" cy="22" r="19" data-league-round-ring></circle>
+              </svg>
+              <b data-league-round-time>04:16</b>
+            </span>
+          </button>
+
           <div class="league-chat-scroll" data-league-chat-scroll>
             <div class="league-chat-list" aria-live="polite" data-league-chat-list></div>
           </div>
@@ -2061,13 +2079,15 @@
 <script src="js/thearena.js?v=7"></script>
 <script src="js/tournament.js?v=44"></script>
 <script src="js/arena-join.js?v=2"></script>
-<script src="js/league.js?v=10"></script>
+<script src="js/league.js?v=11"></script>
 <script src="js/leagues.js?v=4"></script>
-<script src="js/league-create.js?v=18"></script>
+<script src="js/league-create.js?v=19"></script>
 <script src="js/league-picks.js?v=1"></script>
-<script src="js/league-pager.js?v=3"></script>
+<script src="js/league-pager.js?v=5"></script>
 <script src="js/league-rules.js?v=2"></script>
-<script src="js/league-tabs.js?v=5"></script>
+<script src="js/league-tabs.js?v=6"></script>
+<script src="js/league-round.js?v=3"></script>
+<script src="js/league-menu.js?v=2"></script>
 <script src="js/league-participants.js?v=1"></script>
 <script src="js/my-zone.js?v=2"></script>
 <script src="js/ranks.js?v=3"></script>
