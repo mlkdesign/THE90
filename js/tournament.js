@@ -376,17 +376,28 @@
      The bar's own rect is deliberately not used as the reference — when it is
      hidden it sits off-screen, which would flip the answer and set the two
      into a loop. Its resting top edge is derived from the frame instead. */
+  var lastBarHeight = 0;
+
+  function barHeight() {
+    // hidden, the bar measures zero — remember the last real height so the
+    // answer does not change the moment it appears
+    var measured = sharedPickBar.element.offsetHeight;
+    if (measured) lastBarHeight = measured;
+    return lastBarHeight || 96;
+  }
+
   function roundCardIsReadable() {
     var scroller = screen.querySelector('.round-questions-scroller');
-    if (!scroller || !scroll) return false;
+    if (!scroller || !scroll || !sharedPickBar || !sharedPickBar.element) return false;
 
     var card = scroller.querySelector('[data-round-question="' +
       (activeRoundPick ? activeRoundPick.index : -1) + '"]') || nearestQuestionCard(scroller);
     if (!card) return false;
 
+    // rects come back scaled by the device fit; offsetHeight does not
     var frame = scroll.getBoundingClientRect();
-    var barHeight = sharedPickBar.element.offsetHeight || 0;
-    var barTop = frame.bottom - barHeight;
+    var scale = frame.width / scroll.offsetWidth || 1;
+    var barTop = frame.bottom - barHeight() * scale;
 
     var rect = card.getBoundingClientRect();
     var top = Math.max(rect.top, frame.top);
@@ -523,7 +534,7 @@
         var questionIndex = Number(card.dataset.roundQuestion);
         var state = getRoundPickState(tournament)[questionIndex];
         if (state && !state.confirmed && state.selected >= 0) showRoundPickBar(tournament, questionIndex);
-        else hideRoundPickBar();
+        else if (sharedPickBar) sharedPickBar.show(false);
       });
     }, { passive: true });
   }
@@ -1103,9 +1114,7 @@
   if (scroll) {
     scroll.addEventListener('scroll', function () {
       updateStickyTabs();
-      var currentScrollTop = scroll.scrollTop;
-      if (currentScrollTop < lastTournamentScrollTop - 2) hideRoundPickBar();
-      lastTournamentScrollTop = currentScrollTop;
+      lastTournamentScrollTop = scroll.scrollTop;
     }, { passive: true });
   }
   window.addEventListener('resize', function () {
