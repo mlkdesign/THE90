@@ -232,11 +232,14 @@
   top: 0;
   right: 0;
   left: 0;
-  height: 78px;
+  /* Two pixels past the strip rather than flush with it: the frame is drawn at
+     a fractional scale, and on that seam a hairline of content was surviving.
+     The stops are absolute so the overlap stays solid colour. */
+  height: 80px;
   background: linear-gradient(180deg,
-    rgba(14, 14, 14, .55) 0%,
-    rgba(14, 14, 14, .88) 46%,
-    var(--bg-primary) 100%);
+    rgba(14, 14, 14, .55) 0,
+    rgba(14, 14, 14, .88) 36px,
+    var(--bg-primary) 78px);
   -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
   opacity: 0;
@@ -244,9 +247,9 @@
   pointer-events: none;
 }
 .league-tabs-sticky.is-stuck::before { opacity: 1; }
-.league-tabs { pointer-events: auto; }
 .league-tabs {
   position: relative;
+  pointer-events: auto;
   display: flex;
   width: 100%;
   padding: 0 16px;

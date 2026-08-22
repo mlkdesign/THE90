@@ -56,6 +56,7 @@
   var desiredPanelPosition = 0;
   var panelScrollFrame = null;
   var panelAnimationFrame = null;
+  var tabFiller = 0;
   var liveCountdownTimer = null;
   var title = screen.querySelector('[data-tournament-title]');
   var kind = screen.querySelector('[data-tournament-kind]');
@@ -724,7 +725,29 @@
   function fitPanelHeight() {
     if (!panelScroller) return;
     var height = panelHeightAt(panelPosition());
-    if (height) panelScroller.style.height = Math.round(height) + 'px';
+    if (height) panelScroller.style.height = Math.round(height + tabFiller) + 'px';
+  }
+
+  /* Moving to a shorter tab used to pull the page out from under you: the
+     strip shrinks, the browser clamps the scroll position, and the screen
+     jumps. So the difference is held open as empty space under the tab and
+     the position is left alone. */
+  function holdScrollForTab(index) {
+    if (!scroll || !panelScroller || !panels[index]) return;
+    var rest = scroll.scrollHeight - panelScroller.offsetHeight;
+    var natural = rest + panels[index].offsetHeight;
+    tabFiller = Math.max(0, Math.round(scroll.scrollTop + scroll.clientHeight - natural));
+  }
+
+  /* The space is only ever given back, never taken again: scrolling up needs
+     less of it, and what is released does not come back on the way down. */
+  function releaseTabFiller() {
+    if (!tabFiller || !scroll) return;
+    var natural = scroll.scrollHeight - tabFiller;
+    var needed = Math.max(0, Math.round(scroll.scrollTop + scroll.clientHeight - natural));
+    if (needed >= tabFiller) return;
+    tabFiller = needed;
+    fitPanelHeight();
   }
 
   function nearestTabScrollPosition() {
@@ -909,6 +932,7 @@
       renderPanelPosition(index);
       return;
     }
+    holdScrollForTab(index);
     animateToTab(index);
   }
 
@@ -921,7 +945,9 @@
     tournaments[id].joined = source.dataset.tournamentState === 'joined';
     tournaments[id].live = source.dataset.tournamentPhase === 'live';
     renderTournament();
+    tabFiller = 0;
     setActiveTab('events', 'auto');
+    fitPanelHeight();
     if (scroll) scroll.scrollTop = 0;
     lastTournamentScrollTop = scroll ? scroll.scrollTop : 0;
     updateStickyTabs();
@@ -1114,7 +1140,9 @@
       } else if (Math.abs(panelDrag.velocity) >= .55) {
         target = Math.round(panelDrag.startPosition) + direction;
       }
-      animateToTab(clamp(target, 0, tabButtons.length - 1));
+      target = clamp(target, 0, tabButtons.length - 1);
+      holdScrollForTab(target);
+      animateToTab(target);
     }
     panelScroller.addEventListener('pointerup', endPanelDrag);
     panelScroller.addEventListener('pointercancel', endPanelDrag);
@@ -1145,6 +1173,7 @@
 
   if (scroll) {
     scroll.addEventListener('scroll', function () {
+      releaseTabFiller();
       updateStickyTabs();
       lastTournamentScrollTop = scroll.scrollTop;
     }, { passive: true });
