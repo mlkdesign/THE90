@@ -75,7 +75,6 @@
   var eventItems = Array.prototype.slice.call(screen.querySelectorAll('[data-tournament-event]'));
   var roundPickStates = {};
   var activeRoundPick = null;
-  var pinnedWinbar = false; // when true, winbar stays visible and won't auto-hide on overlap
   var sharedPickBar = window.THE90 && window.THE90.pickConfirmationBar;
   var lastTournamentScrollTop = scroll ? scroll.scrollTop : 0;
   var TOURNAMENT_PLAYER_COUNT = 20;
@@ -337,40 +336,69 @@
     hideRoundPickBar();
   }
 
+  /* What the bar says, and whether it is on screen, are two different
+     questions. Writing its copy on every scroll frame is what made it slide
+     in at a different point each time; content is set once, here, and
+     visibility is decided separately by syncRoundBar(). */
   function showRoundPickBar(tournament, questionIndex) {
     if (!sharedPickBar || !sharedPickBar.element) return;
     var state = getRoundPickState(tournament);
     var question = state[questionIndex];
-    if (!question || question.confirmed || question.selected < 0) {
-      hideRoundPickBar();
-      return;
-    }
-
-    // Selecting an answer should clear any pinned state so the bar can
-    // behave normally (appear with animation and hide on overlap)
-    pinnedWinbar = false;
+    if (!question) return hideRoundPickBar();
 
     activeRoundPick = { id: activeId, round: tournament.currentRound, index: questionIndex };
     sharedPickBar.element.classList.add('winbar--round-picks');
     if (sharedPickBar.label) sharedPickBar.label.textContent = 'Estimated win:';
-    // Sum estimated win across all selected answers (each question = +40)
+    // every answered question is worth +40
     if (sharedPickBar.points) {
-      var totalSelected = state.reduce(function (sum, q) { return sum + (q.selected >= 0 ? 1 : 0); }, 0);
-      sharedPickBar.points.textContent = '+' + (40 * totalSelected);
+      var answered = state.reduce(function (sum, q) { return sum + (q.selected >= 0 ? 1 : 0); }, 0);
+      sharedPickBar.points.textContent = '+' + (40 * answered);
     }
     if (sharedPickBar.next) {
-      sharedPickBar.next.textContent = 'Accept pick?';
-      // Enable only when this question has a selection and isn't confirmed
-      sharedPickBar.next.disabled = !!question.confirmed || !(question.selected >= 0);
+      var ready = !question.confirmed && question.selected >= 0;
+      sharedPickBar.next.textContent = ready ? 'Accept pick?' : 'Select your prediction';
+      sharedPickBar.next.disabled = !ready;
     }
-    sharedPickBar.show(true);
+    syncRoundBar();
   }
 
   function hideRoundPickBar() {
     activeRoundPick = null;
-    if (pinnedWinbar) return; // don't hide when pinned after Accept pick
     if (!sharedPickBar || !sharedPickBar.element || !sharedPickBar.element.classList.contains('winbar--round-picks')) return;
     sharedPickBar.show(false);
+  }
+
+  /* The bar belongs to the question card: it stays up for as long as that
+     card is genuinely readable, and steps aside once the card has scrolled
+     away or the bar itself is covering half of it. Scrolling back brings it
+     straight back, because this is a pure function of the scroll position.
+
+     The bar's own rect is deliberately not used as the reference — when it is
+     hidden it sits off-screen, which would flip the answer and set the two
+     into a loop. Its resting top edge is derived from the frame instead. */
+  function roundCardIsReadable() {
+    var scroller = screen.querySelector('.round-questions-scroller');
+    if (!scroller || !scroll) return false;
+
+    var card = scroller.querySelector('[data-round-question="' +
+      (activeRoundPick ? activeRoundPick.index : -1) + '"]') || nearestQuestionCard(scroller);
+    if (!card) return false;
+
+    var frame = scroll.getBoundingClientRect();
+    var barHeight = sharedPickBar.element.offsetHeight || 0;
+    var barTop = frame.bottom - barHeight;
+
+    var rect = card.getBoundingClientRect();
+    var top = Math.max(rect.top, frame.top);
+    var bottom = Math.min(rect.bottom, barTop);
+    return (bottom - top) >= rect.height * 0.5;
+  }
+
+  function syncRoundBar() {
+    if (!sharedPickBar || !sharedPickBar.element) return;
+    if (!sharedPickBar.element.classList.contains('winbar--round-picks')) return;
+    if (!activeRoundPick || activeRoundPick.id !== activeId) return;
+    sharedPickBar.show(roundCardIsReadable());
   }
 
   function restoreDailyPickBar() {
@@ -540,7 +568,6 @@
     var done = makeRoundDoneCard(tournament);
     scroller.appendChild(done.card);
 
-    pinnedWinbar = false;
     hideRoundPickBar();
 
     window.requestAnimationFrame(function () {
@@ -595,18 +622,7 @@
     // Keep the shared winbar visible but disable its confirm button for
     // the newly confirmed question. Update the summed estimated win.
     paintRoundQuestionStates(tournament);
-    if (sharedPickBar && sharedPickBar.next) {
-      var stateAll = getRoundPickState(tournament);
-      var totalSelectedAll = stateAll.reduce(function (sum, q) { return sum + (q.selected >= 0 ? 1 : 0); }, 0);
-      if (sharedPickBar.points) sharedPickBar.points.textContent = '+' + (40 * totalSelectedAll);
-      sharedPickBar.element.classList.add('winbar--round-picks');
-      sharedPickBar.next.disabled = true;
-      sharedPickBar.next.textContent = 'Select your prediction';
-      // after confirming we pin the winbar so it stays in place until the
-      // user actively selects another answer
-      pinnedWinbar = true;
-      sharedPickBar.show(true);
-    }
+    showRoundPickBar(tournament, confirmedIndex);
 
     // Nothing left to answer — the round is done, so close it on its own card
     if (nextIndex < 0) {
@@ -628,16 +644,7 @@
             left: Math.max(0, nextCard.offsetLeft - (firstCard ? firstCard.offsetLeft : 0)),
             behavior: 'smooth'
           });
-          // After moving to the next card, show the shared winbar but
-          // keep the confirm button disabled until the user selects
-          // an answer — mirror the Daily picks behaviour and update
-          // the button text to guide the user.
-          if (sharedPickBar && sharedPickBar.next) {
-            sharedPickBar.element.classList.add('winbar--round-picks');
-            sharedPickBar.next.disabled = true;
-            sharedPickBar.next.textContent = 'Select your prediction';
-            sharedPickBar.show(true);
-          }
+          showRoundPickBar(tournament, nextIndex);
         }
       });
     }
@@ -682,6 +689,9 @@
     tabsSticky.classList.toggle('is-stuck', scroll.scrollTop >= tabsSticky.offsetTop - 78);
   }
 
+  /* Every panel is a flex item in one horizontal strip, so the strip is as
+     tall as its tallest tab and a short tab left a screenful of nothing under
+     it. Measure the one on show and let the page end where it ends. */
   function nearestTabScrollPosition() {
     if (!tabs) return 0;
     var nearest = 0;
@@ -896,7 +906,9 @@
   });
 
   tabButtons.forEach(function (button) {
-    button.addEventListener('click', function () { setActiveTab(button.dataset.tournamentTab); });
+    button.addEventListener('click', function () {
+      setActiveTab(button.dataset.tournamentTab);
+    });
   });
 
   if (tabs) {
@@ -940,33 +952,10 @@
     }, { passive: false });
   }
 
-  // Hide the shared pick bar when it overlaps the active question card
-  // by 50% on vertical scroll, and show it again when scrolled back.
-  function checkWinbarOverlap() {
-    if (!sharedPickBar || !sharedPickBar.element) return;
-    if (pinnedWinbar) return; // don't auto-hide/show while pinned
-    var scroller = screen.querySelector('.round-questions-scroller');
-    if (!scroller) return;
-    var card = nearestQuestionCard(scroller);
-    if (!card) return;
-    var winRect = sharedPickBar.element.getBoundingClientRect();
-    var cardRect = card.getBoundingClientRect();
-    var overlap = Math.max(0, cardRect.bottom - winRect.top);
-    var percent = overlap / cardRect.height;
-    if (percent >= 0.5) {
-      // hide visually but keep state
-      sharedPickBar.show(false);
-    } else {
-      // if there's an active selected question, restore bar
-      var tournament = currentTournament();
-      var idx = selectedQuestionIndex(getRoundPickState(tournament));
-      if (idx >= 0) showRoundPickBar(tournament, idx);
-    }
-  }
-
   if (scroll) {
-    scroll.addEventListener('scroll', function () { checkWinbarOverlap(); }, { passive: true });
+    scroll.addEventListener('scroll', syncRoundBar, { passive: true });
   }
+  window.addEventListener('resize', syncRoundBar);
 
   if (sharedPickBar && sharedPickBar.next) {
     sharedPickBar.next.addEventListener('click', function () {

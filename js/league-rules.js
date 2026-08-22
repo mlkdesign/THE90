@@ -48,7 +48,12 @@
 
   poster.addEventListener('click', play);
 
+  // leaving the league, or switching off the Rules tab, stops the video
   window.addEventListener('the90:screen', function (event) {
-    if (event.detail !== 'league-rules') stop();
+    if (event.detail !== 'league') stop();
+  });
+  document.addEventListener('click', function (event) {
+    var tab = event.target.closest('[data-league-tab]');
+    if (tab && tab.dataset.leagueTab !== 'rules') stop();
   });
 })();

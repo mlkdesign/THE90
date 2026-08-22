@@ -206,6 +206,127 @@
 .league-actions button:hover,
 .league-join:hover { filter: brightness(1.06); }
 
+/* ---------------------------------------------------------
+   Tabs, the same control the tournament uses
+   --------------------------------------------------------- */
+
+.league-scrim {
+  position: absolute;
+  z-index: 7;
+  top: 0;
+  left: 0;
+  width: 390px;
+  height: 110px;
+  background: linear-gradient(180deg,
+    var(--bg-primary) 0%,
+    rgba(14, 14, 14, .8) 34%,
+    rgba(14, 14, 14, .36) 66%,
+    rgba(14, 14, 14, 0) 100%);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 58%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 58%, transparent 100%);
+  pointer-events: none;
+}
+
+.league-tabs-sticky {
+  position: sticky;
+  z-index: 6;
+  top: 78px;
+  width: calc(100% + 32px);
+  margin: 0 -16px;
+}
+.league-tabs {
+  position: relative;
+  display: flex;
+  width: 100%;
+  padding: 0 16px;
+  overflow-x: auto;
+  overflow-y: clip;
+  border-bottom: 1px solid rgba(255, 255, 255, .1);
+  background: var(--bg-primary);
+  scrollbar-width: none;
+}
+.league-tabs::-webkit-scrollbar { display: none; }
+.league-tabs button {
+  height: 40px;
+  flex: none;
+  padding: 0 16px;
+  color: rgba(247, 250, 248, .5);
+  font-size: 13px;
+  line-height: 18px;
+  white-space: nowrap;
+  transition: color .18s ease;
+}
+.league-tabs button.is-active { color: var(--text-primary); font-weight: 600; }
+.league-tabs__indicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--brand-primary);
+  transition: transform .24s cubic-bezier(.2, .8, .3, 1), width .24s cubic-bezier(.2, .8, .3, 1);
+}
+
+.league-panels { display: block; }
+.league-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: league-panel-in .22s ease;
+}
+.league-panel[hidden] { display: none; }
+@keyframes league-panel-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+.league-about { display: flex; flex-direction: column; gap: 8px; }
+.league-about h2 {
+  margin: 0;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+}
+.league-about p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+/* Chat took the place Rules used to hold, and carries its unread count */
+.league-actions__chat {
+  position: relative;
+  gap: 8px;
+}
+.league-actions__badge {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: var(--input-border-error);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+/* the Participants figure is a way in, not just a number */
+.league-stats button {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: opacity .16s ease;
+}
+.league-stats button:hover { opacity: .75; }
+
 .league-participants {
   display: flex;
   flex-direction: column;
@@ -405,73 +526,6 @@
   line-height: 18px;
 }
 
-/* ---------------------------------------------------------
-   Rules, on their own page
-
-   Opened from the button next to Invite friend. Same head as
-   the rank ladder, so sub-pages of the app all behave alike.
-   --------------------------------------------------------- */
-
-.screen--lrules {
-  overflow: hidden;
-  background: var(--bg-primary);
-}
-.lrules-head {
-  position: absolute;
-  z-index: 10;
-  top: 62px;
-  left: 0;
-  width: 390px;
-  height: 40px;
-  padding: 10px 16px;
-  display: grid;
-  grid-template-columns: 20px 1fr 20px;
-  align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, .1);
-  background: var(--bg-primary);
-}
-.lrules-head button,
-.lrules-head > span { width: 20px; height: 20px; }
-.lrules-head button { display: grid; place-items: center; }
-.lrules-head button img { width: 20px; height: 20px; transform: rotate(90deg); }
-.lrules-head h1 {
-  margin: 0;
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 20px;
-  text-align: center;
-}
-
-.lrules-scroll {
-  position: absolute;
-  inset: 102px 0 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-.lrules-scroll::-webkit-scrollbar { display: none; }
-
-.lrules-content {
-  width: 390px;
-  padding: 20px 16px 140px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.lrules-intro {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.lrules-lead {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 13px;
-  line-height: 18px;
-}
-
 /* the video: our own poster until you press play, then the real player */
 .rules-video {
   position: relative;
@@ -648,7 +702,9 @@
 .shell-footer.is-league-chat .league-join,
 .shell-footer.is-league-rules .pickbar,
 .shell-footer.is-league-rules .rankings-pin,
-.shell-footer.is-league-rules .league-join { display: none !important; }
+.shell-footer.is-league-participants .pickbar,
+.shell-footer.is-league-participants .rankings-pin,
+.shell-footer.is-league-participants .league-join { display: none !important; }
 .shell-footer.is-league .league-join { display: flex; width: 100%; flex: none; }
 .shell-footer.is-league-chat .league-chat-input { display: flex; }
 
@@ -938,3 +994,80 @@
   flex: 0 0 358px;
   scroll-snap-align: start;
 }
+
+
+/* ---------------------------------------------------------
+   Participants — the roster, on the Settings shell
+   --------------------------------------------------------- */
+
+.screen--participants { overflow: hidden; background: var(--bg-primary); }
+.participants-list { padding: 0; }
+.participant {
+  min-height: 64px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.participant + .participant { border-top: 1px solid rgba(255, 255, 255, .08); }
+.participant__avatar {
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, .1);
+  object-fit: cover;
+  object-position: center 18%;
+}
+.participant__copy {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.participant__copy strong {
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.participant__copy small {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 16px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.participant__delete {
+  flex: none;
+  padding: 6px 10px;
+  border-radius: 10px;
+  color: var(--input-border-error);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  transition: background .16s ease;
+}
+.participant__delete:hover { background: rgba(240, 93, 93, .12); }
+
+/* wide and quiet — inviting is the next thing you might do, not the point */
+.participants-invite {
+  width: calc(100% - 32px);
+  height: 48px;
+  margin: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 16px;
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 20px;
+  transition: background .18s ease, border-color .18s ease;
+}
+.participants-invite:hover { border-color: rgba(255, 255, 255, .3); background: rgba(255, 255, 255, .06); }

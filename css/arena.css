@@ -545,23 +545,33 @@
 .arena-tournament-join:active { transform: scale(.98); }
 .arena-tournament-join[hidden] { display: none; }
 
+/* Sits over the scroller, under the back button: the hero and the summary
+   dissolve as they pass beneath instead of being cut off by a hard edge. */
+.arena-tournament-scrim {
+  position: absolute;
+  z-index: 12;
+  top: 0;
+  left: 0;
+  width: 390px;
+  height: 110px;
+  background: linear-gradient(180deg,
+    var(--bg-primary) 0%,
+    rgba(14, 14, 14, .86) 34%,
+    rgba(14, 14, 14, .4) 66%,
+    rgba(14, 14, 14, 0) 100%);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 58%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 58%, transparent 100%);
+  pointer-events: none;
+}
+
 .arena-tournament-tabs-sticky {
   position: sticky;
   top: 78px;
   z-index: 15;
   isolation: isolate;
   overflow: visible;
-}
-.arena-tournament-tabs-sticky.is-stuck::before {
-  content: '';
-  position: absolute;
-  z-index: 0;
-  top: -78px;
-  right: 0;
-  left: 0;
-  height: calc(100% + 78px);
-  background: var(--bg-primary);
-  pointer-events: none;
 }
 .arena-tournament-tabs {
   position: relative;

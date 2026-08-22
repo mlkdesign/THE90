@@ -95,7 +95,7 @@
     if (shellFooter) {
       var isSettings = name.indexOf('settings') === 0;
       var isNotifications = name === 'notifications';
-      var isLeagueScreen = name === 'league' || name === 'league-chat' || name === 'league-rules';
+      var isLeagueScreen = name === 'league' || name === 'league-chat' || name === 'league-participants';
       var isMyZoneSubpage = isNotifications || name === 'invite-friends' ||
         name === 'support' || name === 'support-contact' || name === 'support-requests' ||
         name === 'ranks';
@@ -111,7 +111,7 @@
       shellFooter.classList.toggle('is-leagues', name === 'leagues');
       shellFooter.classList.toggle('is-league', name === 'league');
       shellFooter.classList.toggle('is-league-chat', name === 'league-chat');
-      shellFooter.classList.toggle('is-league-rules', name === 'league-rules');
+      shellFooter.classList.toggle('is-league-participants', name === 'league-participants');
       shellFooter.classList.toggle('is-live-match', isLiveMatch);
       $$('[data-nav]', shellFooter).forEach(function (nav) {
         var activeName = (isSettings || isMyZoneSubpage) ? 'my-zone' :
