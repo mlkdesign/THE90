@@ -20,6 +20,17 @@
   if (!strip || !buttons.length || !panels.length) return;
 
   var active = 'picks';
+  var sticky = strip.closest('.league-tabs-sticky');
+
+  /* The block covers the top only once it has arrived there. Measured from
+     where it actually is rather than from offsetTop: the negative margin that
+     pulls it up puts those two numbers 78px apart. */
+  function updateStuck() {
+    if (!sticky || !scroll) return;
+    var frame = scroll.getBoundingClientRect();
+    sticky.classList.toggle('is-stuck', sticky.getBoundingClientRect().top - frame.top < 1);
+  }
+  if (scroll) scroll.addEventListener('scroll', updateStuck, { passive: true });
 
   function moveIndicator() {
     if (!indicator) return;
@@ -47,13 +58,12 @@
       show(button.dataset.leagueTab);
       // keep the tab strip in view — switching to a short tab otherwise
       // leaves you looking at whitespace further down the page
-      if (!scroll) return;
-      var stripTop = strip.closest('.league-tabs-sticky');
-      if (!stripTop) return;
+      if (!scroll || !sticky) return;
       var frame = scroll.getBoundingClientRect();
       var scale = frame.width / scroll.offsetWidth || 1;
-      var delta = (stripTop.getBoundingClientRect().top - frame.top) / scale - 78;
+      var delta = (sticky.getBoundingClientRect().top - frame.top) / scale;
       if (delta < 0) scroll.scrollTo({ top: scroll.scrollTop + delta, behavior: 'smooth' });
+      updateStuck();
     });
   });
 
@@ -66,5 +76,5 @@
   });
 
   show('picks');
-  window.requestAnimationFrame(moveIndicator);
+  window.requestAnimationFrame(function () { moveIndicator(); updateStuck(); });
 })();

@@ -701,7 +701,7 @@
 
   function updateStickyTabs() {
     if (!scroll || !tabsSticky) return;
-    tabsSticky.classList.toggle('is-stuck', scroll.scrollTop >= tabsSticky.offsetTop - 78);
+    tabsSticky.classList.toggle('is-stuck', scroll.scrollTop >= tabsSticky.offsetTop);
   }
 
   /* Every panel is a flex item in one horizontal strip, so the strip is as

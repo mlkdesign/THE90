@@ -61,6 +61,30 @@
   -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 62%, transparent 100%);
   mask-image: linear-gradient(180deg, #000 0%, #000 62%, transparent 100%);
 }
+/* The same idea without the bar: screens that scroll a hero and a back button
+   past the top edge get this so they dissolve into the background instead of
+   being cut off by it. The tab strips carry their own opaque cover for when
+   they arrive at the top — this one is only the soft edge above them. */
+.screen-topfade {
+  position: absolute;
+  z-index: 20;
+  top: 0;
+  left: 0;
+  width: 390px;
+  height: 78px;
+  background: linear-gradient(180deg,
+    var(--bg-primary) 0%,
+    rgba(14, 14, 14, .92) 26%,
+    rgba(14, 14, 14, .55) 52%,
+    rgba(14, 14, 14, .18) 76%,
+    rgba(14, 14, 14, 0) 100%);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 58%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 58%, transparent 100%);
+  pointer-events: none;
+}
+
 .topbar__row {
   position: absolute;
   top: 62px; left: 0;

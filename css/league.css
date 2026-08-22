@@ -38,8 +38,12 @@
 }
 .league-scroll::-webkit-scrollbar { display: none; }
 
-/* Same control as the registration flow, moved below the status bar. */
+/* Positioned against the scrolling column, not the scroller, so it travels
+   with the page and dissolves into the top fade like everything else instead
+   of being pinned over it. (The tournament's back button borrows this rule,
+   which is why the offset is stated against the screen and not the column.) */
 .league-back {
+  position: absolute;
   z-index: 8;
   top: 62px;
   left: 16px;
@@ -210,32 +214,37 @@
    Tabs, the same control the tournament uses
    --------------------------------------------------------- */
 
-.league-scrim {
-  position: absolute;
-  z-index: 7;
-  top: 0;
-  left: 0;
-  width: 390px;
-  height: 110px;
-  background: linear-gradient(180deg,
-    var(--bg-primary) 0%,
-    rgba(14, 14, 14, .8) 34%,
-    rgba(14, 14, 14, .36) 66%,
-    rgba(14, 14, 14, 0) 100%);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 58%, transparent 100%);
-  mask-image: linear-gradient(180deg, #000 0%, #000 58%, transparent 100%);
-  pointer-events: none;
-}
-
 .league-tabs-sticky {
   position: sticky;
   z-index: 6;
-  top: 78px;
+  top: 0;
   width: calc(100% + 32px);
-  margin: 0 -16px;
+  /* the block carries the status bar's height as padding and is pulled back
+     up by the same amount, so it reaches the top of the screen on its own and
+     nothing above it is covered until it gets there */
+  margin: -78px -16px 0;
+  padding-top: 78px;
+  pointer-events: none;
 }
+.league-tabs-sticky::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 78px;
+  background: linear-gradient(180deg,
+    rgba(14, 14, 14, .55) 0%,
+    rgba(14, 14, 14, .88) 46%,
+    var(--bg-primary) 100%);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  opacity: 0;
+  transition: opacity .18s ease;
+  pointer-events: none;
+}
+.league-tabs-sticky.is-stuck::before { opacity: 1; }
+.league-tabs { pointer-events: auto; }
 .league-tabs {
   position: relative;
   display: flex;
@@ -269,7 +278,15 @@
   transition: transform .24s cubic-bezier(.2, .8, .3, 1), width .24s cubic-bezier(.2, .8, .3, 1);
 }
 
-.league-panels { display: block; }
+/* A tab needs a screenful underneath the strip before the strip can reach the
+   top of the screen — 852 of screen, less the 119 the sticky block occupies
+   and the 188 the column already pads at the foot. Short tabs run out of
+   content first, and then the hero can never scroll away and the strip never
+   covers what is above it. This buys them the room. */
+.league-panels {
+  display: block;
+  min-height: 545px;
+}
 .league-panel {
   display: flex;
   flex-direction: column;

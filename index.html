@@ -16,12 +16,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="css/style.css?v=4">
-<link rel="stylesheet" href="css/main.css?v=40">
+<link rel="stylesheet" href="css/main.css?v=41">
 <link rel="stylesheet" href="css/rankings.css?v=13">
     <link rel="stylesheet" href="css/leagues.css?v=16">
-  <link rel="stylesheet" href="css/arena.css?v=57">
+  <link rel="stylesheet" href="css/arena.css?v=58">
 <link rel="stylesheet" href="css/live.css?v=4">
-<link rel="stylesheet" href="css/league.css?v=12">
+<link rel="stylesheet" href="css/league.css?v=16">
 <link rel="stylesheet" href="css/my-zone.css?v=7">
 <link rel="stylesheet" href="css/ranks.css?v=1">
 <link rel="stylesheet" href="css/notifications.css">
@@ -792,7 +792,6 @@
 
           <!-- ============ SCREEN: ARENA TOURNAMENT ============ -->
           <section class="screen screen--arena-tournament" data-screen="arena-tournament">
-            <div class="arena-tournament-scrim" aria-hidden="true"></div>
             <div class="arena-tournament-scroll" data-tournament-scroll>
               <header class="arena-tournament-hero">
                 <img src="assets/arena/thearena-tournament-hero.png" alt="Tournament trophy" data-tournament-hero>
@@ -931,14 +930,11 @@
                 </section>
               </div>
             </div>
+            <div class="screen-topfade" aria-hidden="true"></div>
           </section>
 
         <!-- ============ SCREEN: LEAGUE ============ -->
         <section class="screen screen--league" data-screen="league">
-          <button class="setup-back league-back" type="button" data-go="leagues" aria-label="Back">
-            <img src="assets/icons/chevron-down.svg" alt="" width="20" height="20">
-          </button>
-          <div class="league-scrim" aria-hidden="true"></div>
           <div class="league-scroll" data-league-scroll>
             <div class="league-hero" aria-hidden="true">
               <img class="league-hero__bg" src="assets/league/league-bg.png" alt="">
@@ -947,6 +943,9 @@
             </div>
 
             <main class="league-content">
+              <button class="setup-back league-back" type="button" data-go="leagues" aria-label="Back">
+                <img src="assets/icons/chevron-down.svg" alt="" width="20" height="20">
+              </button>
               <header class="league-summary">
                 <h1>DIAMOND CUP</h1>
                 <p>Invite-only VIP tournament · 5 rounds of top matches · branded prizes from the sponsor</p>
@@ -1147,6 +1146,7 @@
               </button>
             </main>
           </div>
+          <div class="screen-topfade" aria-hidden="true"></div>
         </section>
 
         <!-- ============ SCREEN: CREATE LEAGUE ============ -->
@@ -2059,7 +2059,7 @@
 <script src="js/live.js?v=3"></script>
 <script src="js/rankings.js?v=9"></script>
 <script src="js/thearena.js?v=7"></script>
-<script src="js/tournament.js?v=36"></script>
+<script src="js/tournament.js?v=37"></script>
 <script src="js/arena-join.js?v=2"></script>
 <script src="js/league.js?v=10"></script>
 <script src="js/leagues.js?v=4"></script>
@@ -2067,7 +2067,7 @@
 <script src="js/league-picks.js?v=1"></script>
 <script src="js/league-pager.js?v=3"></script>
 <script src="js/league-rules.js?v=2"></script>
-<script src="js/league-tabs.js?v=1"></script>
+<script src="js/league-tabs.js?v=3"></script>
 <script src="js/league-participants.js?v=1"></script>
 <script src="js/my-zone.js?v=2"></script>
 <script src="js/ranks.js?v=3"></script>
