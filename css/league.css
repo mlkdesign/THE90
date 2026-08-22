@@ -753,8 +753,10 @@
 /* the chat owns the whole screen down to the message field */
 .shell-footer.is-league-chat .navbar { display: none; }
 /* Messages leave the same way they arrive: down into the dark and under the
-   field, which blurs whatever is still behind it. The scrim reaches above the
-   footer so the fade has room to be a fade. */
+   field. Darkening only, again — the blur is the field's own, so a message is
+   sharp until the moment it goes behind it. The scrim reaches above the footer
+   so the fade has room to be a fade, and never goes fully solid: there is
+   nothing for the field to blur behind a wall. */
 .shell-footer.is-league-chat { background: none; }
 .shell-footer.is-league-chat::before {
   content: '';
@@ -763,20 +765,15 @@
   right: 0;
   bottom: 0;
   left: 0;
-  /* never fully solid: the field is meant to blur what is behind it, and
-     there is nothing to blur behind a wall */
   background: linear-gradient(0deg,
     rgba(14, 14, 14, .9) 0,
     rgba(14, 14, 14, .82) 46%,
     rgba(14, 14, 14, .5) 72%,
     rgba(14, 14, 14, 0) 100%);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-  -webkit-mask-image: linear-gradient(0deg, #000 0, #000 64%, transparent 100%);
-  mask-image: linear-gradient(0deg, #000 0, #000 64%, transparent 100%);
   pointer-events: none;
 }
-/* the field itself is glass too, over the blur the scrim already lays down */
+/* and the field is the glass at this end: the only thing on the foot of
+   the screen that blurs what passes behind it */
 .shell-footer.is-league-chat .league-chat-input label {
   background: rgba(255, 255, 255, .06);
   -webkit-backdrop-filter: blur(18px);
@@ -931,7 +928,9 @@
 }
 
 /* Solid behind the header and gone by the time the plate begins, so the room
-   passes under both instead of stopping at them. */
+   passes under both instead of stopping at them. Darkening only — the blur on
+   this screen belongs to the plate and the message field, and a message on its
+   way past either of them should be legible right up to the edge. */
 .league-chat-fade {
   position: absolute;
   z-index: 10;
@@ -943,10 +942,6 @@
     var(--bg-primary) 0,
     var(--bg-primary) 74%,
     rgba(14, 14, 14, 0) 100%);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
-  -webkit-mask-image: linear-gradient(180deg, #000 0, #000 78%, transparent 100%);
-  mask-image: linear-gradient(180deg, #000 0, #000 78%, transparent 100%);
   pointer-events: none;
 }
 
