@@ -57,6 +57,7 @@
   var panelScrollFrame = null;
   var panelAnimationFrame = null;
   var tabFiller = 0;
+  var tabFillerPanel = null;
   var liveCountdownTimer = null;
   var title = screen.querySelector('[data-tournament-title]');
   var kind = screen.querySelector('[data-tournament-kind]');
@@ -700,9 +701,18 @@
     rankingPodium.classList.add('is-entering');
   }
 
+  /* Where the strip comes to rest — the scroll position at which it reaches
+     the top of the screen. Read from the panels that follow it rather than
+     from the strip itself: offsetTop on a stuck block reports where it is
+     being held, not where it belongs. */
+  function tabPinOffset() {
+    if (!panelScroller || !tabsSticky) return 0;
+    return Math.max(0, panelScroller.offsetTop - tabsSticky.offsetHeight);
+  }
+
   function updateStickyTabs() {
     if (!scroll || !tabsSticky) return;
-    tabsSticky.classList.toggle('is-stuck', scroll.scrollTop >= tabsSticky.offsetTop);
+    tabsSticky.classList.toggle('is-stuck', scroll.scrollTop >= tabPinOffset());
   }
 
   /* Every panel is a flex item in one horizontal strip, so the strip is as
@@ -728,23 +738,38 @@
     if (height) panelScroller.style.height = Math.round(height + tabFiller) + 'px';
   }
 
-  /* Moving to a shorter tab used to pull the page out from under you: the
-     strip shrinks, the browser clamps the scroll position, and the screen
-     jumps. So the difference is held open as empty space under the tab and
-     the position is left alone. */
+  /* How tall the page would be with this tab and no space held open under it.
+     Everything outside the strip is a constant, so the tab is the only term
+     that changes. */
+  function naturalHeightFor(panel) {
+    if (!scroll || !panelScroller || !panel) return 0;
+    return (scroll.scrollHeight - panelScroller.offsetHeight) + panel.offsetHeight;
+  }
+
+  /* A tab change lands on the beginning of the new tab: if the page is already
+     past the strip it comes back to it, so the content starts right under the
+     tabs instead of somewhere in its middle. A shorter tab cannot hold that
+     position on its own — the page would end above it and the browser would
+     drag the screen back down — so the difference is held open as empty space
+     beneath it. */
   function holdScrollForTab(index) {
-    if (!scroll || !panelScroller || !panels[index]) return;
-    var rest = scroll.scrollHeight - panelScroller.offsetHeight;
-    var natural = rest + panels[index].offsetHeight;
-    tabFiller = Math.max(0, Math.round(scroll.scrollTop + scroll.clientHeight - natural));
+    if (!scroll || !panelScroller || !panels[index] || !tabsSticky) return;
+    var target = Math.min(scroll.scrollTop, tabPinOffset());
+    tabFillerPanel = panels[index];
+    tabFiller = Math.max(0, Math.round(
+      target + scroll.clientHeight - naturalHeightFor(tabFillerPanel)));
+    fitPanelHeight();
+    if (target !== scroll.scrollTop) scroll.scrollTop = target;
   }
 
   /* The space is only ever given back, never taken again: scrolling up needs
-     less of it, and what is released does not come back on the way down. */
+     less of it, and what is released does not come back on the way down.
+     Measured against the tab it was opened for, not against the strip's
+     current height, which is still mid-slide when this first runs. */
   function releaseTabFiller() {
-    if (!tabFiller || !scroll) return;
-    var natural = scroll.scrollHeight - tabFiller;
-    var needed = Math.max(0, Math.round(scroll.scrollTop + scroll.clientHeight - natural));
+    if (!tabFiller || !scroll || !tabFillerPanel) return;
+    var needed = Math.max(0, Math.round(
+      scroll.scrollTop + scroll.clientHeight - naturalHeightFor(tabFillerPanel)));
     if (needed >= tabFiller) return;
     tabFiller = needed;
     fitPanelHeight();
@@ -946,6 +971,7 @@
     tournaments[id].live = source.dataset.tournamentPhase === 'live';
     renderTournament();
     tabFiller = 0;
+    tabFillerPanel = null;
     setActiveTab('events', 'auto');
     fitPanelHeight();
     if (scroll) scroll.scrollTop = 0;

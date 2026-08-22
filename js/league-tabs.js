@@ -32,6 +32,17 @@
   }
   if (scroll) scroll.addEventListener('scroll', updateStuck, { passive: true });
 
+  /* Where the strip comes to rest — the scroll position at which it reaches
+     the top of the screen. Read from the panels that follow it rather than
+     from the strip itself: offsetTop on a stuck block reports where it is
+     being held, not where it belongs. */
+  function pinOffset() {
+    var host = panels[0].parentNode;
+    if (!host || !sticky) return 0;
+    var gap = parseFloat(window.getComputedStyle(host.parentNode).rowGap) || 0;
+    return Math.max(0, host.offsetTop - gap - sticky.offsetHeight);
+  }
+
   function moveIndicator() {
     if (!indicator) return;
     var button = buttons.filter(function (b) { return b.dataset.leagueTab === active; })[0];
@@ -56,13 +67,13 @@
   buttons.forEach(function (button) {
     button.addEventListener('click', function () {
       show(button.dataset.leagueTab);
-      // keep the tab strip in view — switching to a short tab otherwise
-      // leaves you looking at whitespace further down the page
-      if (!scroll || !sticky) return;
-      var frame = scroll.getBoundingClientRect();
-      var scale = frame.width / scroll.offsetWidth || 1;
-      var delta = (sticky.getBoundingClientRect().top - frame.top) / scale;
-      if (delta < 0) scroll.scrollTo({ top: scroll.scrollTop + delta, behavior: 'smooth' });
+      /* A tab change lands on the beginning of the new tab: if the page is
+         already past the strip it comes back to it, so the content starts
+         right under the tabs instead of somewhere in its middle. */
+      if (scroll && sticky) {
+        var pin = pinOffset();
+        if (scroll.scrollTop > pin) scroll.scrollTop = pin;
+      }
       updateStuck();
     });
   });
