@@ -57,7 +57,10 @@
   var panelScrollFrame = null;
   var panelAnimationFrame = null;
   var tabFiller = 0;
-  var tabFillerPanel = null;
+  var tabFillerIndex = -1;
+  var tabChanging = false;
+  var panelOffsets = [];
+  var pageOwner = 0;
   var liveCountdownTimer = null;
   var title = screen.querySelector('[data-tournament-title]');
   var kind = screen.querySelector('[data-tournament-kind]');
@@ -715,9 +718,23 @@
     tabsSticky.classList.toggle('is-stuck', scroll.scrollTop >= tabPinOffset());
   }
 
-  /* Every panel is a flex item in one horizontal strip, so the strip is as
-     tall as its tallest tab and a short tab left a screenful of nothing under
-     it. Measure the one on show and let the page end where it ends. */
+  /* How far down the strip a tab is being held — see holdScrollForTab. */
+  function panelOffset(index) { return panelOffsets[index] || 0; }
+
+  function setPanelOffset(index, value) {
+    if (!panels[index]) return;
+    panelOffsets[index] = value;
+    panels[index].style.marginTop = value ? value + 'px' : '';
+  }
+
+  function clearPanelOffsets() {
+    panels.forEach(function (panel, index) { setPanelOffset(index, 0); });
+  }
+
+  function panelExtent(index) {
+    return panels[index] ? panels[index].offsetHeight + panelOffset(index) : 0;
+  }
+
   /* Every tab is a flex item in one horizontal strip, so the strip is as tall
      as its tallest tab and a short one sits above a screenful of nothing.
      align-items keeps each tab at its own height; this then sizes the strip
@@ -726,10 +743,10 @@
     var last = panels.length - 1;
     var value = clamp(position, 0, last);
     var index = Math.floor(value);
-    var left = panels[index];
-    if (!left) return 0;
-    var right = panels[Math.min(last, index + 1)] || left;
-    return left.offsetHeight + (right.offsetHeight - left.offsetHeight) * (value - index);
+    if (!panels[index]) return 0;
+    var left = panelExtent(index);
+    var right = panelExtent(Math.min(last, index + 1));
+    return left + (right - left) * (value - index);
   }
 
   function fitPanelHeight() {
@@ -738,38 +755,102 @@
     if (height) panelScroller.style.height = Math.round(height + tabFiller) + 'px';
   }
 
-  /* How tall the page would be with this tab and no space held open under it.
-     Everything outside the strip is a constant, so the tab is the only term
-     that changes. */
-  function naturalHeightFor(panel) {
-    if (!scroll || !panelScroller || !panel) return 0;
-    return (scroll.scrollHeight - panelScroller.offsetHeight) + panel.offsetHeight;
+  /* Everything on the page that is not the strip. Constant, whichever tab is
+     open, so a tab's own extent is the only term that changes. */
+  function heightOutsidePanels() {
+    if (!scroll || !panelScroller) return 0;
+    return scroll.scrollHeight - panelScroller.offsetHeight;
   }
 
-  /* A tab change lands on the beginning of the new tab: if the page is already
-     past the strip it comes back to it, so the content starts right under the
-     tabs instead of somewhere in its middle. A shorter tab cannot hold that
-     position on its own — the page would end above it and the browser would
-     drag the screen back down — so the difference is held open as empty space
-     beneath it. */
+  /* Empty space to hold open under a tab. Where the page will come to rest is
+     known — against the strip, or wherever it already is if it has not reached
+     it — and a tab shorter than the screen cannot hold that position on its
+     own: the page would end above it and the browser would drag the screen up
+     to meet it. This is the difference. */
+  function roomUnder(index) {
+    if (!scroll || !panels[index]) return 0;
+    var settled = Math.min(scroll.scrollTop, tabPinOffset());
+    return Math.max(0, Math.round(
+      settled + scroll.clientHeight - (heightOutsidePanels() + panels[index].offsetHeight)));
+  }
+
+  function roomAcross(from, to) {
+    var first = Math.min(from, to);
+    var last = Math.max(from, to);
+    var room = 0;
+    for (var index = first; index <= last; index++) room = Math.max(room, roomUnder(index));
+    return room;
+  }
+
+  /* A tab opens at its own beginning, level with the strip — and the page is
+     not scrolled there to arrange it. Scrolling back would haul the tab you
+     are leaving up to its own top in front of you, which is the jump all of
+     this is here to avoid. The arriving tab is dropped down the strip by
+     however far the page is scrolled past the tabs instead: nothing on screen
+     moves, and it still starts where it should. */
+  function dropTab(index) {
+    if (index === pageOwner) return;
+    setPanelOffset(index, Math.max(0, scroll.scrollTop - tabPinOffset()));
+  }
+
   function holdScrollForTab(index) {
     if (!scroll || !panelScroller || !panels[index] || !tabsSticky) return;
-    var target = Math.min(scroll.scrollTop, tabPinOffset());
-    tabFillerPanel = panels[index];
-    tabFiller = Math.max(0, Math.round(
-      target + scroll.clientHeight - naturalHeightFor(tabFillerPanel)));
+    dropTab(index);
+    tabChanging = true;
+    tabFillerIndex = index;
+    // Room for every tab the slide passes over, not only the one it lands on:
+    // the strip is sized to whatever is under it at each moment, and a page
+    // that shrinks under the scroll position loses it to the browser for good.
+    // Whatever the arrival does not need is given up in commitPanelOffset.
+    tabFiller = Math.max(roomUnder(pageOwner),
+                         roomAcross(Math.round(panelPosition()), index));
     fitPanelHeight();
-    if (target !== scroll.scrollTop) scroll.scrollTop = target;
+  }
+
+  /* Once the tab has arrived the drop is traded for real scroll position: the
+     tab moves up by exactly what the page moves down, so nothing on screen
+     changes. The page is left resting against the strip, and scrolling up from
+     there leads back to the banner rather than into the gap the drop would
+     otherwise have left above the tab. */
+  function commitPanelOffset(index) {
+    var offset = panelOffset(index);
+    pageOwner = index;
+    tabChanging = false;
+    clearPanelOffsets();
+    if (offset && scroll) scroll.scrollTop = Math.max(0, scroll.scrollTop - offset);
+    // and the room the tab it was crossing from needed is given up here, once
+    // the page no longer stands on it
+    tabFillerIndex = index;
+    tabFiller = roomUnder(index);
+    fitPanelHeight();
+  }
+
+  /* The room has to be there before the finger moves, not once it lifts: the
+     strip is as tall as whatever is under it, so a drag towards a shorter tab
+     shrinks the page mid-gesture and the browser hauls the screen up with it,
+     back over the banner. A drag can only reach a neighbour, so both of them
+     are made ready and the room is held for the shorter one. What actually
+     settles is measured again when the drag ends. */
+  function holdScrollForDrag() {
+    if (!scroll || !panelScroller || !panels.length) return;
+    var index = Math.round(panelPosition());
+    [index - 1, index + 1].forEach(function (near) {
+      if (panels[near]) dropTab(near);
+    });
+    tabChanging = true;
+    tabFillerIndex = index;
+    tabFiller = Math.max(roomUnder(pageOwner), roomAcross(index - 1, index + 1));
+    fitPanelHeight();
   }
 
   /* The space is only ever given back, never taken again: scrolling up needs
      less of it, and what is released does not come back on the way down.
-     Measured against the tab it was opened for, not against the strip's
-     current height, which is still mid-slide when this first runs. */
+     Left alone while a tab change is in flight — the strip is mid-slide then,
+     and its height says nothing about where the page will settle. */
   function releaseTabFiller() {
-    if (!tabFiller || !scroll || !tabFillerPanel) return;
-    var needed = Math.max(0, Math.round(
-      scroll.scrollTop + scroll.clientHeight - naturalHeightFor(tabFillerPanel)));
+    if (!tabFiller || !scroll || tabChanging || tabFillerIndex < 0) return;
+    var needed = Math.max(0, Math.round(scroll.scrollTop + scroll.clientHeight -
+      (heightOutsidePanels() + panelExtent(tabFillerIndex))));
     if (needed >= tabFiller) return;
     tabFiller = needed;
     fitPanelHeight();
@@ -895,13 +976,14 @@
     panelAnimationFrame = null;
   }
 
-  function animateToTab(index) {
+  function animateToTab(index, done) {
     var target = clamp(index, 0, tabButtons.length - 1);
     var start = panelPosition();
     var distance = target - start;
     stopPanelAnimation();
     if (Math.abs(distance) < .001) {
       renderPanelPosition(target);
+      if (done) done();
       return;
     }
 
@@ -912,8 +994,12 @@
       // ease-out keeps the release soft without decoupling any sub-element.
       var eased = 1 - Math.pow(1 - elapsed, 4);
       renderPanelPosition(start + distance * eased);
-      if (elapsed < 1) panelAnimationFrame = window.requestAnimationFrame(frame);
-      else panelAnimationFrame = null;
+      if (elapsed < 1) {
+        panelAnimationFrame = window.requestAnimationFrame(frame);
+        return;
+      }
+      panelAnimationFrame = null;
+      if (done) done();
     }
     panelAnimationFrame = window.requestAnimationFrame(frame);
   }
@@ -958,7 +1044,7 @@
       return;
     }
     holdScrollForTab(index);
-    animateToTab(index);
+    animateToTab(index, function () { commitPanelOffset(index); });
   }
 
   function openTournament(id) {
@@ -971,7 +1057,10 @@
     tournaments[id].live = source.dataset.tournamentPhase === 'live';
     renderTournament();
     tabFiller = 0;
-    tabFillerPanel = null;
+    tabFillerIndex = -1;
+    tabChanging = false;
+    pageOwner = 0;
+    clearPanelOffsets();
     setActiveTab('events', 'auto');
     fitPanelHeight();
     if (scroll) scroll.scrollTop = 0;
@@ -1121,6 +1210,7 @@
         }
         panelDrag.axis = 'x';
         panelDrag.moved = true;
+        holdScrollForDrag();
         if (panelScroller.setPointerCapture) panelScroller.setPointerCapture(event.pointerId);
         panelScroller.classList.add('is-dragging');
       }
@@ -1168,7 +1258,7 @@
       }
       target = clamp(target, 0, tabButtons.length - 1);
       holdScrollForTab(target);
-      animateToTab(target);
+      animateToTab(target, function () { commitPanelOffset(target); });
     }
     panelScroller.addEventListener('pointerup', endPanelDrag);
     panelScroller.addEventListener('pointercancel', endPanelDrag);
