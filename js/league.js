@@ -127,7 +127,10 @@
 
     requestAnimationFrame(function () {
       if (!footer.classList.contains('is-league-chat')) return;
-      scroll.style.bottom = footer.offsetHeight + 'px';
+      /* The room runs the whole height of the screen — messages pass under the
+         field and are blurred by it — so it is the list that keeps clear of a
+         growing composer, not the scroller. */
+      list.style.paddingBottom = (footer.offsetHeight + 18) + 'px';
       if (keepAtBottom) scrollToBottom();
     });
   }

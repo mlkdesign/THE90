@@ -752,6 +752,36 @@
 .shell-footer.is-league-chat .league-chat-input { display: flex; }
 /* the chat owns the whole screen down to the message field */
 .shell-footer.is-league-chat .navbar { display: none; }
+/* Messages leave the same way they arrive: down into the dark and under the
+   field, which blurs whatever is still behind it. The scrim reaches above the
+   footer so the fade has room to be a fade. */
+.shell-footer.is-league-chat { background: none; }
+.shell-footer.is-league-chat::before {
+  content: '';
+  position: absolute;
+  top: -48px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  /* never fully solid: the field is meant to blur what is behind it, and
+     there is nothing to blur behind a wall */
+  background: linear-gradient(0deg,
+    rgba(14, 14, 14, .9) 0,
+    rgba(14, 14, 14, .82) 46%,
+    rgba(14, 14, 14, .5) 72%,
+    rgba(14, 14, 14, 0) 100%);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  -webkit-mask-image: linear-gradient(0deg, #000 0, #000 64%, transparent 100%);
+  mask-image: linear-gradient(0deg, #000 0, #000 64%, transparent 100%);
+  pointer-events: none;
+}
+/* the field itself is glass too, over the blur the scrim already lays down */
+.shell-footer.is-league-chat .league-chat-input label {
+  background: rgba(255, 255, 255, .06);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
 
 .league-chat-input {
   width: 100%;
@@ -852,10 +882,25 @@
   justify-content: space-between;
   border: 1px solid rgba(255, 255, 255, .1);
   border-radius: 28px;
-  background: var(--bg-surface);
+  /* glass rather than a surface: the conversation carries on underneath and
+     is blurred by it rather than cut off by it */
+  background: rgba(255, 255, 255, .06);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
   transition: background .18s ease, transform .12s ease;
 }
-.league-round:hover { background: rgba(255, 255, 255, .08); }
+/* and dims on its way under, so nothing arrives at the plate at full strength */
+.league-round::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  right: -8px;
+  left: -8px;
+  height: 44px;
+  background: linear-gradient(180deg, rgba(14, 14, 14, .88), rgba(14, 14, 14, 0));
+  pointer-events: none;
+}
+.league-round:hover { background: rgba(255, 255, 255, .1); }
 .league-round:active { transform: scale(.99); }
 .league-round__copy { color: var(--text-primary); font-size: 14px; line-height: 20px; }
 .league-round__copy b { font-weight: 600; }
@@ -885,11 +930,31 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Solid behind the header and gone by the time the plate begins, so the room
+   passes under both instead of stopping at them. */
+.league-chat-fade {
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  width: 390px;
+  height: 124px;
+  background: linear-gradient(180deg,
+    var(--bg-primary) 0,
+    var(--bg-primary) 74%,
+    rgba(14, 14, 14, 0) 100%);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  -webkit-mask-image: linear-gradient(180deg, #000 0, #000 78%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0, #000 78%, transparent 100%);
+  pointer-events: none;
+}
+
 .league-chat-scroll {
   position: absolute;
-  /* under the round block, and down to the message field: the app's own tab
-     bar is not on this screen */
-  inset: 174px 0 96px;
+  /* the whole screen: the list is padded to clear the plate and the message
+     field, and what scrolls past them goes underneath */
+  inset: 0;
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -899,7 +964,7 @@
 .league-chat-list {
   width: 390px;
   min-height: 100%;
-  padding: 0 16px 20px;
+  padding: 182px 16px 104px;
   display: flex;
   flex-direction: column;
   gap: 20px;
