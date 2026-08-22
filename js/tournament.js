@@ -346,6 +346,10 @@
     var question = state[questionIndex];
     if (!question) return hideRoundPickBar();
 
+    // nothing to confirm until the round has been started
+    var started = state.some(function (q) { return q.selected >= 0; });
+    if (!started) return hideRoundPickBar();
+
     activeRoundPick = { id: activeId, round: tournament.currentRound, index: questionIndex };
     sharedPickBar.element.classList.add('winbar--round-picks');
     if (sharedPickBar.label) sharedPickBar.label.textContent = 'Estimated win:';
@@ -532,9 +536,7 @@
         var card = nearestQuestionCard(scroller);
         if (!card) return;
         var questionIndex = Number(card.dataset.roundQuestion);
-        var state = getRoundPickState(tournament)[questionIndex];
-        if (state && !state.confirmed && state.selected >= 0) showRoundPickBar(tournament, questionIndex);
-        else if (sharedPickBar) sharedPickBar.show(false);
+        showRoundPickBar(tournament, questionIndex);
       });
     }, { passive: true });
   }
