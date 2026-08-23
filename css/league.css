@@ -772,10 +772,26 @@
     rgba(14, 14, 14, 0) 100%);
   pointer-events: none;
 }
-/* and the field is the glass at this end: the only thing on the foot of
-   the screen that blurs what passes behind it */
+/* Over everything on this screen, the darkening included — stated rather than
+   left to the painting order, which puts a static form under a positioned
+   sibling whatever the markup says. */
+.shell-footer.is-league-chat .league-chat-input {
+  position: relative;
+  z-index: 1;
+}
+
+/* And it is a surface in its own right, not a hole in the dark: enough tint to
+   sit on top of whatever is behind it, and the blur so that what is behind it
+   still moves. A field that is only 6% of anything reads as the message
+   showing through it rather than as the field being over the message. */
 .shell-footer.is-league-chat .league-chat-input label {
-  background: rgba(255, 255, 255, .06);
+  border-color: rgba(255, 255, 255, .14);
+  background: rgba(28, 28, 28, .72);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+.shell-footer.is-league-chat .league-chat-input > button:disabled {
+  background: rgba(255, 255, 255, .14);
   -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
 }
