@@ -33,23 +33,25 @@
     else done();
   }
 
-  var ACTIONS = [
-    {
-      label: 'Delete league',
-      danger: true,
-      run: function () {
-        ask('Delete ' + leagueName() + '?',
-          'The league, its board and its chat go with it. This cannot be undone.',
-          'Delete league', function () { if (T && T.go) T.go('leagues'); });
-      }
-    },
-    {
-      label: 'Share league',
+  /* What the ... offers depends on whose league it is. Running one and being
+     in one are two different jobs, and the menu is where that shows. */
+  var viewing = { own: false, league: null };
+
+  document.addEventListener('the90:league-membership', function (event) {
+    viewing = event.detail || viewing;
+    close();
+  });
+
+  function isOpen() { return !!(viewing.league && viewing.league.privacy === 'open'); }
+
+  function actions() {
+    var share = {
+      label: 'Share invite',
       // the invite link is built and copied by the same handler the
       // Invite friend button goes through
       share: true
-    },
-    {
+    };
+    var leave = {
       label: 'Leave league',
       danger: true,
       run: function () {
@@ -57,14 +59,37 @@
           'You drop off its board and lose the chat. You can be invited back.',
           'Leave league', function () { if (T && T.go) T.go('leagues'); });
       }
+    };
+
+    if (!viewing.own) {
+      // a member of a private league has nobody to invite
+      return isOpen() ? [share, leave] : [leave];
     }
-  ];
+
+    return [
+      { label: 'Edit league', run: function () {
+        if (T && T.ownLeagues && viewing.index > -1) T.ownLeagues.edit(viewing.index);
+        if (T && T.go) T.go('league-create');
+      } },
+      { label: 'Manage rounds', run: function () { if (T && T.go) T.go('league-rounds'); } },
+      { label: 'Manage participants', run: function () { if (T && T.go) T.go('league-participants'); } },
+      share,
+      { label: 'Delete league', danger: true, run: function () {
+        ask('Delete ' + leagueName() + '?',
+          'The league, its board and its chat go with it. This cannot be undone.',
+          'Delete league', function () {
+            if (T && T.ownLeagues && viewing.index > -1) T.ownLeagues.remove(viewing.index);
+            if (T && T.go) T.go('leagues');
+          });
+      } }
+    ];
+  }
 
   function build() {
     var box = document.createElement('div');
     box.className = 'league-sheet';
     box.setAttribute('role', 'menu');
-    ACTIONS.forEach(function (action) {
+    actions().forEach(function (action) {
       var item = document.createElement('button');
       item.type = 'button';
       item.setAttribute('role', 'menuitem');

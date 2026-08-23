@@ -835,3 +835,294 @@
 }
 .leagues-topbar .balance { -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
 .shell-footer.is-leagues .leagues-create { display: none !important; }
+
+
+/* =========================================================
+   Running a league you own — rounds, and the form that
+   starts one. Built out of the pieces the app already has:
+   the settings shell, the segmented control, the sheet.
+   ========================================================= */
+
+/* --- the create/edit form ------------------------------- */
+
+.field__box--area { height: auto; padding: 12px 16px; }
+.field__box--area .field__input { height: auto; min-height: 60px; resize: none; line-height: 20px; }
+.field__note {
+  margin: 6px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--text-dim);
+  font-size: 12px;
+  line-height: 16px;
+}
+.field__note b { font-weight: 400; font-variant-numeric: tabular-nums; }
+
+.create-row--stack { display: flex; flex-direction: column; align-items: stretch; gap: 10px; }
+.create-row__note { margin: 0; color: var(--text-dim); font-size: 12px; line-height: 16px; }
+
+/* a number you nudge rather than type */
+.stepper {
+  height: 56px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 16px;
+  background: var(--bg-surface);
+}
+.stepper__btn {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .1);
+  color: var(--text-primary);
+  font-size: 20px;
+  line-height: 1;
+  transition: background .18s ease, transform .12s ease;
+}
+.stepper__btn:hover { background: rgba(255, 255, 255, .16); }
+.stepper__btn:active { transform: scale(.94); }
+.stepper__btn:disabled { opacity: .35; }
+.stepper__value { color: var(--text-primary); font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* two ways to run a league, said in full rather than in one word */
+.privacy { display: flex; flex-direction: column; gap: 8px; }
+.privacy__card {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 16px;
+  background: var(--bg-surface);
+  text-align: left;
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.privacy__card b { color: var(--text-primary); font-size: 14px; font-weight: 600; line-height: 20px; }
+.privacy__card small { color: var(--text-dim); font-size: 12px; line-height: 16px; }
+.privacy__card.is-on {
+  border-color: var(--brand-primary);
+  background: rgba(74, 222, 128, .06);
+  box-shadow: 0 0 0 1px var(--brand-primary), 0 8px 24px rgba(74, 222, 128, .12);
+}
+.privacy__card.is-on b::after {
+  content: '✓';
+  margin-left: 8px;
+  color: var(--brand-primary);
+}
+
+/* --- manage rounds -------------------------------------- */
+
+.rounds-new {
+  position: absolute;
+  right: 16px;
+  padding: 0;
+  color: var(--brand-primary);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 20px;
+}
+.rounds-list { display: flex; flex-direction: column; gap: 8px; }
+.round-row {
+  width: 100%;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 16px;
+  background: var(--bg-surface);
+  text-align: left;
+  transition: background .18s ease, transform .12s ease;
+}
+.round-row:hover { background: rgba(255, 255, 255, .06); }
+.round-row:active { transform: scale(.99); }
+.round-row__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.round-row__title { min-width: 0; color: var(--text-primary); font-size: 14px; font-weight: 600; line-height: 20px; }
+.round-row__meta { color: var(--text-dim); font-size: 12px; line-height: 16px; }
+
+/* draft / published / live / completed, said in a word */
+.round-pill {
+  flex: none;
+  padding: 3px 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .1);
+  color: var(--text-dim);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .4px;
+  line-height: 14px;
+  text-transform: uppercase;
+}
+.round-pill--published,
+.round-pill--open { background: rgba(74, 222, 128, .16); color: var(--brand-primary); }
+.round-pill--live { background: rgba(255, 92, 92, .16); color: #ff6b6b; }
+.round-pill--completed { background: rgba(255, 255, 255, .08); color: var(--text-dim); }
+
+.rounds-empty {
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+.rounds-empty strong { color: var(--text-primary); font-size: 15px; font-weight: 600; }
+.rounds-empty p { margin: 0; color: var(--text-dim); font-size: 12px; line-height: 18px; }
+.rounds-empty .btn { margin-top: 8px; }
+
+/* --- the round editor ----------------------------------- */
+
+.round-edit { padding-bottom: 140px; display: flex; flex-direction: column; gap: 20px; }
+.round-link { padding: 0; color: var(--brand-primary); font-size: 12px; font-weight: 600; line-height: 18px; }
+.round-matches { display: flex; flex-direction: column; gap: 12px; }
+.round-match-list { display: flex; flex-direction: column; gap: 8px; }
+.round-hint { margin: 0; color: var(--text-dim); font-size: 12px; line-height: 18px; }
+
+.round-match {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 16px;
+  background: var(--bg-surface);
+}
+.round-match__head { display: flex; align-items: center; gap: 10px; }
+.round-match__teams { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.round-match__teams strong { color: var(--text-primary); font-size: 13px; font-weight: 600; line-height: 18px; }
+.round-match__teams small { color: var(--text-dim); font-size: 11px; line-height: 16px; }
+.round-match__badges { display: flex; align-items: center; gap: -6px; }
+.round-match__badges img { width: 24px; height: 24px; object-fit: contain; }
+.round-match__drop { padding: 0; color: var(--text-dim); font-size: 11px; line-height: 16px; }
+.round-match__drop:hover { color: #ff6b6b; }
+.round-questions { display: flex; flex-direction: column; gap: 6px; }
+.round-questions > span { color: var(--text-dim); font-size: 11px; line-height: 16px; }
+.round-q {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .04);
+}
+.round-q__copy { min-width: 0; flex: 1; color: var(--text-primary); font-size: 12px; line-height: 18px; }
+.round-q__points { flex: none; color: var(--brand-primary); font-size: 11px; font-weight: 600; }
+.round-q__toggle {
+  width: 40px;
+  height: 24px;
+  flex: none;
+  padding: 2px;
+  display: flex;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .12);
+  transition: background .18s ease;
+}
+.round-q__toggle i { width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform .18s ease; }
+.round-q__toggle.is-on { background: var(--brand-primary); }
+.round-q__toggle.is-on i { transform: translateX(16px); }
+.round-q__toggle:disabled { opacity: .5; }
+.round-q--fixed .round-q__copy::after { content: ' · required'; color: var(--text-dim); }
+
+.round-actions {
+  position: absolute;
+  z-index: 4;
+  right: 16px;
+  bottom: 40px;
+  left: 16px;
+  display: flex;
+  gap: 8px;
+}
+.round-actions .btn { flex: 1; }
+.round-draft { background: rgba(255, 255, 255, .1); color: var(--text-primary); }
+.round-locked-note {
+  position: absolute;
+  right: 16px;
+  bottom: 48px;
+  left: 16px;
+  margin: 0;
+  color: var(--text-dim);
+  font-size: 12px;
+  line-height: 18px;
+  text-align: center;
+}
+
+/* --- the match picker ----------------------------------- */
+
+.round-picker { max-height: 620px; display: flex; flex-direction: column; }
+.round-picker .settings-sheet__content { min-height: 0; flex: 1; }
+.round-search {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 16px;
+  outline: none;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 13px;
+}
+.round-search::placeholder { color: var(--text-dim); }
+.round-days { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+.round-days::-webkit-scrollbar { display: none; }
+.round-day {
+  flex: none;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 12px;
+  color: var(--text-dim);
+  font-size: 12px;
+  line-height: 16px;
+  white-space: nowrap;
+}
+.round-day.is-on { border-color: var(--brand-primary); color: var(--brand-primary); }
+.round-fixtures {
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.round-fixtures::-webkit-scrollbar { display: none; }
+.round-fixture {
+  width: 100%;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 16px;
+  background: var(--bg-surface);
+  text-align: left;
+}
+.round-fixture:disabled { opacity: .4; }
+.round-fixture img { width: 24px; height: 24px; flex: none; object-fit: contain; }
+.round-fixture__copy { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.round-fixture__copy strong { color: var(--text-primary); font-size: 13px; font-weight: 600; line-height: 18px; }
+.round-fixture__copy small { color: var(--text-dim); font-size: 11px; line-height: 16px; }
+
+/* --- what the picks tab shows ---------------------------- */
+
+.league-rounds { display: flex; flex-direction: column; gap: 12px; }
+.league-round-card {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 20px;
+  background: var(--bg-surface);
+}
+.league-round-card__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.league-round-card h2 { margin: 0; color: var(--text-primary); font-size: 15px; font-weight: 600; line-height: 20px; }
+.league-round-card p { margin: 0; color: var(--text-dim); font-size: 12px; line-height: 18px; }
+.league-round-card .btn { margin-top: 4px; }
+.league-round-card__ghost { background: rgba(255, 255, 255, .1); color: var(--text-primary); }
+.league-round-note { margin: 0; color: var(--text-dim); font-size: 11px; line-height: 16px; }

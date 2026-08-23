@@ -16,9 +16,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="css/style.css?v=4">
-<link rel="stylesheet" href="css/main.css?v=41">
+<link rel="stylesheet" href="css/main.css?v=42">
 <link rel="stylesheet" href="css/rankings.css?v=13">
-    <link rel="stylesheet" href="css/leagues.css?v=16">
+    <link rel="stylesheet" href="css/leagues.css?v=18">
   <link rel="stylesheet" href="css/arena.css?v=59">
 <link rel="stylesheet" href="css/live.css?v=4">
 <link rel="stylesheet" href="css/league.css?v=27">
@@ -544,7 +544,7 @@
                   </button>
                 </article>
                 <article class="lcard">
-                  <button class="lcard__open" type="button" data-go="league-chat" data-league-joined="true" aria-label="Open Arsenal Fans">
+                  <button class="lcard__open" type="button" data-go="league-chat" data-league-joined="true" data-league-privacy="open" aria-label="Open Arsenal Fans">
                     <span class="lcard__cover">
                       <img class="lcard__banner" src="assets/league/card-cover-ball.jpg" alt="">
                     </span>
@@ -588,7 +588,7 @@
                   </button>
                 </article>
                 <article class="lcard">
-                  <button class="lcard__open" type="button" data-go="league-chat" data-league-joined="true" aria-label="Open Chelsea Crew">
+                  <button class="lcard__open" type="button" data-go="league-chat" data-league-joined="true" data-league-privacy="open" aria-label="Open Chelsea Crew">
                     <span class="lcard__cover">
                       <img class="lcard__banner" src="assets/league/card-cover-ball.jpg" alt="">
                     </span>
@@ -976,6 +976,9 @@
 
                 <div class="league-panels" data-league-panels>
                   <section class="league-panel" role="tabpanel" data-league-panel="picks">
+                <!-- rounds: what the owner runs and the members play -->
+                <div class="league-rounds" data-league-rounds></div>
+
                 <!-- the round's picks — only once you are in the league -->
                 <section class="league-picks" data-league-picks hidden aria-label="Daily picks">
                   <div class="section-head">
@@ -1170,36 +1173,40 @@
               <label class="field__label" for="league-name">League name</label>
               <div class="field__box">
                 <input class="field__input" id="league-name" type="text" name="league-name"
-                       placeholder="e.g. Office League" autocomplete="off" data-league-name>
+                       placeholder="e.g. Friday Football Club" autocomplete="off" maxlength="40" data-league-name>
               </div>
               <p class="field__msg" data-msg></p>
             </div>
 
-            <div class="create-row">
+            <div class="field" data-field>
+              <label class="field__label" for="league-desc">Description</label>
+              <div class="field__box field__box--area">
+                <textarea class="field__input" id="league-desc" rows="3" maxlength="160"
+                          placeholder="What is this league about?" data-league-desc></textarea>
+              </div>
+              <p class="field__msg" data-msg></p>
+              <p class="field__note"><span>Visible to everyone you invite.</span><b data-league-desc-count>0/160</b></p>
+            </div>
+
+            <div class="create-row create-row--stack">
+              <span class="create-row__label">Maximum participants</span>
+              <div class="stepper" data-league-max>
+                <button class="stepper__btn" type="button" data-step="-1" aria-label="Fewer participants">–</button>
+                <b class="stepper__value" data-league-max-value>12</b>
+                <button class="stepper__btn" type="button" data-step="1" aria-label="More participants">+</button>
+              </div>
+              <p class="create-row__note" data-league-max-note>You can’t set a limit below the current member count when editing.</p>
+            </div>
+
+            <div class="create-row create-row--stack">
               <span class="create-row__label">Privacy</span>
-              <div class="seg" data-league-privacy>
-                <button class="seg__btn is-on" type="button" data-val="invite"><span>Invite only</span></button>
-                <button class="seg__btn" type="button" data-val="private"><span>Private</span></button>
-                <button class="seg__btn" type="button" data-val="public"><span>Public</span></button>
-              </div>
-            </div>
-
-            <div class="create-row">
-              <span class="create-row__label">Entry fee, Coins</span>
-              <div class="seg" data-league-fee>
-                <button class="seg__btn is-on" type="button" data-val="0"><span>Free</span></button>
-                <button class="seg__btn" type="button" data-val="50"><span>50</span></button>
-                <button class="seg__btn" type="button" data-val="100"><span>100</span></button>
-                <button class="seg__btn" type="button" data-val="500"><span>500</span></button>
-              </div>
-            </div>
-
-            <div class="create-row">
-              <span class="create-row__label">Length</span>
-              <div class="seg" data-league-length>
-                <button class="seg__btn" type="button" data-val="1 round"><span>1 round</span></button>
-                <button class="seg__btn is-on" type="button" data-val="5 rounds"><span>5 rounds</span></button>
-                <button class="seg__btn" type="button" data-val="Full season"><span>Full season</span></button>
+              <div class="privacy" data-league-privacy role="radiogroup" aria-label="Privacy">
+                <button class="privacy__card is-on" type="button" role="radio" aria-checked="true" data-val="private">
+                  <b>Private</b><small>Only you can invite people to this league.</small>
+                </button>
+                <button class="privacy__card" type="button" role="radio" aria-checked="false" data-val="open">
+                  <b>Open</b><small>Any member can invite friends once they join.</small>
+                </button>
               </div>
             </div>
 
@@ -1221,6 +1228,92 @@
             <div class="settings-scroll">
               <div class="settings-group participants-list" data-participants-list></div>
               <button class="participants-invite" type="button" data-share-league>Invite friend</button>
+            </div>
+          </section>
+
+          <!-- ============ SCREEN: MANAGE ROUNDS (owner only) ============ -->
+          <section class="screen screen--rounds" data-screen="league-rounds">
+            <header class="settings-head">
+              <button type="button" data-go="league" aria-label="Back to the league">
+                <img src="assets/icons/chevron-down.svg" alt="" width="20" height="20">
+              </button>
+              <h1>Manage rounds</h1>
+              <button class="rounds-new" type="button" data-round-new>Create round</button>
+            </header>
+            <div class="settings-scroll">
+              <div class="rounds-list" data-rounds-list></div>
+              <div class="rounds-empty" data-rounds-empty hidden>
+                <strong>No rounds yet</strong>
+                <p>Choose matches, add prediction questions and publish when you are ready.</p>
+                <button class="btn btn--primary" type="button" data-round-new>Create round</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ SCREEN: CREATE / EDIT ROUND (owner only) ============ -->
+          <section class="screen screen--round-edit" data-screen="league-round-edit">
+            <header class="settings-head">
+              <button type="button" data-go="league-rounds" aria-label="Back to the rounds">
+                <img src="assets/icons/chevron-down.svg" alt="" width="20" height="20">
+              </button>
+              <h1 data-round-head>Create round</h1>
+            </header>
+            <div class="settings-scroll round-edit" data-round-scroll>
+              <div class="field" data-field>
+                <label class="field__label" for="round-name">Round name</label>
+                <div class="field__box">
+                  <input class="field__input" id="round-name" type="text" maxlength="40"
+                         placeholder="e.g. Derby Weekend" autocomplete="off" data-round-name>
+                </div>
+                <p class="field__msg" data-msg></p>
+              </div>
+
+              <div class="field" data-field>
+                <label class="field__label" for="round-desc">Round description</label>
+                <div class="field__box field__box--area">
+                  <textarea class="field__input" id="round-desc" rows="2" maxlength="120"
+                            placeholder="Top matches of the weekend" data-round-desc></textarea>
+                </div>
+                <p class="field__note"><span>Optional</span><b data-round-desc-count>0/120</b></p>
+              </div>
+
+              <section class="round-matches">
+                <div class="section-head">
+                  <span>Matches in this round</span>
+                  <button class="round-link" type="button" data-round-add>Add match</button>
+                </div>
+                <div class="round-match-list" data-round-matches></div>
+                <p class="round-hint" data-round-matches-empty>Nothing here yet — add the matches this round is played on.</p>
+              </section>
+
+              <div class="create-row create-row--stack">
+                <span class="create-row__label">Lock picks</span>
+                <div class="seg" data-round-lock>
+                  <button class="seg__btn is-on" type="button" data-val="15"><span>15 min before</span></button>
+                  <button class="seg__btn" type="button" data-val="30"><span>30 min before</span></button>
+                  <button class="seg__btn" type="button" data-val="0"><span>At kickoff</span></button>
+                </div>
+                <p class="create-row__note">Applies to every match in this round, and is fixed once it is published.</p>
+              </div>
+            </div>
+
+            <div class="round-actions" data-round-actions>
+              <button class="btn round-draft" type="button" data-round-save>Save draft</button>
+              <button class="btn btn--primary" type="button" data-round-publish>Publish round</button>
+            </div>
+            <p class="round-locked-note" data-round-readonly hidden>Published — matches, questions and deadlines are fixed.</p>
+
+            <!-- the match picker, on the app's own sheet -->
+            <div class="settings-sheet round-sheet" data-round-picker hidden>
+              <section class="settings-sheet__panel round-picker">
+                <i class="settings-sheet__handle"></i>
+                <div class="settings-sheet__content">
+                  <h2>Add match</h2>
+                  <input class="round-search" type="search" placeholder="Search a team" data-round-search>
+                  <div class="round-days" data-round-days></div>
+                  <div class="round-fixtures" data-round-fixtures></div>
+                </div>
+              </section>
             </div>
           </section>
 
@@ -2028,6 +2121,9 @@
               <p class="modal__text" data-modal-text>You received a Welcome reward for registering in our app</p>
             </div>
             <button class="btn btn--primary modal__cta" type="button" data-modal-cta>Got It</button>
+            <!-- the way out that is not the X: used where a reward offers two
+                 next steps rather than one -->
+            <button class="modal__second" type="button" data-modal-second hidden>Do this later</button>
           </div>
         </div>
 
@@ -2075,7 +2171,7 @@
 <script src="js/pick-card.js?v=20"></script>
 <script src="js/leaderboard.js?v=1"></script>
 <script src="js/app.js?v=13"></script>
-<script src="js/main.js?v=27"></script>
+<script src="js/main.js?v=28"></script>
 <script src="js/news.js?v=1"></script>
 <script src="js/live.js?v=3"></script>
 <script src="js/rankings.js?v=9"></script>
@@ -2084,14 +2180,15 @@
 <script src="js/arena-join.js?v=2"></script>
 <script src="js/league.js?v=12"></script>
 <script src="js/leagues.js?v=4"></script>
-<script src="js/league-create.js?v=19"></script>
+<script src="js/league-create.js?v=20"></script>
 <script src="js/league-picks.js?v=1"></script>
 <script src="js/league-pager.js?v=8"></script>
 <script src="js/league-rules.js?v=2"></script>
 <script src="js/league-tabs.js?v=6"></script>
 <script src="js/league-round.js?v=3"></script>
-<script src="js/league-menu.js?v=2"></script>
+<script src="js/league-menu.js?v=4"></script>
 <script src="js/league-participants.js?v=1"></script>
+<script src="js/league-rounds.js?v=2"></script>
 <script src="js/my-zone.js?v=2"></script>
 <script src="js/ranks.js?v=3"></script>
 <script src="js/notifications.js?v=6"></script>

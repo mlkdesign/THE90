@@ -136,6 +136,18 @@
   justify-content: center;
 }
 
+/* the quieter of two ways on from a reward */
+.modal__second {
+  width: 100%;
+  height: 44px;
+  margin-top: 8px;
+  padding: 0;
+  color: var(--text-dim);
+  font-size: 13px;
+  line-height: 18px;
+}
+.modal__second:hover { color: var(--text-primary); }
+
 .balance {
   height: 48px;
   padding: 4px 12px 4px 4px;

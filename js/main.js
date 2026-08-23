@@ -435,6 +435,9 @@
 
   $('[data-modal-close]').addEventListener('click', closeModal);
   $('[data-modal-cta]').addEventListener('click', closeModal);
+  // the second way on closes it too, and does nothing else — that is the point
+  var modalSecond = $('[data-modal-second]');
+  if (modalSecond) modalSecond.addEventListener('click', closeModal);
   modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
 
 
