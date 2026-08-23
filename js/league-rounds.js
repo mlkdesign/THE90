@@ -41,7 +41,7 @@
 
   var STATE_LABEL = {
     draft: 'Draft', published: 'Published', open: 'Open',
-    locked: 'Locked', pending: 'Results pending', completed: 'Completed'
+    pending: 'Results pending', completed: 'Completed'
   };
 
 
@@ -146,8 +146,9 @@
     var locks = deadlineOf(round);
     var ends = lastWhistle(round);
     if (!locks || !ends) return 'published';
-    if (now < locks.getTime()) return 'open';
-    if (now < ends.getTime()) return 'locked';
+    /* No locked window for now: a pick can be changed for as long as the
+       matches are still to be played. */
+    if (now < ends.getTime()) return 'open';
     if (now < ends.getTime() + 30 * 60000) return 'pending';
     return 'completed';
   }
@@ -165,9 +166,9 @@
     var state = stateOf(round);
     if (state === 'open') {
       var locks = deadlineOf(round);
-      return locks ? 'Closes in ' + countdown(locks) : 'Open';
+      if (!locks) return 'Open';
+      return locks.getTime() > Date.now() ? 'Closes in ' + countdown(locks) : 'In play';
     }
-    if (state === 'locked') return 'Picks locked';
     if (state === 'pending') return 'Results pending';
     if (state === 'completed') return 'Completed';
     return STATE_LABEL[state] || state;
