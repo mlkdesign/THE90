@@ -448,101 +448,145 @@
     return box;
   }
 
+  /* The round's own header: which round, how long is left, and how much of
+     it is answered — Figma › LEAGUES › League (748:2284). */
+  function roundHead(round, state) {
+    var box = el('div', 'round-head');
+    var top = el('div', 'round-head__row');
+    top.appendChild(el('strong', null, round.name));
+    if (state) top.appendChild(pill(state));
+    var clock = el('span', 'round-head__clock');
+    var timer = document.createElement('img');
+    timer.src = 'assets/icons/timer.svg';
+    timer.alt = '';
+    timer.width = timer.height = 16;
+    clock.appendChild(timer);
+    var ticking = el('b', null, statusLine(round));
+    ticking.dataset.roundClock = round.id;
+    clock.appendChild(ticking);
+    top.appendChild(clock);
+    box.appendChild(top);
+
+    var bar = el('div', 'round-head__row');
+    var rail = el('div', 'round-head__rail');
+    var fill = el('i');
+    var total = questionCount(round);
+    var done = lockedCount(round);
+    fill.style.width = (total ? Math.round(done / total * 100) : 0) + '%';
+    rail.appendChild(fill);
+    bar.appendChild(rail);
+    var count = el('span', 'round-head__count');
+    count.appendChild(el('b', null, String(done)));
+    count.appendChild(el('small', null, '/' + total));
+    bar.appendChild(count);
+    box.appendChild(bar);
+    return box;
+  }
+
+  /* One card per match, the app's own — the same pitch, the same crests, the
+     same highlight when an answer lands — with the round's questions in it. */
   function playCard(round) {
     var state = stateOf(round);
     var live = state === 'open';
-    var box = el('article', 'league-round-card');
+    var box = el('article', 'league-round-card league-round-card--play');
 
-    var head = el('div', 'league-round-card__head');
-    head.appendChild(el('h2', null, round.name));
-    head.appendChild(pill(state));
-    box.appendChild(head);
-    box.appendChild(el('p', null, statusLine(round)));
-    if (round.description) box.appendChild(el('p', null, round.description));
+    box.appendChild(roundHead(round, state));
+    if (round.description) box.appendChild(el('p', 'round-head__note', round.description));
 
+    var track = el('div', 'picks-track round-track');
     round.matches.forEach(function (match) {
       var pick = pickOf(round, match);
-      var open = live && !pick.locked;
-      var block = el('section', 'pick-match');
-
-      var top = el('div', 'pick-match__head');
-      [match.home, match.away].forEach(function (slug) {
-        var logo = document.createElement('img');
-        logo.src = T.logo(slug);
-        logo.alt = '';
-        top.appendChild(logo);
-      });
-      var copy = el('span', 'pick-match__copy');
-      copy.appendChild(el('strong', null, teamsOf(match)));
-      copy.appendChild(el('small', null, kickoffLabel(match) + ' · ' + lockLabel(round, match)));
-      top.appendChild(copy);
-      block.appendChild(top);
-
-      var result = resultOf(match);
-      if (result) block.appendChild(el('p', 'pick-match__result',
-        'Final score ' + result.home + ' – ' + result.away));
-
-      match.questions.forEach(function (id) {
-        var meta = template(id);
-        if (!meta) return;
-        var row = el('div', 'pick-q');
-        var label = el('span', 'pick-q__label', meta.label);
-        var points = el('b', null, '+' + meta.points);
-        var got = result ? scoreOf(round, match, id, pick.answers[id]) : null;
-        if (got !== null && pick.locked) {
-          points.textContent = '+' + got;
-          points.className = got ? 'is-hit' : 'is-miss';
-        }
-        label.appendChild(points);
-        row.appendChild(label);
-
-        var options = optionsFor(id, match);
-        var host = el('div', 'pick-q__options');
-        if (options) {
-          options.forEach(function (option) {
-            host.appendChild(chip(option.label, pick.answers[id] === option.value,
-              open ? function () {
-                pick.answers[id] = option.value;
-                savePicks();
-                renderPanel();
-              } : null));
-          });
-        } else {
-          host.appendChild(scoreStepper(pick, function () {
-            savePicks();
-            renderPanel();
-          }, open));
-        }
-        row.appendChild(host);
-        block.appendChild(row);
-      });
-
-      if (open) {
-        var answered = match.questions.filter(function (id) {
-          return pick.answers[id] !== undefined;
-        }).length;
-        var confirm = action(answered ? 'Confirm ' + answered + ' ' +
-          (answered === 1 ? 'pick' : 'picks') : 'Make your picks',
-          'btn--primary pick-confirm', function () {
-            if (!answered) return;
-            pick.locked = true;
-            savePicks();
-            renderPanel();
-          });
-        confirm.disabled = !answered;
-        block.appendChild(confirm);
-      } else if (pick.locked) {
-        block.appendChild(el('p', 'league-round-note', 'Your picks are in.'));
+      if (!pick.card) {
+        pick.card = { outcome: null, score: { home: null, away: null }, derived: false, extras: {} };
       }
+      restoreCard(round, match, pick);
 
-      box.appendChild(block);
+      var extras = match.questions.filter(function (id) {
+        return id === 'btts' || id === 'scorer';
+      });
+
+      track.appendChild(T.pickCard.create(match, pick.card, {
+        when: kickoffLabel(match).split(' · ')[0],
+        round: true,
+        extras: extras,
+        editable: function () { return live && !pick.locked; },
+        onChange: function () {
+          keepCard(round, match, pick);
+          paintBar(round);
+        }
+      }));
+    });
+    box.appendChild(track);
+
+    box.appendChild(el('p', 'league-round-note',
+      lockedCount(round) + ' / ' + questionCount(round) + ' picks locked' +
+      (state === 'completed' ? ' · you scored +' + roundScore(round) + ' points' : '')));
+    return box;
+  }
+
+  /* The card keeps its own shape; the store keeps answers by question. These
+     two carry a pick between them. */
+  function restoreCard(round, match, pick) {
+    pick.card.outcome = pick.answers.result || null;
+    pick.card.score = pick.answers.score || { home: null, away: null };
+    pick.card.extras = {
+      btts: pick.answers.btts || null,
+      scorer: pick.answers.scorer || null
+    };
+  }
+
+  function keepCard(round, match, pick) {
+    pick.answers.result = pick.card.outcome || undefined;
+    if (pick.card.score && pick.card.score.home !== null && pick.card.score.away !== null) {
+      pick.answers.score = pick.card.score;
+    } else {
+      delete pick.answers.score;
+    }
+    ['btts', 'scorer'].forEach(function (id) {
+      if (pick.card.extras && pick.card.extras[id]) pick.answers[id] = pick.card.extras[id];
+      else delete pick.answers[id];
+    });
+    savePicks();
+  }
+
+  /* The shared confirmation surface, in the league's own currency. */
+  function paintBar(round) {
+    var bar = T.pickConfirmationBar;
+    if (!bar || !bar.element) return;
+    var answered = answeredCount(round);
+    if (!answered || stateOf(round) !== 'open') { bar.show(false); return; }
+
+    var worth = 0;
+    round.matches.forEach(function (match) {
+      var pick = pickOf(round, match);
+      match.questions.forEach(function (id) {
+        if (pick.answers[id] === undefined) return;
+        var meta = template(id);
+        if (meta) worth += meta.points;
+      });
     });
 
-    var total = questionCount(round);
-    box.appendChild(el('p', 'league-round-note',
-      lockedCount(round) + ' / ' + total + ' picks locked' +
-      (state === 'completed' ? ' · you scored +' + roundScore(round) : '')));
-    return box;
+    bar.element.classList.add('winbar--round-picks');
+    if (bar.label) bar.label.textContent = 'Potential win:';
+    if (bar.points) bar.points.textContent = '+' + worth;
+    bar.element.classList.add('winbar--points');
+    if (bar.next) bar.next.textContent = 'Accept picks';
+    bar.show(true);
+  }
+
+  if (T.pickConfirmationBar && T.pickConfirmationBar.next) {
+    T.pickConfirmationBar.next.addEventListener('click', function () {
+      var here = document.querySelector('.screen.is-active');
+      if (!here || here.dataset.screen !== 'league') return;
+      var round = publishedOf(league())[0];
+      if (!round || stateOf(round) !== 'open') return;
+      round.matches.forEach(function (match) {
+        var pick = pickOf(round, match);
+        if (Object.keys(pick.answers).length) pick.locked = true;
+      });
+      savePicks();
+      renderPanel();
+    });
   }
 
 
@@ -917,12 +961,11 @@
   window.setInterval(function () {
     var active = document.querySelector('.screen.is-active');
     if (!active || active.dataset.screen !== 'league') return;
-    if (!panel || !panel.children.length) return;
-    $$('.league-round-card', panel).forEach(function (box, index) {
-      var round = publishedOf(league())[index - (draftOf(league()) && isOwner() ? 1 : 0)];
-      if (!round) return;
-      var line = box.querySelector('p');
-      if (line) line.textContent = statusLine(round);
+    $$('[data-round-clock]', panel || document).forEach(function (cell) {
+      var round = roundsOf(league()).filter(function (item) {
+        return item.id === cell.dataset.roundClock;
+      })[0];
+      if (round) cell.textContent = statusLine(round);
     });
   }, 1000);
 

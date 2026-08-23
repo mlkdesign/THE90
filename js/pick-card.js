@@ -84,16 +84,49 @@
     var isComplete = opts.isComplete || hasPick;
     var home = T.club(match.home), away = T.club(match.away);
     var isDaily = !!opts.daily;
-    var resultCopy = isDaily
+    /* A league round is played for league points, which are not the coins the
+       rest of the app counts — so it says so in words where everything else
+       shows the ball. */
+    var isRound = !!opts.round;
+    var ball = '<img src="assets/icons/soccer-ball.svg" alt="" width="16" height="16">';
+    function worth(points) { return isRound ? 'points' : ball; }
+
+    var resultCopy = (isDaily || isRound)
       ? '<p class="mcard__label">Match result</p>' +
-        '<span class="mcard__hint">(correct result +10 <img src="assets/icons/soccer-ball.svg" alt="" width="16" height="16">)</span>'
+        '<span class="mcard__hint">(correct result +10 ' + worth() + ')</span>'
       : '<p class="mcard__label">Choose the winner or draw:</p>' +
-        '<span class="mcard__points"><b>+ 10</b><img src="assets/icons/soccer-ball.svg" alt="" width="16" height="16"></span>';
-    var scoreCopy = isDaily
+        '<span class="mcard__points"><b>+ 10</b>' + ball + '</span>';
+    var scoreCopy = (isDaily || isRound)
       ? '<span class="exact__title">Exact score</span>' +
-        '<span class="mcard__hint">(exact score +40 <img src="assets/icons/soccer-ball.svg" alt="" width="16" height="16">)</span>'
+        '<span class="mcard__hint">(exact score +40 ' + worth() + ')</span>'
       : '<span class="exact__title">Add exact score</span>' +
-        '<span class="mcard__points"><b>+ 40</b><img src="assets/icons/soccer-ball.svg" alt="" width="16" height="16"></span>';
+        '<span class="mcard__points"><b>+ 40</b>' + ball + '</span>';
+
+    /* The extra questions a round can ask. They are the same shape as the
+       result block — a label, what it is worth, and a row of choices. */
+    var EXTRAS = {
+      btts: { label: 'Both teams to score', points: 15,
+        options: [['yes', 'Yes'], ['no', 'No']] },
+      scorer: { label: 'First goalscorer', points: 25,
+        options: [['home', home.name], ['away', away.name], ['none', 'No goals']] }
+    };
+
+    var extrasMarkup = (opts.extras || []).map(function (id) {
+      var meta = EXTRAS[id];
+      if (!meta) return '';
+      return '<div class="mcard__block" data-extra="' + id + '">' +
+        '<div class="mcard__labelrow">' +
+          '<p class="mcard__label">' + meta.label + '</p>' +
+          '<span class="mcard__hint">(+' + meta.points + ' ' + worth() + ')</span>' +
+        '</div>' +
+        '<div class="seg" data-extra-options="' + id + '">' +
+          meta.options.map(function (option) {
+            return '<button class="seg__btn" type="button" data-val="' + option[0] + '">' +
+              '<span>' + option[1] + '</span></button>';
+          }).join('') +
+        '</div>' +
+      '</div>';
+    }).join('');
     var infoCopy = isDaily
       ? '<button class="mcard__info" type="button" data-points-info aria-label="How points work" aria-controls="points-info-modal" aria-expanded="false">' +
           '<img src="assets/icons/info.svg" alt="" width="20" height="20">' +
@@ -101,7 +134,8 @@
       : '';
 
     var card = el(
-      '<article class="mcard' + (isDaily ? ' mcard--daily' : '') + '" data-card="' + match.id + '">' +
+      '<article class="mcard' + (isDaily ? ' mcard--daily' : '') +
+        (isRound ? ' mcard--daily mcard--round' : '') + '" data-card="' + match.id + '">' +
         '<img class="mcard__pitch" src="assets/img/match-card-background.png" alt="">' +
         '<div class="mcard__head">' +
           '<div class="pitch">' +
@@ -149,7 +183,9 @@
                 '</div>' +
               '</div>' +
             '</div>' +
+            extrasMarkup +
           '</div>' +
+          (isRound ? '<div class="mcard__dots" data-dots aria-hidden="true"></div>' : '') +
         '</div>' +
       '</article>'
     );
@@ -190,6 +226,12 @@
       $$('[data-outcome] .seg__btn', card).forEach(function (b) {
         b.classList.toggle('is-on', pick.outcome === b.dataset.val);
       });
+      $$('[data-extra-options]', card).forEach(function (group) {
+        var chosen = pick.extras && pick.extras[group.dataset.extraOptions];
+        $$('.seg__btn', group).forEach(function (b) {
+          b.classList.toggle('is-on', chosen === b.dataset.val);
+        });
+      });
       $$('.scorepad', card).forEach(function (pad) { paintDrum(pad, animate !== false); });
     }
 
@@ -221,6 +263,40 @@
         changed();
       });
     });
+
+
+    /* ---- the extra questions ---- */
+
+    $$('[data-extra-options]', card).forEach(function (group) {
+      var id = group.dataset.extraOptions;
+      $$('.seg__btn', group).forEach(function (button) {
+        button.addEventListener('click', function () {
+          if (!editable()) return;
+          if (!pick.extras) pick.extras = {};
+          pick.extras[id] = pick.extras[id] === button.dataset.val ? null : button.dataset.val;
+          changed();
+        });
+      });
+    });
+
+
+    /* ---- one question at a time, with dots for the rest ---- */
+
+    var dots = $('[data-dots]', card);
+    if (dots) {
+      var body = $('.mcard__body', card);
+      var blocks = $$('.mcard__block', body);
+      blocks.forEach(function (block, index) {
+        var dot = document.createElement('i');
+        if (!index) dot.className = 'is-on';
+        dots.appendChild(dot);
+      });
+      var marks = $$('i', dots);
+      body.addEventListener('scroll', function () {
+        var at = Math.round(body.scrollLeft / Math.max(1, body.clientWidth));
+        marks.forEach(function (mark, index) { mark.classList.toggle('is-on', index === at); });
+      }, { passive: true });
+    }
 
 
     /* ---- the score drum ---- */

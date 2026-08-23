@@ -1154,89 +1154,53 @@
 
 /* --- a round, as it is played ---------------------------- */
 
-.pick-match {
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, .04);
-}
-.pick-match__head { display: flex; align-items: center; gap: 8px; }
-.pick-match__head img { width: 22px; height: 22px; flex: none; object-fit: contain; }
-.pick-match__copy { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 2px; }
-.pick-match__copy strong { color: var(--text-primary); font-size: 13px; font-weight: 600; line-height: 18px; }
-.pick-match__copy small { color: var(--text-dim); font-size: 11px; line-height: 15px; }
-.pick-match__result { margin: 0; color: var(--text-primary); font-size: 12px; font-weight: 600; line-height: 16px; }
+.league-round-card--play { padding: 16px 0; gap: 12px; }
+.league-round-card--play > h2,
+.league-round-card--play > p,
+.league-round-card--play > .league-round-card__head,
+.league-round-card--play > .round-head,
+.league-round-card--play > .round-head__note,
+.league-round-card--play > .league-round-note { padding: 0 16px; }
 
-.pick-q { display: flex; flex-direction: column; gap: 6px; }
-.pick-q__label {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
-  color: var(--text-dim);
-  font-size: 11px;
-  line-height: 16px;
-}
-.pick-q__label b { flex: none; color: var(--brand-primary); font-size: 11px; font-weight: 600; }
-.pick-q__label b.is-hit { color: var(--brand-primary); }
-.pick-q__label b.is-miss { color: var(--text-dim); }
-.pick-q__options { display: flex; align-items: center; gap: 6px; }
-.pick-q__options > .pick-score { flex: 1; }
-
-.pick-chip {
+/* Figma › LEAGUES › League (748:2284): which round, how long is left, and
+   how much of it is answered. */
+.round-head { display: flex; flex-direction: column; gap: 8px; }
+.round-head__row { display: flex; align-items: center; gap: 8px; }
+.round-head__row .round-pill { margin-left: auto; }
+.round-head__note { color: var(--text-dim); font-size: 12px; line-height: 18px; }
+.round-head__row strong { color: var(--text-primary); font-size: 16px; font-weight: 600; line-height: 23px; }
+.round-head__clock { display: flex; align-items: center; gap: 6px; color: var(--text-dim); font-size: 12px; line-height: 15px; }
+.round-head__clock b { font-weight: 400; font-variant-numeric: tabular-nums; }
+.round-head__rail {
   min-width: 0;
-  height: 36px;
+  height: 8px;
   flex: 1;
-  padding: 0 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(255, 255, 255, .1);
-  border-radius: 12px;
-  background: var(--bg-surface);
-  color: var(--text-primary);
-  font-size: 12px;
-  line-height: 16px;
-  white-space: nowrap;
-  transition: border-color .18s ease, background .18s ease, color .18s ease;
-}
-.pick-chip.is-on {
-  border-color: var(--brand-primary);
-  background: rgba(74, 222, 128, .12);
-  color: var(--brand-primary);
-  font-weight: 600;
-}
-.pick-chip:disabled { opacity: .6; }
-
-.pick-score { width: 100%; display: flex; gap: 8px; }
-.pick-score__side {
-  flex: 1;
-  height: 36px;
-  padding: 0 6px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border: 1px solid rgba(255, 255, 255, .1);
-  border-radius: 12px;
-  background: var(--bg-surface);
-}
-.pick-score__side b { color: var(--text-primary); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
-.pick-score__btn {
-  width: 26px;
-  height: 26px;
-  display: grid;
-  place-items: center;
-  border-radius: 8px;
+  overflow: hidden;
+  border-radius: 4px;
   background: rgba(255, 255, 255, .1);
-  color: var(--text-primary);
-  font-size: 14px;
-  line-height: 1;
 }
-.pick-score__btn:disabled { opacity: .4; }
-.pick-confirm { height: 40px; font-size: 13px; }
+.round-head__rail i { display: block; height: 100%; border-radius: 4px; background: var(--brand-primary); transition: width .24s ease; }
+.round-head__count { flex: none; display: flex; align-items: baseline; gap: 2px; }
+.round-head__count b { color: var(--text-primary); font-size: 12px; font-weight: 600; line-height: 18px; }
+.round-head__count small { color: var(--text-dim); font-size: 10px; line-height: 15px; }
 
+.round-track {
+  width: 100%;
+  padding: 0 16px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.round-track::-webkit-scrollbar { display: none; }
+.round-track > .mcard { flex: 0 0 100%; scroll-snap-align: center; }
 
-/* the create button stands the app's own height */
-.create-submit { height: 44px; min-height: 44px; }
+/* league points are not coins: the bar says so in words */
+.winbar--points .winbar__points b img { display: none; }
+.winbar--points .winbar__points b::after {
+  content: ' points';
+  color: var(--text-dim);
+  font-size: 12px;
+  font-weight: 400;
+}

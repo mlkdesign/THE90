@@ -1677,3 +1677,59 @@
 }
 .donecard__edit:hover { border-color: rgba(255, 255, 255, .45); background: rgba(255, 255, 255, .06); }
 .donecard__edit:active { transform: scale(.98); }
+
+
+/* =========================================================
+   A league round — Figma › LEAGUES › League (748:2299)
+
+   The daily card, with one question on show at a time and a
+   dot for each of the others. Everything a round asks is the
+   same height, so sliding between questions moves nothing but
+   the question.
+   ========================================================= */
+
+.mcard--round .mcard__body {
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  gap: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.mcard--round .mcard__body::-webkit-scrollbar { display: none; }
+.mcard--round .mcard__block {
+  min-width: 0;
+  /* one question fills the card; the rest wait a swipe away */
+  flex: 0 0 100%;
+  min-height: 86px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: center;
+  scroll-snap-align: start;
+}
+/* the score keeps the height the other questions set rather than adding to it */
+.mcard--round .exact__body { flex: 1; display: flex; align-items: center; }
+.mcard--round .scores { width: 100%; }
+.mcard--round .mcard__info { z-index: 3; }
+
+.mcard__dots {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 0 0;
+}
+.mcard__dots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .3);
+  transition: background .18s ease;
+}
+.mcard__dots i.is-on { background: var(--brand-primary); }
