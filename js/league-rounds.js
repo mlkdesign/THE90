@@ -478,23 +478,13 @@
 
   /* The round's own header: which round, how long is left, and how much of
      it is answered — Figma › LEAGUES › League (748:2284). */
-  function editLink(round) {
-    var edit = el('button', 'round-head__edit', editingRounds[round.id] ? 'Done' : 'Edit');
-    edit.type = 'button';
-    edit.addEventListener('click', function () {
-      editingRounds[round.id] = !editingRounds[round.id];
-      renderPanel();
-    });
-    return edit;
-  }
-
   function roundHead(round, state) {
     var box = el('div', 'round-head');
     var top = el('div', 'round-head__row');
     top.appendChild(el('strong', null, round.name));
     if (state) top.appendChild(pill(state));
 
-    if (roundComplete(round)) top.appendChild(editLink(round));
+
     var clock = el('span', 'round-head__clock');
     var timer = document.createElement('img');
     timer.src = 'assets/icons/timer.svg';
@@ -555,17 +545,20 @@
       editable: function () { return true; },
         onChange: function () {
           keepCard(round, match, pick);
-          paintLocks(card, round, match, pick);
           paintBar(round);
         }
       });
-      paintLocks(card, round, match, pick);
-
       var slider = card.querySelector('.mcard__body');
       if (slider) {
         slider.addEventListener('scroll', function () {
-          card.dataset.question =
-            String(Math.round(slider.scrollLeft / Math.max(1, slider.clientWidth)));
+          var was = Number(card.dataset.question || 0);
+          var now = Math.round(slider.scrollLeft / Math.max(1, slider.clientWidth));
+          if (now !== was && revert(round, match, was)) {
+            card.dataset.question = String(now);
+            renderPanel();
+            return;
+          }
+          card.dataset.question = String(now);
           paintBar(round);
         }, { passive: true });
       }
@@ -576,20 +569,6 @@
 
     window.setTimeout(function () { paintBar(round); }, 0);
     return box;
-  }
-
-  /* What is already in reads as such: the answer stays on the card, the
-     controls around it stop responding until Edit says otherwise. */
-  function paintLocks(card, round, match, pick) {
-    if (!card) return;
-    var blocks = $$('.mcard__block', card);
-    blocksOf(match).forEach(function (id, index) {
-      var block = blocks[index];
-      if (!block) return;
-      var locked = !editingRounds[round.id] && !!(pick.accepted && pick.accepted[id]);
-      block.classList.toggle('is-locked', locked);
-      $$('button', block).forEach(function (button) { button.disabled = locked; });
-    });
   }
 
   /* The card keeps its own shape; the store keeps answers by question. These
@@ -636,10 +615,6 @@
     var done = acceptedCount(round);
     if (rail) rail.style.width = (total ? Math.round(done / total * 100) : 0) + '%';
 
-    var row = panel.querySelector('.round-head__row');
-    if (row && roundComplete(round) && !row.querySelector('.round-head__edit')) {
-      row.appendChild(editLink(round));
-    }
     if (count) {
       count.replaceChildren();
       count.appendChild(el('b', null, String(done)));
@@ -702,10 +677,12 @@
     if (!spot.match) return;
     var pick = pickOf(round, spot.match);
     var id = blocksOf(spot.match)[spot.question];
-    if (id === 'result') pick.card.outcome = null;
-    else if (id === 'score') pick.card.score = { home: null, away: null };
-    else if (id && pick.card.extras) pick.card.extras[id] = null;
-    if (pick.accepted) delete pick.accepted[id];
+    if (isAccepted(pick, id)) {
+      // an accepted answer goes back to what it was, not to nothing
+      setValue(pick, spot.match, spot.question, pick.accepted[id]);
+    } else {
+      setValue(pick, spot.match, spot.question, null);
+    }
     keepCard(round, spot.match, pick);
     renderPanel();
   }
@@ -714,17 +691,15 @@
      when the card has none left. */
   function acceptOne(round) {
     var spot = currentSpot(round);
-    editingRounds[round.id] = false;
     if (!spot.match || !spot.body) return;
     var pick = pickOf(round, spot.match);
     if (!blockAnswered(pick, spot.match, spot.question)) return;
 
     var id = blocksOf(spot.match)[spot.question];
     if (!pick.accepted) pick.accepted = {};
-    pick.accepted[id] = true;
+    pick.accepted[id] = valueOf(pick, spot.match, spot.question);
     savePicks();
     paintProgress(round);
-    paintLocks(spot.card, round, spot.match, pick);
 
     for (var next = spot.question + 1; next < spot.blocks.length; next += 1) {
       if (blockAnswered(pick, spot.match, next)) continue;
@@ -749,6 +724,9 @@
     var bar = T.pickConfirmationBar;
     if (!track) return;
     if (!roundComplete(round)) { paintBar(round); return; }
+    if (round.celebrated) { if (bar) bar.show(false); return; }
+    round.celebrated = true;
+    save();
     var tick = track.querySelector('.mcard--done');
     if (!tick) {
       tick = doneCard(round);
@@ -760,13 +738,55 @@
     if (bar) bar.show(false);
   }
 
+  function isAccepted(pick, id) {
+    return !!(pick.accepted && Object.prototype.hasOwnProperty.call(pick.accepted, id));
+  }
+
   function acceptedCount(round) {
     return round.matches.reduce(function (total, match) {
       var pick = pickOf(round, match);
       return total + blocksOf(match).filter(function (id) {
-        return !!(pick.accepted && pick.accepted[id]);
+        return isAccepted(pick, id);
       }).length;
     }, 0);
+  }
+
+  /* What is on the card for a question, and what was accepted for it. The two
+     differ exactly when there is something to confirm. */
+  function valueOf(pick, match, index) {
+    var id = blocksOf(match)[index];
+    if (id === 'result') return pick.card.outcome || null;
+    if (id === 'score') {
+      var score = pick.card.score;
+      return score && score.home !== null && score.away !== null
+        ? score.home + ':' + score.away : null;
+    }
+    return (pick.card.extras && pick.card.extras[id]) || null;
+  }
+
+  function setValue(pick, match, index, value) {
+    var id = blocksOf(match)[index];
+    if (id === 'result') { pick.card.outcome = value || null; return; }
+    if (id === 'score') {
+      if (!value) { pick.card.score = { home: null, away: null }; return; }
+      var parts = String(value).split(':');
+      pick.card.score = { home: Number(parts[0]), away: Number(parts[1]) };
+      return;
+    }
+    if (!pick.card.extras) pick.card.extras = {};
+    pick.card.extras[id] = value || null;
+  }
+
+  /* Leaving a question you have changed but not confirmed puts it back the
+     way it was accepted — the change was never yours to keep. */
+  function revert(round, match, index) {
+    var pick = pickOf(round, match);
+    var id = blocksOf(match)[index];
+    if (!isAccepted(pick, id)) return false;
+    if (valueOf(pick, match, index) === pick.accepted[id]) return false;
+    setValue(pick, match, index, pick.accepted[id]);
+    keepCard(round, match, pick);
+    return true;
   }
 
   /* Answering is not accepting: a round is done when every question has been
@@ -774,9 +794,7 @@
   function roundComplete(round) {
     return round.matches.every(function (match) {
       var pick = pickOf(round, match);
-      return blocksOf(match).every(function (id) {
-        return !!(pick.accepted && pick.accepted[id]);
-      });
+      return blocksOf(match).every(function (id) { return isAccepted(pick, id); });
     });
   }
 
@@ -812,19 +830,18 @@
      what the round is worth, and its button is about the question in front of
      you: accept it, or go and answer it. */
   var barReady = false;
-  var editingRounds = {};
 
   function paintBar(round) {
     var bar = T.pickConfirmationBar;
     if (!bar || !bar.element) return;
     /* The bar stays up for the last answer — its button is what ends the
        round. It goes when the tick is on the rail, not a moment before. */
-    var finished = panel && panel.querySelector('.round-track .mcard--done');
-    if (!answeredCount(round) || finished) {
+    if (!answeredCount(round)) {
       bar.show(false);
       barReady = false;
       return;
     }
+
 
     var worth = 0;
     round.matches.forEach(function (match) {
@@ -841,12 +858,23 @@
     if (bar.points) bar.points.textContent = '+' + worth;
 
     var spot = currentSpot(round);
-    var ready = !!(spot.match &&
-      blockAnswered(pickOf(round, spot.match), spot.match, spot.question));
+    var ready = false;
+    if (spot.match) {
+      var current = pickOf(round, spot.match);
+      var id = blocksOf(spot.match)[spot.question];
+      ready = blockAnswered(current, spot.match, spot.question) &&
+        (!isAccepted(current, id) || current.accepted[id] !== valueOf(current, spot.match, spot.question));
+    }
+
+    if (!ready) {
+      bar.show(false);
+      barReady = false;
+      return;
+    }
 
     if (bar.next) {
-      bar.next.textContent = ready ? 'Accept pick' : 'Choose your pick';
-      bar.next.disabled = !ready;
+      bar.next.textContent = 'Accept pick';
+      bar.next.disabled = false;
       bar.next.onclick = function () { acceptOne(round); };
       // one nudge as it comes alive, the way the daily slip does it
       if (ready && !barReady) {

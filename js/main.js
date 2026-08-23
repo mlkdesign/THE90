@@ -106,11 +106,38 @@
 
   T.pickCard.countdown($('[data-picks-deadline]'));
 
+  /* What was accepted for a card, so a change can be taken back. */
+  var kept = {};
+
+  function snapshot(pick) {
+    return JSON.stringify({ outcome: pick.outcome, score: pick.score });
+  }
+
+  function repaint(m) {
+    var fresh = build(m);
+    if (cards[m.id] && cards[m.id].parentNode) {
+      cards[m.id].parentNode.replaceChild(fresh, cards[m.id]);
+    }
+    cards[m.id] = fresh;
+  }
+
+  function restore(m) {
+    if (!kept[m.id]) return false;
+    var saved = JSON.parse(kept[m.id]);
+    var pick = picks[m.id];
+    if (snapshot(pick) === kept[m.id]) return false;
+    pick.outcome = saved.outcome;
+    pick.score = saved.score;
+    banked[m.id] = true;
+    return true;
+  }
+
   function build(m) {
     return T.pickCard.create(m, picks[m.id], {
       when: selectedDay.isToday ? 'Today' : selectedDay.weekday,
       daily: true,
-      editable: function () { return !accepted; },
+      // a confirmed pick is still a pick you can change your mind about
+      editable: function () { return true; },
       isComplete: hasPick,
       onChange: function (firstAnswer) {
         // touching a confirmed pick sends it back for confirmation
@@ -315,9 +342,22 @@
 
   // swiping between cards re-points the button at whatever is on screen
   var scrollFrame;
+  var lastCard = 0;
   picksWrap.addEventListener('scroll', function () {
     cancelAnimationFrame(scrollFrame);
-    scrollFrame = requestAnimationFrame(updateCta);
+    scrollFrame = requestAnimationFrame(function () {
+      var here = currentIndex();
+      if (here !== lastCard) {
+        var left = matches[lastCard];
+        lastCard = here;
+        if (left && restore(left)) {
+          repaint(left);
+          refresh();
+          return;
+        }
+      }
+      updateCta();
+    });
   }, { passive: true });
 
   if (winNext) {
@@ -328,6 +368,7 @@
       if (!hasPick(picks[m.id]) || banked[m.id]) return;
 
       banked[m.id] = true;          // this is the confirmation the bar counts
+      kept[m.id] = snapshot(picks[m.id]);
       var open = nextOpen(here);
       refresh();
       if (open !== -1) slideTo(open);
@@ -338,6 +379,13 @@
   if (winClose) {
     winClose.addEventListener('click', function () {
       if (winbar && winbar.classList.contains('winbar--round-picks')) return;
+      // an accepted pick you were changing goes back to what it was
+      var here = matches[currentIndex()];
+      if (here && restore(here)) {
+        repaint(here);
+        refresh();
+        return;
+      }
       winbarDismissed = true;
       showWinbar(false);
     });

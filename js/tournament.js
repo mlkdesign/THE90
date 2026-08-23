@@ -340,7 +340,8 @@
 
   function selectedQuestionIndex(state) {
     return state.findIndex(function (question) {
-      return !question.confirmed && question.selected >= 0;
+      return question.selected >= 0 &&
+        (!question.confirmed || question.selected !== question.acceptedIndex);
     });
   }
 
@@ -351,28 +352,9 @@
       var selected = Number(button.dataset.roundAnswer) === state.selected;
       button.classList.toggle('is-selected', selected);
       button.setAttribute('aria-pressed', String(selected));
-      button.disabled = state.confirmed;
+      // a confirmed answer is still an answer you can change your mind about
+      button.disabled = false;
     });
-
-    /* A confirmed answer is settled, and Edit is how you unsettle it —
-       under the card, where it does not compete with the answers. */
-    var edit = card.querySelector('[data-round-edit]');
-    if (state.confirmed && !edit) {
-      edit = document.createElement('button');
-      edit.className = 'round-question-edit';
-      edit.type = 'button';
-      edit.dataset.roundEdit = '';
-      edit.textContent = 'Edit';
-      edit.addEventListener('click', function () {
-        state.confirmed = false;
-        var done = screen.querySelector('[data-round-done]');
-        if (done) done.remove();
-        paintRoundQuestionStates(currentTournament());
-        showRoundPickBar(currentTournament(), Number(card.dataset.roundQuestion));
-      });
-      card.appendChild(edit);
-    }
-    if (edit) edit.hidden = !state.confirmed;
   }
 
   function paintRoundQuestionStates(tournament) {
@@ -382,10 +364,15 @@
     });
   }
 
+  /* A change you did not accept is not a pick: leaving the question puts back
+     whatever was accepted for it, or nothing if it never was. */
   function discardUnconfirmedRoundPicks(tournament) {
     if (!tournament) return;
     getRoundPickState(tournament).forEach(function (question) {
       if (!question.confirmed) question.selected = -1;
+      else if (question.selected !== question.acceptedIndex) {
+        question.selected = question.acceptedIndex;
+      }
     });
     paintRoundQuestionStates(tournament);
     hideRoundPickBar();
@@ -401,11 +388,10 @@
     var question = state[questionIndex];
     if (!question) return hideRoundPickBar();
 
-    // a finished round has nothing left to confirm, whatever is on screen
-    if (state.every(function (q) { return q.confirmed; })) return hideRoundPickBar();
-
-    // nothing to confirm until the round has been started
-    var started = state.some(function (q) { return q.selected >= 0; });
+    // nothing to confirm until something has been chosen that is not already in
+    var started = state.some(function (q) {
+      return q.selected >= 0 && (!q.confirmed || q.selected !== q.acceptedIndex);
+    });
     if (!started) return hideRoundPickBar();
 
     activeRoundPick = { id: activeId, round: tournament.currentRound, index: questionIndex };
@@ -417,7 +403,8 @@
       sharedPickBar.points.textContent = '+' + (40 * answered);
     }
     if (sharedPickBar.next) {
-      var ready = !question.confirmed && question.selected >= 0;
+      var ready = question.selected >= 0 &&
+        (!question.confirmed || question.selected !== question.acceptedIndex);
       sharedPickBar.next.textContent = ready ? 'Accept pick?' : 'Select your prediction';
       sharedPickBar.next.disabled = !ready;
     }
@@ -547,10 +534,10 @@
       button.type = 'button';
       button.dataset.roundAnswer = String(answerIndex);
       button.textContent = answer;
-      button.disabled = state.confirmed;
       button.setAttribute('aria-pressed', String(selected));
       button.addEventListener('click', function () {
-        if (state.confirmed) return;
+        // a confirmed answer can still be changed; the bar asks whether you
+        // meant it, and leaving the question puts the old one back
         state.selected = answerIndex;
         // Keep the native rail in place. Rebuilding it here resets its scroll
         // position and makes a previously selected card flash out of view.
@@ -686,6 +673,7 @@
     if (!question || question.confirmed || question.selected < 0) return;
 
     question.confirmed = true;
+    question.acceptedIndex = question.selected;
     var confirmedIndex = activeRoundPick.index;
     var nextIndex = -1;
     for (var step = 1; step < state.length; step += 1) {

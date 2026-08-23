@@ -839,20 +839,6 @@
   justify-content: center;
 }
 
-/* the way back into an answer that is already in */
-.round-question-edit {
-  position: absolute;
-  z-index: 3;
-  right: 16px;
-  bottom: 10px;
-  padding: 0;
-  color: var(--brand-primary);
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 18px;
-  text-decoration: underline;
-}
-
 .round-question-card.is-picked {
   border-color: var(--brand-primary);
   box-shadow: 0 0 0 1px rgba(36, 255, 0, .25), 0 10px 30px -14px rgba(36, 255, 0, .45);
