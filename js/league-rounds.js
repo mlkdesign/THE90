@@ -226,16 +226,6 @@
     }, 0);
   }
 
-  function lockedCount(round) {
-    return round.matches.reduce(function (total, match) {
-      var pick = pickOf(round, match);
-      if (!pick.locked) return total;
-      return total + match.questions.filter(function (id) {
-        return pick.answers[id] !== undefined;
-      }).length;
-    }, 0);
-  }
-
   function template(id) {
     return TEMPLATES.filter(function (item) { return item.id === id; })[0];
   }
@@ -405,7 +395,6 @@
     var total = 0;
     round.matches.forEach(function (match) {
       var pick = pickOf(round, match);
-      if (!pick.locked) return;
       match.questions.forEach(function (id) {
         var got = scoreOf(round, match, id, pick.answers[id]);
         if (got) total += got;
@@ -471,7 +460,7 @@
     var rail = el('div', 'round-head__rail');
     var fill = el('i');
     var total = questionCount(round);
-    var done = lockedCount(round);
+    var done = answeredCount(round);
     fill.style.width = (total ? Math.round(done / total * 100) : 0) + '%';
     rail.appendChild(fill);
     bar.appendChild(rail);
@@ -490,7 +479,7 @@
     var live = state === 'open';
     var box = el('section', 'round-play');
 
-    box.appendChild(roundHead(round, state === 'open' ? null : state));
+    box.appendChild(roundHead(round));
 
     var track = el('div', 'picks-track round-track');
     round.matches.forEach(function (match) {
@@ -508,7 +497,7 @@
         when: kickoffLabel(match).split(' · ')[0],
         round: true,
         extras: extras,
-        editable: function () { return live && !pick.locked; },
+        editable: function () { return live; },
         onChange: function () {
           keepCard(round, match, pick);
           paintBar(round);
@@ -517,9 +506,6 @@
     });
     box.appendChild(track);
 
-    box.appendChild(el('p', 'league-round-note',
-      lockedCount(round) + ' / ' + questionCount(round) + ' picks locked' +
-      (state === 'completed' ? ' · you scored +' + roundScore(round) + ' points' : '')));
     window.setTimeout(function () { paintBar(round); }, 0);
     return box;
   }
@@ -559,15 +545,17 @@
     if (!match) return;
 
     var pick = pickOf(round, match);
-    if (match.questions.some(function (id) { return pick.answers[id] !== undefined; })) {
-      pick.locked = true;
-      savePicks();
-    }
+    pick.seen = true;
+    savePicks();
 
+    // on to the next match nobody has answered yet
     var next = -1;
     for (var i = 0; i < round.matches.length; i += 1) {
       var other = pickOf(round, round.matches[i]);
-      if (!other.locked) { next = i; break; }
+      var answered = round.matches[i].questions.some(function (id) {
+        return other.answers[id] !== undefined;
+      });
+      if (!answered) { next = i; break; }
     }
     renderPanel();
 
@@ -586,20 +574,12 @@
 
     /* What is answered and not yet in. Once it is all locked there is nothing
        left to confirm and the bar has no business being up. */
-    var pending = 0;
-    round.matches.forEach(function (match) {
-      var pick = pickOf(round, match);
-      if (pick.locked) return;
-      pending += match.questions.filter(function (id) {
-        return pick.answers[id] !== undefined;
-      }).length;
-    });
+    var pending = answeredCount(round);
     if (!pending || stateOf(round) !== 'open') { bar.show(false); return; }
 
     var worth = 0;
     round.matches.forEach(function (match) {
       var pick = pickOf(round, match);
-      if (pick.locked) return;
       match.questions.forEach(function (id) {
         if (pick.answers[id] === undefined) return;
         var meta = template(id);
