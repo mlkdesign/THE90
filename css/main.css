@@ -1585,8 +1585,10 @@
 /* The tournament feeds the shared confirmation surface with an active
    round question. Its daily-only reward and dismiss affordance stay out of
    that focused two-action flow. */
-.winbar--round-picks .winbar__reward,
-.winbar--round-picks .winbar__close { display: none; }
+/* The round keeps the way out — dismissing it drops the pick that has not
+   been confirmed yet, the way it does on the daily slip — and drops only the
+   daily reward line. */
+.winbar--round-picks .winbar__reward { display: none; }
 /* A league round keeps the way out — Figma › LEAGUES › League (748:2420) —
    and drops only the daily reward line. */
 .winbar--points .winbar__reward { display: none; }

@@ -536,6 +536,24 @@
   }
 
   /* The shared confirmation surface, in the league's own currency. */
+  /* And the way back out of it: the card in front of you loses what has not
+     been confirmed, and the bar goes with it. */
+  function clearCurrent(round) {
+    var track = panel && panel.querySelector('.round-track');
+    var index = track ? Math.round(track.scrollLeft / Math.max(1, track.clientWidth)) : 0;
+    var match = round.matches[index] || round.matches[0];
+    if (!match) return;
+    var pick = pickOf(round, match);
+    pick.answers = {};
+    if (pick.card) {
+      pick.card.outcome = null;
+      pick.card.score = { home: null, away: null };
+      pick.card.extras = {};
+    }
+    savePicks();
+    renderPanel();
+  }
+
   /* Confirming works the way the daily slip does: the card in front of you is
      banked, and the rail moves on to the next one still waiting. */
   function acceptOne(round) {
@@ -599,6 +617,7 @@
       bar.next.disabled = false;
       bar.next.onclick = function () { acceptOne(round); };
     }
+    if (bar.close) bar.close.onclick = function () { clearCurrent(round); };
     bar.show(true);
   }
 
@@ -965,6 +984,7 @@
     if (!bar || !bar.element) return;
     bar.element.classList.remove('winbar--points');
     if (bar.next) bar.next.onclick = null;
+    if (bar.close) bar.close.onclick = null;
     if (bar.restoreDaily) bar.restoreDaily();
   }
 

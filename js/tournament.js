@@ -1209,6 +1209,18 @@
   }
   window.addEventListener('resize', syncRoundBar);
 
+  /* The X on the bar is the way back out of a pick you have not accepted:
+     it clears the selection and takes the bar with it, exactly as the daily
+     slip does. main.js leaves it alone while the round owns the bar. */
+  if (sharedPickBar && sharedPickBar.close) {
+    sharedPickBar.close.addEventListener('click', function () {
+      if (!sharedPickBar.element ||
+          !sharedPickBar.element.classList.contains('winbar--round-picks')) return;
+      if (!screen.classList.contains('is-active')) return;
+      discardUnconfirmedRoundPicks(currentTournament());
+    });
+  }
+
   if (sharedPickBar && sharedPickBar.next) {
     sharedPickBar.next.addEventListener('click', function () {
       if (!sharedPickBar.element.classList.contains('winbar--round-picks')) return;
