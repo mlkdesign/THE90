@@ -813,6 +813,37 @@
   backdrop-filter: blur(18px);
 }
 
+/* Mid-gesture both halves of the foot are on stage at once, each carried by
+   the screen it belongs to: the field goes out with the chat, the tab bar
+   comes in with the info. They are taken out of the flow so that showing both
+   cannot change the height of the bar they sit in — the places below are the
+   ones they hold anyway, the field inside the bar's padding and the tab bar
+   flush with the bottom of the screen. */
+.shell-footer.is-paging .league-chat-input,
+.shell-footer.is-paging .navbar { display: flex; }
+.shell-footer.is-paging .league-chat-input {
+  position: absolute;
+  z-index: 1;
+  right: 16px;
+  bottom: 32px;
+  left: 16px;
+  width: auto;
+}
+.shell-footer.is-paging .navbar {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+}
+/* and they flick home on the same curve the screens do */
+.shell-footer.is-settling .league-chat-input,
+.shell-footer.is-settling .navbar,
+.shell-footer.is-settling .league-join {
+  transition: transform .28s cubic-bezier(.2, .8, .3, 1);
+}
+
+
 .league-chat-input {
   width: 100%;
   align-items: flex-end;

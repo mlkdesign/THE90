@@ -21,6 +21,14 @@
   var chat = document.querySelector('[data-screen="league-chat"]');
   if (!T || !league || !chat) return;
 
+  /* The foot of the screen belongs to whichever screen is under it: the
+     message field is the chat's, the tab bar and the join button are the
+     info's. Each travels with the screen it belongs to rather than swapping
+     over once the slide has already finished. */
+  var footer = document.querySelector('[data-shell-footer]');
+  var withChat = footer ? footer.querySelectorAll('.league-chat-input') : [];
+  var withLeague = footer ? footer.querySelectorAll('.navbar, .league-join') : [];
+
   var WIDTH = 390;          // one screen, in design px
   var COMMIT = 70;          // travel that counts as "take me there"
   var SLOP = 10;            // travel before the gesture picks an axis
@@ -55,6 +63,39 @@
     chat.classList.toggle('is-settling', !!settling);
     chat.style.transform = 'translateX(' + (-p * WIDTH) + 'px)';
     league.style.transform = 'translateX(' + ((1 - p) * WIDTH) + 'px)';
+    paintFooter(p, settling);
+  }
+
+  function slide(nodes, x) {
+    Array.prototype.forEach.call(nodes, function (node) {
+      node.style.transform = x === '' ? '' : 'translateX(' + x + 'px)';
+    });
+  }
+
+  function paintFooter(p, settling) {
+    if (!footer) return;
+    if (!footer.classList.contains('is-paging')) {
+      /* Both halves are on stage for the length of the gesture. The box keeps
+         the height it had, so the gradient behind them stays where it is while
+         they cross. */
+      footer.style.height = footer.offsetHeight + 'px';
+      footer.classList.add('is-paging');
+    }
+    footer.classList.toggle('is-settling', !!settling);
+    slide(withChat, -p * WIDTH);
+    slide(withLeague, (1 - p) * WIDTH);
+  }
+
+  /* Let go once the halves have arrived: whichever one landed is at rest
+     already, and the one that left is off the side and about to be hidden. */
+  function restFooter() {
+    if (!footer) return;
+    footer.classList.remove('is-paging', 'is-settling');
+    footer.style.height = '';
+    window.setTimeout(function () {
+      slide(withChat, '');
+      slide(withLeague, '');
+    }, 340);
   }
 
   /* Hand over to the router only once the slide has finished, and let the
@@ -67,6 +108,7 @@
       T.go(target);
       league.classList.remove('is-paging', 'is-settling');
       chat.classList.remove('is-paging', 'is-settling');
+      restFooter();
       if (done) done();
       window.setTimeout(function () {
         league.style.transform = '';
