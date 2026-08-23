@@ -614,6 +614,9 @@
     if (!scroller || scroller.querySelector('[data-round-done]')) return;
 
     var done = makeRoundDoneCard(tournament);
+    // the same height as the questions it follows, so the rail does not grow
+    var first = scroller.querySelector('[data-round-question="0"]');
+    if (first) done.card.style.height = first.offsetHeight + 'px';
     scroller.appendChild(done.card);
     fitPanelHeight();
 

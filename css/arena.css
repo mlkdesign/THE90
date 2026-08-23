@@ -793,6 +793,9 @@
 }
 .round-questions-scroller {
   display: flex;
+  /* each card keeps its own height: the tick at the end of a round must not
+     stretch the questions to match it */
+  align-items: flex-start;
   gap: 12px;
   width: 100%;
   padding: 8px 16px 22px 60px;
@@ -825,7 +828,16 @@
   border-color: transparent;
   background: none;
 }
-.round-question-card--done .donecard { min-height: 300px; }
+/* the tick takes the height the questions already have, set from the card it
+   arrives beside (js/tournament.js) */
+.round-question-card--done .donecard {
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 
 .round-question-card.is-picked {
   border-color: var(--brand-primary);
