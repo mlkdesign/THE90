@@ -1744,6 +1744,11 @@
 /* the info sits on the question it explains, not over the pitch */
 .mcard--round .mcard__info { z-index: 3; top: 8px; right: 8px; }
 
+/* a question that is already in: the answer stands, the choosing does not */
+.mcard--round .mcard__block.is-locked .seg,
+.mcard--round .mcard__block.is-locked .scores { opacity: .55; }
+.mcard--round .mcard__block.is-locked .seg__btn.is-on { opacity: 1; }
+
 .mcard__dots {
   display: flex;
   gap: 4px;

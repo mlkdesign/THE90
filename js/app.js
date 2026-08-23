@@ -128,6 +128,17 @@
     window.dispatchEvent(new CustomEvent('the90:screen', { detail: name }));
   }
 
+  /* The logo above the mockup is the way back to a clean install: everything
+     the prototype has remembered — leagues you made, rounds you published,
+     picks you have taken, where you left off — goes with it. */
+  var stageLogo = document.querySelector('.stage__logo');
+  if (stageLogo) {
+    stageLogo.addEventListener('click', function () {
+      try { localStorage.clear(); } catch (error) { /* storage may be unavailable */ }
+      window.location.reload();
+    });
+  }
+
   document.addEventListener('click', function (e) {
     var trigger = e.target.closest('[data-go]');
     if (!trigger) return;

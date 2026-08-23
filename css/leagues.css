@@ -1169,6 +1169,17 @@
 .round-head { display: flex; flex-direction: column; gap: 4px; padding: 0 8px; }
 .round-head__row { display: flex; align-items: center; gap: 8px; }
 .round-head__row .round-pill { margin-left: auto; }
+/* the way back into a round that is already in */
+.round-head__edit {
+  margin-left: auto;
+  padding: 0;
+  color: var(--brand-primary);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+  text-decoration: underline;
+}
+.round-head__row .round-pill + .round-head__edit { margin-left: 8px; }
 .round-head__note { color: var(--text-dim); font-size: 12px; line-height: 18px; }
 .round-head__row strong { color: var(--text-primary); font-size: 16px; font-weight: 600; line-height: 23px; }
 .round-head__clock { display: flex; align-items: center; gap: 6px; color: var(--text-dim); font-size: 12px; line-height: 15px; }

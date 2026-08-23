@@ -64,11 +64,10 @@
     if (!here && ticking) { window.clearInterval(ticking); ticking = null; }
   });
 
-  /* The same slide the i does, and the picks are waiting at the top of it. */
+  /* The same slide the i does — it lands on the league, not part-way down it. */
   block.addEventListener('click', function () {
     if (!T) return;
-    function open() { if (T.leagueTabs) T.leagueTabs.open('picks', { pinned: true }); }
-    if (T.leaguePage) T.leaguePage.go('league', open);
-    else if (T.go) { T.go('league'); open(); }
+    if (T.leaguePage) T.leaguePage.go('league');
+    else if (T.go) T.go('league');
   });
 })();

@@ -353,6 +353,26 @@
       button.setAttribute('aria-pressed', String(selected));
       button.disabled = state.confirmed;
     });
+
+    /* A confirmed answer is settled, and Edit is how you unsettle it —
+       under the card, where it does not compete with the answers. */
+    var edit = card.querySelector('[data-round-edit]');
+    if (state.confirmed && !edit) {
+      edit = document.createElement('button');
+      edit.className = 'round-question-edit';
+      edit.type = 'button';
+      edit.dataset.roundEdit = '';
+      edit.textContent = 'Edit';
+      edit.addEventListener('click', function () {
+        state.confirmed = false;
+        var done = screen.querySelector('[data-round-done]');
+        if (done) done.remove();
+        paintRoundQuestionStates(currentTournament());
+        showRoundPickBar(currentTournament(), Number(card.dataset.roundQuestion));
+      });
+      card.appendChild(edit);
+    }
+    if (edit) edit.hidden = !state.confirmed;
   }
 
   function paintRoundQuestionStates(tournament) {
