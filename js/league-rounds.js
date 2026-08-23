@@ -460,8 +460,10 @@
     var bar = el('div', 'round-head__row');
     var rail = el('div', 'round-head__rail');
     var fill = el('i');
-    var total = questionCount(round);
-    var done = answeredCount(round);
+    var total = round.matches.reduce(function (sum, match) {
+      return sum + blocksOf(match).length;
+    }, 0);
+    var done = acceptedCount(round);
     fill.style.width = (total ? Math.round(done / total * 100) : 0) + '%';
     rail.appendChild(fill);
     bar.appendChild(rail);
@@ -551,6 +553,24 @@
     savePicks();
   }
 
+  /* The rail and the counter under the round's name, redrawn without
+     rebuilding the cards — they are mid-slide when this runs. */
+  function paintProgress(round) {
+    if (!panel) return;
+    var rail = panel.querySelector('.round-head__rail i');
+    var count = panel.querySelector('.round-head__count');
+    var total = round.matches.reduce(function (sum, match) {
+      return sum + blocksOf(match).length;
+    }, 0);
+    var done = acceptedCount(round);
+    if (rail) rail.style.width = (total ? Math.round(done / total * 100) : 0) + '%';
+    if (count) {
+      count.replaceChildren();
+      count.appendChild(el('b', null, String(done)));
+      count.appendChild(el('small', null, '/' + total));
+    }
+  }
+
   /* Where the eye is: which match is under the rail, and which question is
      under the card's own slider. */
   function currentSpot(round) {
@@ -609,6 +629,7 @@
     if (id === 'result') pick.card.outcome = null;
     else if (id === 'score') pick.card.score = { home: null, away: null };
     else if (id && pick.card.extras) pick.card.extras[id] = null;
+    if (pick.accepted) delete pick.accepted[id];
     keepCard(round, spot.match, pick);
     renderPanel();
   }
@@ -620,6 +641,12 @@
     if (!spot.match || !spot.body) return;
     var pick = pickOf(round, spot.match);
     if (!blockAnswered(pick, spot.match, spot.question)) return;
+
+    var id = blocksOf(spot.match)[spot.question];
+    if (!pick.accepted) pick.accepted = {};
+    pick.accepted[id] = true;
+    savePicks();
+    paintProgress(round);
 
     for (var next = spot.question + 1; next < spot.blocks.length; next += 1) {
       if (blockAnswered(pick, spot.match, next)) continue;
@@ -654,14 +681,23 @@
     if (bar) bar.show(false);
   }
 
+  function acceptedCount(round) {
+    return round.matches.reduce(function (total, match) {
+      var pick = pickOf(round, match);
+      return total + blocksOf(match).filter(function (id) {
+        return !!(pick.accepted && pick.accepted[id]);
+      }).length;
+    }, 0);
+  }
+
+  /* Answering is not accepting: a round is done when every question has been
+     confirmed with the button, not when every question has a choice on it. */
   function roundComplete(round) {
     return round.matches.every(function (match) {
       var pick = pickOf(round, match);
-      var blocks = blocksOf(match).length;
-      for (var index = 0; index < blocks; index += 1) {
-        if (!blockAnswered(pick, match, index)) return false;
-      }
-      return true;
+      return blocksOf(match).every(function (id) {
+        return !!(pick.accepted && pick.accepted[id]);
+      });
     });
   }
 
