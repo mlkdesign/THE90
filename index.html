@@ -19,9 +19,9 @@
 <link rel="stylesheet" href="css/main.css?v=42">
 <link rel="stylesheet" href="css/rankings.css?v=13">
     <link rel="stylesheet" href="css/leagues.css?v=22">
-  <link rel="stylesheet" href="css/arena.css?v=59">
+  <link rel="stylesheet" href="css/arena.css?v=60">
 <link rel="stylesheet" href="css/live.css?v=4">
-<link rel="stylesheet" href="css/league.css?v=28">
+<link rel="stylesheet" href="css/league.css?v=29">
 <link rel="stylesheet" href="css/my-zone.css?v=7">
 <link rel="stylesheet" href="css/ranks.css?v=1">
 <link rel="stylesheet" href="css/notifications.css">
@@ -930,6 +930,14 @@
                 </section>
               </div>
             </div>
+            <!-- your own place, held at the foot of the board until it scrolls
+                 far enough to show the real row -->
+            <div class="rankings-pin tournament-pin" data-tournament-pin hidden>
+              <span class="rankings-pin__rank">96</span>
+              <span class="rankings-pin__avatar"><img src="assets/img/avatar.png" alt="Your profile photo"></span>
+              <span class="rankings-pin__copy"><strong>Your Name</strong><small>@yournickname</small></span>
+              <span class="rankings-score">1 520 <img src="assets/notifications/crown.svg" alt="" width="14" height="12"></span>
+            </div>
             <div class="screen-topfade" aria-hidden="true"></div>
           </section>
 
@@ -967,7 +975,7 @@
                 <div class="league-tabs-sticky">
                   <div class="league-tabs" role="tablist" aria-label="League sections" data-league-tabs>
                     <button class="is-active" type="button" role="tab" aria-selected="true" data-league-tab="picks">League picks</button>
-                    <button type="button" role="tab" aria-selected="false" data-league-tab="participants">Participants</button>
+                    <button type="button" role="tab" aria-selected="false" data-league-tab="participants">Leaderboard</button>
                     <button type="button" role="tab" aria-selected="false" data-league-tab="prizes">Prizes</button>
                     <button type="button" role="tab" aria-selected="false" data-league-tab="rules">Rules</button>
                     <i class="league-tabs__indicator" data-league-tab-indicator aria-hidden="true"></i>
@@ -987,7 +995,7 @@
 
                   <section class="league-panel" role="tabpanel" data-league-panel="participants">
                 <section class="league-participants" aria-labelledby="league-participants-title">
-                  <h2 id="league-participants-title" data-league-participants-title>Top Participants</h2>
+                  <h2 id="league-participants-title" data-league-participants-title>Leaderboard</h2>
                   <div class="league-participants__top" data-league-top>
                     <article class="league-member">
                       <span class="league-member__rank">1</span><img src="assets/league/zara.png" alt="Zara Volkov">
@@ -1136,11 +1144,11 @@
           </div>
           <!-- your own seat, held at the foot of the screen until the board
                scrolls far enough to show the real one -->
-          <div class="league-pin" data-league-pin hidden>
-            <span class="league-member__rank" data-league-pin-rank>15</span>
-            <img src="assets/league/your-avatar.png" alt="Your Name">
-            <span class="league-member__copy"><strong>Your Name</strong><small>@yournickname</small></span>
-            <span class="league-member__score" data-league-pin-score>5 125 <img src="assets/league/coin.svg" alt="Coins"></span>
+          <div class="rankings-pin league-pin" data-league-pin hidden>
+            <span class="rankings-pin__rank" data-league-pin-rank>15</span>
+            <span class="rankings-pin__avatar"><img src="assets/league/your-avatar.png" alt="Your Name"></span>
+            <span class="rankings-pin__copy"><strong>Your Name</strong><small>@yournickname</small></span>
+            <span class="rankings-score" data-league-pin-score>5 125 <img src="assets/league/coin.svg" alt="Coins" width="14" height="12"></span>
           </div>
           <div class="screen-topfade" aria-hidden="true"></div>
         </section>
@@ -2172,9 +2180,9 @@
 <script src="js/live.js?v=3"></script>
 <script src="js/rankings.js?v=9"></script>
 <script src="js/thearena.js?v=7"></script>
-<script src="js/tournament.js?v=44"></script>
+<script src="js/tournament.js?v=46"></script>
 <script src="js/arena-join.js?v=2"></script>
-<script src="js/league.js?v=14"></script>
+<script src="js/league.js?v=15"></script>
 <script src="js/leagues.js?v=4"></script>
 <script src="js/league-create.js?v=21"></script>
 <script src="js/league-picks.js?v=1"></script>

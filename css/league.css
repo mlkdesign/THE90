@@ -1286,24 +1286,13 @@
 .participants-invite:hover { border-color: rgba(255, 255, 255, .3); background: rgba(255, 255, 255, .06); }
 
 
-/* Your seat, held at the foot of the league board — the same plate the global
-   ranking pins, in the league's own row shape. */
+/* Your seat, held at the foot of the league board. The plate is the global
+   ranking's — only where it sits is the league's business. */
 .league-pin {
   position: absolute;
   z-index: 7;
   right: 16px;
   bottom: 124px;
   left: 16px;
-  padding: 10px 12px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  border: 1px solid rgba(74, 222, 128, .5);
-  border-radius: 16px;
-  background: rgba(20, 24, 21, .92);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, .45);
 }
 .league-pin[hidden] { display: none; }
-.league-pin > img { width: 36px; height: 36px; flex: none; border-radius: 50%; object-fit: cover; }

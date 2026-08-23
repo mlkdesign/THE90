@@ -247,18 +247,25 @@
   function createMember(rank) {
     var person = participantAt(rank);
     var row = document.createElement('article');
-    row.className = 'league-member' + (person.isYou ? ' league-member--you' : '');
+    /* The same row the global ranking draws — one board, one shape, so a
+       place in a league reads the way a place anywhere else does. */
+    row.className = 'rankings-row league-member' + (person.isYou ? ' rankings-row--you league-member--you' : '');
+    row.dataset.rank = String(rank);
+    if (person.isYou) row.dataset.currentRank = 'true';
 
     var position = document.createElement('span');
-    position.className = 'league-member__rank';
+    position.className = 'rankings-row__rank';
     position.textContent = rank;
 
+    var avatarHost = document.createElement('span');
+    avatarHost.className = 'rankings-row__avatar';
     var avatar = document.createElement('img');
     avatar.src = person.avatar;
     avatar.alt = person.name;
+    avatarHost.appendChild(avatar);
 
     var copy = document.createElement('span');
-    copy.className = 'league-member__copy';
+    copy.className = 'rankings-row__copy';
     var name = document.createElement('strong');
     name.textContent = person.name;
     var handle = document.createElement('small');
@@ -267,15 +274,17 @@
     copy.appendChild(handle);
 
     var score = document.createElement('span');
-    score.className = 'league-member__score';
+    score.className = 'rankings-score';
     score.textContent = formatScore(person.score) + ' ';
     var coin = document.createElement('img');
     coin.src = 'assets/league/coin.svg';
     coin.alt = 'Coins';
+    coin.width = 14;
+    coin.height = 12;
     score.appendChild(coin);
 
     row.appendChild(position);
-    row.appendChild(avatar);
+    row.appendChild(avatarHost);
     row.appendChild(copy);
     row.appendChild(score);
     return row;
@@ -310,8 +319,10 @@
   }
 
   function renderFull() {
-    // Same shape as the global board: the leading 20, then wherever you are.
-    var shape = BOARD.plan(PARTICIPANT_COUNT, joined ? YOUR_RANK : null);
+    /* Everyone, in order. A league is small enough that there is nothing to
+       gain by folding the middle of it away — that trick belongs to the
+       global board and to a tournament, where the middle is thousands long. */
+    var shape = BOARD.plan(PARTICIPANT_COUNT, joined ? YOUR_RANK : null, PARTICIPANT_COUNT);
     var fragment = document.createDocumentFragment();
 
     shape.lead.forEach(function (rank) {

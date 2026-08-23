@@ -9,7 +9,7 @@
   var tournaments = {
     'diamond-cup': {
       title: 'DIAMOND CUP', kind: 'sponsored', label: 'Sponsored', joined: true, live: true, liveMinutes: 2735,
-      participants: 15, capacity: 40, entry: 'Free', currentRound: 3, rounds: 5, place: '#6',
+      participants: 240, capacity: 400, entry: 'Free', currentRound: 3, rounds: 5, place: '#96',
       roundMatch: { home: 'arsenal', away: 'barcelona' },
       description: 'Exclusive VIP tournament · 5 rounds of top matches · branded sponsor prizes',
       about: 'Diamond Cup is a closed VIP tournament with 5 rounds of top matches. Predict outcomes, earn points and compete for amazing prizes from our sponsor.'
@@ -82,7 +82,15 @@
   var activeRoundPick = null;
   var sharedPickBar = window.THE90 && window.THE90.pickConfirmationBar;
   var lastTournamentScrollTop = scroll ? scroll.scrollTop : 0;
-  var TOURNAMENT_PLAYER_COUNT = 20;
+  /* Big enough that the board has to fold: a tournament is not a league. */
+  var TOURNAMENT_PLAYER_COUNT = 240;
+  var YOUR_TOURNAMENT_RANK = 96;
+
+  function yourTournamentRank() {
+    var tournament = currentTournament();
+    if (!tournament.joined) return null;
+    return Number(String(tournament.place).replace('#', '')) || YOUR_TOURNAMENT_RANK;
+  }
   var rankingAvatars = [
     'assets/invite/avatar-zara.png',
     'assets/invite/avatar-kai.png',
@@ -247,12 +255,34 @@
     });
     rankingPodium.replaceChildren(podium);
 
+    /* A tournament can be thousands deep, so the board shows the top fifty
+       and then jumps: the ranks either side of yours, with the gap marked
+       rather than scrolled through. The podium already holds 1–3. */
+    var board = window.THE90.board;
+    var shape = board.plan(TOURNAMENT_PLAYER_COUNT, yourTournamentRank(), 50);
     var rows = document.createDocumentFragment();
-    for (var rank = 4; rank <= TOURNAMENT_PLAYER_COUNT; rank += 1) {
+
+    shape.lead.forEach(function (rank) {
+      if (rank < 4) return;                       // the podium has those
       rows.appendChild(makeRankingRow(rank, tournament));
+    });
+
+    if (shape.neighbours.length) {
+      if (shape.gap) {
+        var jump = document.createElement('p');
+        jump.className = 'rankings-jump';
+        jump.textContent = '· · ·';
+        rows.appendChild(jump);
+      }
+      shape.neighbours.forEach(function (rank) {
+        rows.appendChild(makeRankingRow(rank, tournament));
+      });
     }
+
     rankingList.replaceChildren(rows);
     rankingList.dataset.userCount = String(TOURNAMENT_PLAYER_COUNT);
+    fillTournamentPin();
+    scheduleTournamentPin();
   }
 
   /* =======================================================
@@ -711,6 +741,52 @@
   function tabPinOffset() {
     if (!panelScroller || !tabsSticky) return 0;
     return Math.max(0, panelScroller.offsetTop - tabsSticky.offsetHeight);
+  }
+
+  /* Your own place, held at the foot of the screen while the real row is
+     further down the board — the same plate the global ranking pins. */
+  var boardPin = screen.querySelector('[data-tournament-pin]');
+  var boardPinQueued = false;
+
+  function fillTournamentPin() {
+    if (!boardPin) return;
+    var rank = yourTournamentRank();
+    var user = tournamentUser(rank, currentTournament());
+    var rankCell = boardPin.querySelector('.rankings-pin__rank');
+    var avatar = boardPin.querySelector('.rankings-pin__avatar img');
+    var name = boardPin.querySelector('.rankings-pin__copy strong');
+    var handle = boardPin.querySelector('.rankings-pin__copy small');
+    var score = boardPin.querySelector('.rankings-score');
+    if (rankCell) rankCell.textContent = rank || '—';
+    if (avatar) avatar.src = user.avatar;
+    if (name) name.textContent = user.name;
+    if (handle) handle.textContent = user.handle;
+    if (score) {
+      score.textContent = formatScore(rankingScore(rank || 1)) + ' ';
+      var crown = document.createElement('img');
+      crown.src = 'assets/notifications/crown.svg';
+      crown.alt = '';
+      crown.width = 14;
+      crown.height = 12;
+      score.appendChild(crown);
+    }
+  }
+
+  function updateTournamentPin() {
+    boardPinQueued = false;
+    if (!boardPin || !scroll) return;
+    var row = rankingList && rankingList.querySelector('.rankings-row--you');
+    var onBoard = activeTab === 'leaderboard' || Math.round(panelPosition()) === 2;
+    var showing = screen.classList.contains('is-active') && row && onBoard && yourTournamentRank();
+    if (!showing) { boardPin.hidden = true; return; }
+    var frame = scroll.getBoundingClientRect();
+    boardPin.hidden = row.getBoundingClientRect().top < frame.bottom - 132;
+  }
+
+  function scheduleTournamentPin() {
+    if (boardPinQueued) return;
+    boardPinQueued = true;
+    window.requestAnimationFrame(updateTournamentPin);
   }
 
   function updateStickyTabs() {
@@ -1289,6 +1365,7 @@
 
   if (scroll) {
     scroll.addEventListener('scroll', function () {
+      scheduleTournamentPin();
       releaseTabFiller();
       updateStickyTabs();
       lastTournamentScrollTop = scroll.scrollTop;
@@ -1300,8 +1377,10 @@
   window.addEventListener('the90:screen', function (event) {
     if (!event.detail || event.detail !== 'arena-tournament') {
       restoreDailyPickBar();
+      if (boardPin) boardPin.hidden = true;
       return;
     }
+    scheduleTournamentPin();
     window.requestAnimationFrame(syncTabMeasurements);
   });
 

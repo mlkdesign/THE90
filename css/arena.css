@@ -1168,3 +1168,22 @@
   .tournament-more img,
   .arena-tournament-tabs__indicator { transition: none; }
 }
+
+
+/* the plate at the foot of a tournament board, where the league keeps its own */
+.tournament-pin {
+  position: absolute;
+  z-index: 7;
+  right: 16px;
+  bottom: 124px;
+  left: 16px;
+}
+.tournament-pin[hidden] { display: none; }
+/* the jump in the ranks, marked rather than scrolled through */
+.rankings-jump {
+  margin: 6px 0;
+  color: var(--text-dim);
+  font-size: 14px;
+  letter-spacing: 4px;
+  text-align: center;
+}
