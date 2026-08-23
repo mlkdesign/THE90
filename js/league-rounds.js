@@ -165,7 +165,7 @@
     var state = stateOf(round);
     if (state === 'open') {
       var locks = deadlineOf(round);
-      return locks ? 'Locks in ' + countdown(locks) : 'Open';
+      return locks ? 'Closes in ' + countdown(locks) : 'Open';
     }
     if (state === 'locked') return 'Picks locked';
     if (state === 'pending') return 'Results pending';
@@ -488,10 +488,9 @@
   function playCard(round) {
     var state = stateOf(round);
     var live = state === 'open';
-    var box = el('article', 'league-round-card league-round-card--play');
+    var box = el('section', 'round-play');
 
-    box.appendChild(roundHead(round, state));
-    if (round.description) box.appendChild(el('p', 'round-head__note', round.description));
+    box.appendChild(roundHead(round, state === 'open' ? null : state));
 
     var track = el('div', 'picks-track round-track');
     round.matches.forEach(function (match) {
@@ -551,14 +550,34 @@
   }
 
   /* The shared confirmation surface, in the league's own currency. */
-  function lockRound(round) {
-    round.matches.forEach(function (match) {
-      var pick = pickOf(round, match);
-      var answered = match.questions.some(function (id) { return pick.answers[id] !== undefined; });
-      if (answered) pick.locked = true;
-    });
-    savePicks();
+  /* Confirming works the way the daily slip does: the card in front of you is
+     banked, and the rail moves on to the next one still waiting. */
+  function acceptOne(round) {
+    var track = panel && panel.querySelector('.round-track');
+    var index = track ? Math.round(track.scrollLeft / Math.max(1, track.clientWidth)) : 0;
+    var match = round.matches[index] || round.matches[0];
+    if (!match) return;
+
+    var pick = pickOf(round, match);
+    if (match.questions.some(function (id) { return pick.answers[id] !== undefined; })) {
+      pick.locked = true;
+      savePicks();
+    }
+
+    var next = -1;
+    for (var i = 0; i < round.matches.length; i += 1) {
+      var other = pickOf(round, round.matches[i]);
+      if (!other.locked) { next = i; break; }
+    }
     renderPanel();
+
+    if (next < 0) return;
+    var rail = panel && panel.querySelector('.round-track');
+    if (!rail) return;
+    /* The rail has just been rebuilt, so there is nothing to animate from —
+       put the next card in front of you and let the slide be the one the
+       finger makes. */
+    rail.scrollLeft = next * rail.clientWidth;
   }
 
   function paintBar(round) {
@@ -593,12 +612,12 @@
     if (bar.points) bar.points.textContent = '+' + worth;
     bar.element.classList.add('winbar--points');
     if (bar.next) {
-      bar.next.textContent = 'Accept picks';
+      bar.next.textContent = 'Next pick';
       /* The tournament leaves this button disabled when its own round has
          nothing selected, and a disabled button never sees a click — so the
          league has to take it back as well as rename it. */
       bar.next.disabled = false;
-      bar.next.onclick = function () { lockRound(round); };
+      bar.next.onclick = function () { acceptOne(round); };
     }
     bar.show(true);
   }

@@ -1587,6 +1587,10 @@
    that focused two-action flow. */
 .winbar--round-picks .winbar__reward,
 .winbar--round-picks .winbar__close { display: none; }
+/* A league round keeps the way out — Figma › LEAGUES › League (748:2420) —
+   and drops only the daily reward line. */
+.winbar--points .winbar__reward { display: none; }
+.winbar--points .winbar__close { display: grid; }
 
 
 /* Everything on this screen moves; none of it has to. */
