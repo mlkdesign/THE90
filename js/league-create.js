@@ -19,7 +19,6 @@
   var form = $('[data-league-create-form]');
   var listWrap = $('[data-own-leagues]');
   var empty = $('[data-own-empty]');
-  var addButton = $('[data-own-add]');
   if (!form || !listWrap || !empty) return;
 
   /* Art exported from THELEAGUES - Main (712:8963). */
@@ -214,7 +213,6 @@
 
     var has = leagues.length > 0;
     empty.hidden = has;
-    if (addButton) addButton.hidden = !has;
     Array.prototype.forEach.call(document.querySelectorAll('[data-leagues-count]'), function (count) {
       count.textContent = '(' + leagues.length + ')';
     });
@@ -617,8 +615,6 @@
      appears in a league you actually own.
      ======================================================= */
 
-  var chatEntry = $('[data-league-chat-entry]');
-  var prizes = $('.league-prizes');
   var joinButton = $('[data-league-join]');
   var youRow = $('.league-member--you');
   /* Which league you last opened. The app can come back to the league screen
@@ -656,10 +652,8 @@
   var participantsInvite = $('.participants-invite');
 
   function applyMembership() {
-    if (chatEntry) chatEntry.hidden = !viewing.joined;
     if (joinButton) joinButton.hidden = viewing.joined;
     if (youRow) youRow.hidden = !viewing.joined;
-    if (prizes) prizes.hidden = viewing.own;
     if (premiumCard) premiumCard.hidden = !viewing.own || premium;
     if (premiumActive) premiumActive.hidden = !viewing.own || !premium;
 

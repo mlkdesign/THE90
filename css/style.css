@@ -73,6 +73,16 @@ input  { font: inherit; }
 a      { text-decoration: none; }
 img    { display: block; }
 
+/* One timing for every control in the app: the surface and its colour over
+   .18s, the press over .12s. This is only the floor — anything that needs its
+   own curve declares one later and wins. It is here so a control can never
+   change with a jump just because its own rule forgot to say how. */
+button, a, input, textarea,
+[role="tab"], [role="radio"], [role="switch"] {
+  transition: background-color .18s ease, border-color .18s ease, color .18s ease,
+              opacity .18s ease, filter .18s ease, transform .12s ease;
+}
+
 
 /* =========================================================
    Stage — black page, logo above the mockup
@@ -362,7 +372,6 @@ img    { display: block; }
 
 .content--welcome { gap: 32px; }
 .content--form    { justify-content: space-between; }
-.content--done    { justify-content: space-between; padding-bottom: 8px; }
 
 .form-main {
   width: 100%;
@@ -379,6 +388,11 @@ img    { display: block; }
   justify-content: flex-start;
   padding-top: 78px;
 }
+/* the setup screen must fit the frame without squeezing its children —
+   a squeezed 112px avatar circle is an oval */
+.content--profile { padding-top: 72px; }
+.content--profile > * { flex-shrink: 0; }
+.content--profile .setup-skip { margin-top: 10px; }
 .content--teams::after {
   content: '';
   position: absolute;
@@ -391,32 +405,25 @@ img    { display: block; }
   background: linear-gradient(180deg, rgba(14,14,14,0), rgba(14,14,14,.55) 22%, var(--bg-primary) 46%);
   pointer-events: none;
 }
-.setup-back {
+/* The app's own round plate, carried by .iconbtn — the same button the
+   tournament and the league float over their headers. Only where it sits
+   belongs to the setup screens, and it is stated against the element so it
+   outranks .iconbtn's own `position`, which arrives in a later stylesheet. */
+button.setup-back {
   position: absolute;
   top: 10px;
   left: 24px;
-  width: 40px;
-  height: 40px;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(255, 255, 255, .1);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, .1);
-  -webkit-backdrop-filter: blur(32px);
-  backdrop-filter: blur(32px);
-  transition: background .18s ease, transform .12s ease;
 }
 .setup-back img { transform: rotate(90deg); }
-.setup-back:hover { background: rgba(255,255,255,.16); }
-.setup-back:active { transform: scale(.94); }
-.content--profile .offer,
+.content--profile .offer { margin-bottom: 20px; }
 .content--teams .offer { margin-bottom: 28px; }
 .content--teams .offer__title { font-size: 29px; line-height: 36px; }
 .avatar-pick {
   position: relative;
+  display: block;
   width: 112px;
   height: 112px;
-  margin: 0 auto 32px;
+  margin: 0 auto 24px;
   border-radius: 50%;
   overflow: hidden;
   cursor: pointer;
@@ -575,25 +582,29 @@ img    { display: block; }
 }
 .wordmark span { color: var(--brand-primary); }
 
+/* The icon button's plate, drawn long enough for a flag and a label: same
+   surface, same blur, same press, and rounded to its own height the way every
+   round control in the app is. */
 .lang {
   position: absolute;
   left: 0;
   top: 50%;
-  transform: translateY(-50%);
   width: 88px;
   height: 40px;
   padding: 0 16px;
   display: flex;
   align-items: center;
   gap: 8px;
-  border-radius: 16px;
+  border-radius: 20px;
   background: rgba(255, 255, 255, .1);
-  -webkit-backdrop-filter: blur(32px);
-  backdrop-filter: blur(32px);
-  border: 1px solid rgba(255, 255, 255, .1);
-  transition: background .2s ease;
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  /* the pill is centred by a transform, so the press has to keep it there */
+  transform: translateY(-50%);
+  transition: background .18s ease, transform .12s ease;
 }
 .lang:hover { background: rgba(255, 255, 255, .16); }
+.lang:active { transform: translateY(-50%) scale(.94); }
 .lang__flag {
   width: 16px;
   height: 16px;
@@ -986,31 +997,6 @@ img    { display: block; }
 
 
 /* =========================================================
-   Success screen
-   ========================================================= */
-
-.content--done .done {
-  flex: 1 0 0;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 8px;
-}
-.done__mark {
-  width: 64px;
-  height: 64px;
-  margin-bottom: 16px;
-  border-radius: 20px;
-  background: var(--brand-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-
-/* =========================================================
    Section label — the "◆ RULES" heading shared by the league,
    live match and rank screens
    ========================================================= */
@@ -1073,7 +1059,7 @@ button.pill-tag:hover { border-color: rgba(255, 255, 255, .45); }
 
 .avatar-presets {
   width: 100%;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -1163,4 +1149,24 @@ button.pill-tag:hover { border-color: rgba(255, 255, 255, .45); }
   font-size: 18px;
   font-weight: 800;
   line-height: 24px;
+}
+
+
+/* =========================================================
+   Reduced motion
+
+   The movement in here is the app's, not the reader's. When the
+   system asks for less of it, everything collapses to an instant
+   in one place — so a screen added later cannot forget to opt in.
+   Behaviour that is decided in code reads the same query itself
+   (js/main.js, js/rankings.js).
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

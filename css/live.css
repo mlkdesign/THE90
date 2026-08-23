@@ -372,7 +372,6 @@
 
 /* On the match screen the footer is navigation only — no pick bar,
    no leaderboard card. */
-.shell-footer.is-live-match .pickbar,
 .shell-footer.is-live-match .rankings-pin,
 .shell-footer.is-live-match .league-join,
 .shell-footer.is-live-match .league-chat-input { display: none !important; }

@@ -15,7 +15,7 @@
   /* Bump when the seeded conversation changes — the chat is kept in
      localStorage, so an old transcript would otherwise stick around. */
   var STORAGE_KEY = 'the90.leagueChat.v2';
-  var LINE_HEIGHT = 20;
+  var LINE_HEIGHT = 18;
   var MAX_LINES = 5;
   var replyPending = false;
   var initialMessages = [
@@ -51,7 +51,7 @@
     return new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
   }
 
-  function createMessage(message) {
+  function createMessage(message, showTime) {
     /* Not everything in a league chat is somebody talking — picks landing and
        bonuses paying out get announced too. Those sit centred and bare, with
        no avatar and no bubble, so they read as the room rather than a person. */
@@ -96,18 +96,30 @@
     bubble.className = 'league-chat-message__bubble';
     var text = document.createElement('p');
     text.textContent = message.text;
-    var time = document.createElement('time');
-    time.textContent = message.time;
     bubble.appendChild(text);
-    bubble.appendChild(time);
     content.appendChild(bubble);
+
+    /* The time sits under the bubble rather than inside it, and only under the
+       last of a run from the same person at the same minute — the way a
+       messenger stamps a group rather than a line. */
+    if (showTime) {
+      var time = document.createElement('time');
+      time.className = 'league-chat-message__time';
+      time.textContent = message.time;
+      content.appendChild(time);
+    }
     row.appendChild(content);
     return row;
   }
 
   function renderMessages() {
     var fragment = document.createDocumentFragment();
-    messages.forEach(function (message) { fragment.appendChild(createMessage(message)); });
+    messages.forEach(function (message, index) {
+      var next = messages[index + 1];
+      var grouped = next && next.role === message.role &&
+        next.author === message.author && next.time === message.time;
+      fragment.appendChild(createMessage(message, !grouped));
+    });
     list.replaceChildren(fragment);
   }
 
@@ -183,8 +195,6 @@
      your pinned card, expanded drops your card into place at #15.
      ------------------------------------------------------- */
 
-  var allButton = document.querySelector('[data-league-all]');
-  var allLabel = document.querySelector('[data-league-all-label]');
   var topBlock = document.querySelector('[data-league-top]');
   var fullBlock = document.querySelector('[data-league-full]');
   var sectionTitle = document.querySelector('[data-league-participants-title]');

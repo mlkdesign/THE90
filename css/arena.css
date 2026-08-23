@@ -217,6 +217,13 @@
 }
 .thearena-place strong { color: var(--brand-primary); font-size: 20px; line-height: normal; }
 .thearena-place span { color: rgba(247, 250, 248, .5); font-size: 12px; line-height: normal; white-space: nowrap; }
+/* A live card shows one of the two: where you stand in it, or the way in.
+   The way in is the button the upcoming tournaments carry, so joining a
+   tournament already under way is the same move in the same place. */
+[data-tournament-state="open"] .thearena-place { display: none; }
+.thearena-featured__footer .thearena-join { align-self: center; }
+[data-tournament-state="joined"] .thearena-featured__footer .thearena-join,
+[data-tournament-state="locked"] .thearena-featured__footer .thearena-join { display: none; }
 .thearena-featured-pagination { display: flex; justify-content: center; align-items: center; gap: 4px; min-height: 4px; }
 .thearena-featured-pagination[hidden],
 .thearena-featured-empty[hidden],
@@ -470,17 +477,6 @@
 .thearena-how h3 { color: #fff; font-size: 12px; font-weight: 600; line-height: normal; white-space: nowrap; }
 .thearena-how p { margin: 0; color: rgba(255, 255, 255, .5); font-size: 11px; line-height: 15px; }
 
-@media (prefers-reduced-motion: reduce) {
-  .thearena-filter,
-  .thearena-tournament,
-  .thearena-join,
-  .thearena-featured-page,
-  .arena-join-modal,
-  .arena-join-modal__sheet,
-  .arena-join-modal__track { animation-duration: .01ms; transition-duration: .01ms; }
-  .thearena-time--live i { animation: none; }
-}
-
 /* =========================================================
    THEARENA — Tournament
    Figma › THEARENA - Tournament (705:7574)
@@ -540,10 +536,17 @@
 .arena-tournament-stats dt img { width: 12px; height: 12px; }
 .arena-tournament-stats dd { margin: 0; color: #fff; font-size: 18px; font-weight: 600; line-height: 26px; white-space: nowrap; }
 .arena-tournament-stats dd span { color: rgba(247, 250, 248, .5); font-size: 10px; font-weight: 400; }
-.arena-tournament-join { width: 100%; height: 44px; border-radius: 16px; background: var(--brand-primary); color: var(--text-on-brand); font-size: 15px; font-weight: 600; line-height: 18px; transition: filter .18s ease, transform .12s ease; }
+.arena-tournament-join { width: 100%; height: 44px; border-radius: 16px; background: var(--brand-primary); color: var(--text-on-brand); font-size: 15px; font-weight: 600; line-height: 18px; transition: filter .18s ease, transform .12s ease, background .18s ease, color .18s ease; }
 .arena-tournament-join:hover { filter: brightness(1.05); }
 .arena-tournament-join:active { transform: scale(.98); }
 .arena-tournament-join[hidden] { display: none; }
+/* the way out of a tournament you are in — quiet, and clearly not the CTA */
+.arena-tournament-join.is-leave {
+  border: 1px solid rgba(240, 93, 93, .5);
+  background: none;
+  color: var(--status-error-text);
+}
+.arena-tournament-join.is-leave:hover { filter: none; background: rgba(240, 93, 93, .1); }
 
 /* The cover belongs to the sticky block itself, not to a layer floating over
    the whole screen. The block carries the status bar's worth of padding, so
@@ -629,7 +632,6 @@
   pointer-events: none;
   will-change: transform, width;
 }
-.arena-tournament-tabs__indicator.is-instant,
 .arena-tournament-tabs.is-dragging .arena-tournament-tabs__indicator { transition: none; }
 .arena-tournament-tabs button:focus-visible,
 .arena-tournament-join:focus-visible,
@@ -668,8 +670,7 @@
 .tournament-about { display: flex; flex-direction: column; gap: 12px; }
 .tournament-about h2,
 .tournament-panel-head h2,
-.tournament-prize-card h2,
-.tournament-prize-hero h2 { margin: 0; color: #fff; font-size: 14px; font-weight: 600; line-height: normal; }
+.tournament-prize-card h2 { margin: 0; color: #fff; font-size: 14px; font-weight: 600; line-height: normal; }
 .tournament-about p,
 .tournament-panel-head p { margin: 0; color: rgba(255, 255, 255, .5); font-size: 12px; line-height: 18px; }
 .tournament-about p { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
@@ -759,10 +760,11 @@
 .tournament-events li.is-current i { color: var(--brand-primary); }
 .tournament-events li.is-complete i { color: rgba(36, 255, 0, .72); }
 
-/* The live round owns a second grid row. Keeping it inside the same timeline
-   item lets the vertical connector follow its real height rather than a
-   fixed estimate. */
-.tournament-events > li.is-current {
+/* The live round owns a second grid row — but only while it actually carries
+   the question rail. `is-playing` is put on it by the code that builds that
+   rail, so a round you are not in keeps the plain one-row shape every other
+   round has, and the gaps down the list stay even. */
+.tournament-events > li.is-playing {
   grid-template-areas:
     'step card'
     '. questions';
@@ -770,13 +772,13 @@
   align-items: start;
   row-gap: 12px;
 }
-.tournament-events > li.is-current .tournament-events__step {
+.tournament-events > li.is-playing .tournament-events__step {
   grid-area: step;
   align-self: start;
   margin-top: 20px;
 }
-.tournament-events > li.is-current .tournament-events__card { grid-area: card; }
-.tournament-events > li.is-current:not(:last-child)::before {
+.tournament-events > li.is-playing .tournament-events__card { grid-area: card; }
+.tournament-events > li.is-playing:not(:last-child)::before {
   top: 36px;
   bottom: -48px;
 }
@@ -986,7 +988,6 @@
   font-weight: 600;
   line-height: 18px;
 }
-.round-question-card__block { display: flex; flex-direction: column; gap: 8px; }
 .round-question-card__answers {
   width: 100%;
   min-height: 60px;
@@ -1175,11 +1176,6 @@
 .thearena-featured-card[role="button"]:focus-visible,
 .thearena-tournament[role="button"]:focus-visible { outline: 2px solid var(--brand-primary); outline-offset: 2px; }
 
-@media (prefers-reduced-motion: reduce) {
-  .arena-tournament-join,
-  .tournament-more img,
-  .arena-tournament-tabs__indicator { transition: none; }
-}
 
 
 /* the plate at the foot of a tournament board, where the league keeps its own */

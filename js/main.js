@@ -139,11 +139,11 @@
       // a confirmed pick is still a pick you can change your mind about
       editable: function () { return true; },
       isComplete: hasPick,
-      onChange: function (firstAnswer) {
+      onChange: function () {
         // touching a confirmed pick sends it back for confirmation
         banked[m.id] = false;
         winbarDismissed = false;
-        refresh(firstAnswer);
+        refresh();
       }
     });
   }
@@ -200,12 +200,18 @@
   }
 
   // the button always speaks for the card you are looking at
+  var ctaWasReady = false;
   function updateCta() {
     if (!winNext) return;
     var m = matches[currentIndex()];
     var pick = picks[m.id];
     var ready = hasPick(pick) && !banked[m.id];
     winNext.disabled = !ready;
+    // the pulse plays every time the button arms — a fresh answer and a
+    // changed pick both ask for the same confirmation
+    if (ready && !ctaWasReady) nudgeCta();
+    if (!ready) winNext.classList.remove('is-nudging');
+    ctaWasReady = ready;
     if (!hasPick(pick) && pick.outcome) {
       winNext.textContent = 'Choose exact score';
       return;
@@ -223,7 +229,7 @@
     });
   }
 
-  function refresh(firstAnswer) {
+  function refresh() {
     var done = bankedCount();
     var total = matches.length;
 
@@ -235,7 +241,6 @@
 
     updateCta();
     applyWinbar();
-    if (firstAnswer) nudgeCta();
   }
 
   /* Keep the confirmation control available after the first selection. The
@@ -250,19 +255,22 @@
   }
 
   /* The round closes on its own card at the end of the rail: no surface, no
-     border, just the tick, the total and a way back in. */
+     border, just the tick, the total and a way back in. Re-confirming an
+     edited pick only restores the summary — nothing slides on its own. */
   function finish() {
     if (!doneCard) return;
-    if (!rewardGranted) {
+    var firstTime = !rewardGranted;
+    if (firstTime) {
       rewardGranted = true;
       currentBalance += DAILY_REWARD;
       renderBalance(true);
     }
     doneCard.hidden = false;
     refresh();
-    slideTo(-1);
-
-    playDoneTick(doneArt);
+    if (firstTime) {
+      slideTo(-1);
+      playDoneTick(doneArt);
+    }
   }
 
   function withDoneData(then) {

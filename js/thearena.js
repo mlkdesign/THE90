@@ -183,7 +183,8 @@
     button.addEventListener('click', function (event) {
       event.stopPropagation();
       var tournament = button.closest('[data-tournament-id]');
-      if (button.classList.contains('is-locked') || (tournament && tournament.dataset.tournamentPhase === 'live')) return;
+      // a tournament already under way can be joined from its card too
+      if (button.classList.contains('is-locked')) return;
       if (button.classList.contains('is-joined')) return;
       if (tournament && window.THE90 && typeof window.THE90.openArenaJoinModal === 'function') {
         window.THE90.openArenaJoinModal(tournament.dataset.tournamentId);

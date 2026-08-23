@@ -189,7 +189,3 @@
   100% { transform: scale(1); opacity: 1; }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .notification-card.is-new,
-  [data-notification-badge].is-updated { animation: none; }
-}

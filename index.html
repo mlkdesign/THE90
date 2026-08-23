@@ -10,23 +10,24 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>THE90 — Prototype</title>
+<link rel="icon" href="assets/the90-logo.svg" type="image/svg+xml">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="css/style.css?v=4">
-<link rel="stylesheet" href="css/main.css?v=50">
-<link rel="stylesheet" href="css/rankings.css?v=13">
-    <link rel="stylesheet" href="css/leagues.css?v=31">
-  <link rel="stylesheet" href="css/arena.css?v=63">
-<link rel="stylesheet" href="css/live.css?v=4">
-<link rel="stylesheet" href="css/league.css?v=31">
-<link rel="stylesheet" href="css/my-zone.css?v=7">
+<link rel="stylesheet" href="css/style.css?v=8">
+<link rel="stylesheet" href="css/main.css?v=55">
+<link rel="stylesheet" href="css/rankings.css?v=15">
+<link rel="stylesheet" href="css/leagues.css?v=34">
+<link rel="stylesheet" href="css/arena.css?v=66">
+<link rel="stylesheet" href="css/live.css?v=5">
+<link rel="stylesheet" href="css/league.css?v=40">
+<link rel="stylesheet" href="css/my-zone.css?v=8">
 <link rel="stylesheet" href="css/ranks.css?v=1">
-<link rel="stylesheet" href="css/notifications.css">
-<link rel="stylesheet" href="css/community.css?v=8">
-<link rel="stylesheet" href="css/settings.css?v=3">
+<link rel="stylesheet" href="css/notifications.css?v=2">
+<link rel="stylesheet" href="css/community.css?v=11">
+<link rel="stylesheet" href="css/settings.css?v=5">
 </head>
 <body>
 
@@ -170,7 +171,7 @@
 
         <!-- ============ SCREEN: CREATE ACCOUNT ============ -->
         <section class="screen screen--form" data-screen="create">
-          <form class="content content--form content--create" novalidate data-form="create">
+          <form class="content content--form" novalidate data-form="create">
 
             <div class="form-main">
 
@@ -253,7 +254,7 @@
         <!-- ============ SCREEN: PROFILE SETUP ============ -->
         <section class="screen screen--form" data-screen="profile">
           <form class="content content--profile" novalidate data-form="profile">
-            <button class="setup-back" type="button" data-go="create" aria-label="Back">
+            <button class="iconbtn setup-back" type="button" data-go="create" aria-label="Back">
               <img src="assets/icons/chevron-down.svg" alt="" width="20" height="20">
             </button>
             <div class="offer">
@@ -285,7 +286,7 @@
         <!-- ============ SCREEN: FAVOURITE TEAM ============ -->
         <section class="screen screen--form" data-screen="teams">
           <div class="content content--teams">
-            <button class="setup-back" type="button" data-go="profile" aria-label="Back">
+            <button class="iconbtn setup-back" type="button" data-go="profile" aria-label="Back">
               <img src="assets/icons/chevron-down.svg" alt="" width="20" height="20">
             </button>
             <div class="offer">
@@ -414,7 +415,7 @@
                 </button>
                 <button class="balance" type="button" data-go="my-zone" aria-label="Open My Zone profile">
                   <span class="balance__avatar">
-                    <img src="assets/img/avatar.png" alt="">
+                    <img src="assets/my-zone/avatar.png" alt="">
                     <img class="balance__rank-icon" src="assets/icons/rank-badge.svg" alt="" width="16" height="16">
                   </span>
                   <span class="balance__copy">
@@ -547,51 +548,6 @@
               </section>
             </main>
 
-            <div class="leagues-legacy" aria-hidden="true">
-              <div class="leagues-tabs" role="tablist" aria-label="Your leagues">
-                <button class="leagues-tab is-on" type="button" role="tab" aria-selected="true" data-leagues-tab="joined">Joined Leagues</button>
-                <button class="leagues-tab" type="button" role="tab" aria-selected="false" data-leagues-tab="own">My Leagues</button>
-              </div>
-
-              <!-- leagues you were invited into -->
-              <div class="leagues-stack" role="tabpanel" data-leagues-panel="joined">
-                <article class="lcard">
-                  <button class="lcard__open" type="button" data-go="league-chat" data-league-joined="true" data-league-privacy="open" aria-label="Open Office League">
-                    <span class="lcard__cover">
-                      <img class="lcard__banner" src="assets/league/card-cover-cup.jpg" alt="">
-                    </span>
-                    <span class="lcard__body">
-                      <span class="lcard__title">
-                        <strong>Office League</strong>
-                        <small>Invite-only VIP tournament · 5 rounds of top matches · branded prizes from the sponsor</small>
-                      </span>
-                      <span class="lcard__rule"></span>
-                      <span class="lcard__stats">
-                        <span class="lcard__stat lcard__stat--rank"><b>#14</b><i>/ 128</i></span>
-                        <span class="lcard__stat"><b>145<em class="lcard__new">+3</em></b><i>Messages</i></span>
-                        <span class="lcard__stat"><b>5</b><i>rounds</i></span>
-                      </span>
-                    </span>
-                  </button>
-                  <button class="lcard__menu" type="button" aria-label="Options for Office League" aria-haspopup="menu" aria-expanded="false" data-lcard-menu>
-                    <img src="assets/DotsThreeOutline.svg" alt="" width="20" height="20">
-                  </button>
-                </article>
-              </div>
-
-              <!-- leagues you run yourself, rendered by js/league-create.js -->
-              <div class="leagues-stack" role="tabpanel" data-leagues-panel="own" hidden>
-                <div class="own-leagues" data-own-leagues></div>
-                <div class="leagues-empty" data-own-empty>
-                  <span class="leagues-empty__icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24"><path d="M10 11a4 4 0 100-8 4 4 0 000 8zm0 1.6c-3.4 0-6.4 1.9-6.4 4.4v2.4h12.8V17c0-2.5-3-4.4-6.4-4.4zM19 8h2v2h-2v2h-2v-2h-2V8h2V6h2z" fill="currentColor"/></svg>
-                  </span>
-                  <strong>No leagues of your own yet</strong>
-                  <p>Gather your colleagues or friends into a private league — your own leaderboard, chat and prizes.</p>
-                  <button class="btn btn--primary leagues-empty__cta" type="button" data-go="league-create">Create your league</button>
-                </div>
-              </div>
-            </div>
           </div>
 
           <div class="topbar leagues-topbar">
@@ -613,7 +569,7 @@
                       <img class="balance__coin" src="assets/icons/soccer-ball.svg" alt="" width="16" height="16">
                       <span class="balance__value">10 000</span>
                     </span>
-                    <small class="balance__rank">VIP level</small>
+                    <small class="balance__rank" data-rank-label>Diamond</small>
                   </span>
                 </button>
               </div>
@@ -653,6 +609,7 @@
                           <div class="thearena-featured__footer">
                             <dl class="thearena-stats"><div><dt>40</dt><dd>Participants</dd></div><div><dt>5</dt><dd>Rounds</dd></div></dl>
                             <div class="thearena-place"><strong>#6</strong><span>Your place</span></div>
+                            <button type="button" class="thearena-join" data-arena-join>Join for FREE</button>
                           </div>
                         </div>
                       </article>
@@ -667,6 +624,7 @@
                           <div class="thearena-featured__footer">
                             <dl class="thearena-stats"><div><dt>40</dt><dd>Participants</dd></div><div><dt>5</dt><dd>Rounds</dd></div></dl>
                             <div class="thearena-place"><strong>#12</strong><span>Your place</span></div>
+                            <button type="button" class="thearena-join" data-arena-join>Join for FREE</button>
                           </div>
                         </div>
                       </article>
@@ -681,6 +639,7 @@
                           <div class="thearena-featured__footer">
                             <dl class="thearena-stats"><div><dt>32</dt><dd>Participants</dd></div><div><dt>3</dt><dd>Rounds</dd></div></dl>
                             <div class="thearena-place"><strong>#3</strong><span>Your place</span></div>
+                            <button type="button" class="thearena-join" data-arena-join>Join for FREE</button>
                           </div>
                         </div>
                       </article>
@@ -750,7 +709,7 @@
                         <img class="balance__coin" src="assets/icons/soccer-ball.svg" alt="" width="16" height="16">
                         <span class="balance__value">10 000</span>
                       </span>
-                      <small class="balance__rank">VIP level</small>
+                      <small class="balance__rank" data-rank-label>Diamond</small>
                     </span>
                   </button>
                 </div>
@@ -902,7 +861,7 @@
                  far enough to show the real row -->
             <div class="rankings-pin tournament-pin" data-tournament-pin hidden>
               <span class="rankings-pin__rank">96</span>
-              <span class="rankings-pin__avatar"><img src="assets/img/avatar.png" alt="Your profile photo"></span>
+              <span class="rankings-pin__avatar"><img src="assets/my-zone/avatar.png" alt="Your profile photo"></span>
               <span class="rankings-pin__copy"><strong>Your Name</strong><small>@yournickname</small></span>
               <span class="rankings-score">1 520 <img src="assets/notifications/crown.svg" alt="" width="14" height="12"></span>
             </div>
@@ -1123,8 +1082,8 @@
 
         <!-- ============ SCREEN: CREATE LEAGUE ============ -->
         <section class="screen screen--form" data-screen="league-create">
-          <form class="content content--create" novalidate data-league-create-form>
-            <button class="setup-back" type="button" data-go="rankings" aria-label="Back">
+          <form class="content content--league-create" novalidate data-league-create-form>
+            <button class="iconbtn setup-back" type="button" data-go="rankings" aria-label="Back">
               <img src="assets/icons/chevron-down.svg" alt="" width="20" height="20">
             </button>
 
@@ -2011,12 +1970,11 @@
           </div>
           <div class="rankings-pin" data-rankings-pin>
             <span class="rankings-pin__rank">47</span>
-            <span class="rankings-pin__avatar"><img src="assets/img/avatar.png" alt="Your profile photo"></span>
+            <span class="rankings-pin__avatar"><img src="assets/my-zone/avatar.png" alt="Your profile photo"></span>
             <span class="rankings-pin__copy"><strong>Your Name</strong><small>@yournickname</small></span>
             <span class="rankings-score">2 <img src="assets/notifications/crown.svg" alt="" width="14" height="12"></span>
           </div>
           <button class="league-join" type="button" data-league-join>Join league</button>
-          <button class="btn btn--primary leagues-create" type="button" data-go="league-create">Create new league</button>
           <form class="league-chat-input" data-league-chat-form>
             <label><img src="assets/league/chat-attachment.svg" alt="" width="16" height="16"><textarea rows="1" placeholder="Type a message..." autocomplete="off" data-league-chat-input></textarea></label>
             <button type="submit" aria-label="Send message" data-league-chat-send disabled><img src="assets/league/chat-send.svg" alt="" width="20" height="20"></button>
@@ -2059,7 +2017,7 @@
                   <div class="arena-join-modal__stats">
                     <dl>
                       <div><dt>Participants</dt><dd><b data-arena-join-participants>15</b> <span>/ <i data-arena-join-capacity>40</i></span></dd></div>
-                      <div><dt><img src="assets/arena/thearena-timer.svg" alt="" width="12" height="12"><span>Starts in</span></dt><dd data-arena-join-time>2d 14h</dd></div>
+                      <div><dt><img src="assets/arena/thearena-timer.svg" alt="" width="12" height="12"><span data-arena-join-time-label>Starts in</span></dt><dd data-arena-join-time>2d 14h</dd></div>
                       <div><dt>Rounds</dt><dd><b data-arena-join-rounds>5</b></dd></div>
                       <div><dt>Entry</dt><dd data-arena-join-entry>Free</dd></div>
                     </dl>
@@ -2143,28 +2101,27 @@
 <script src="js/pick-card.js?v=22"></script>
 <script src="js/leaderboard.js?v=1"></script>
 <script src="js/app.js?v=14"></script>
-<script src="js/main.js?v=29"></script>
+<script src="js/main.js?v=30"></script>
 <script src="js/news.js?v=1"></script>
 <script src="js/live.js?v=3"></script>
-<script src="js/rankings.js?v=9"></script>
-<script src="js/thearena.js?v=7"></script>
-<script src="js/tournament.js?v=52"></script>
-<script src="js/arena-join.js?v=2"></script>
-<script src="js/league.js?v=15"></script>
-<script src="js/leagues.js?v=4"></script>
-<script src="js/league-create.js?v=22"></script>
-<script src="js/league-picks.js?v=1"></script>
+<script src="js/rankings.js?v=10"></script>
+<script src="js/thearena.js?v=8"></script>
+<script src="js/tournament.js?v=57"></script>
+<script src="js/arena-join.js?v=3"></script>
+<script src="js/league.js?v=18"></script>
+<script src="js/leagues.js?v=5"></script>
+<script src="js/league-create.js?v=23"></script>
 <script src="js/league-pager.js?v=8"></script>
 <script src="js/league-rules.js?v=2"></script>
-<script src="js/league-tabs.js?v=6"></script>
+<script src="js/league-tabs.js?v=7"></script>
 <script src="js/league-round.js?v=4"></script>
 <script src="js/league-menu.js?v=4"></script>
 <script src="js/league-participants.js?v=2"></script>
-<script src="js/league-rounds.js?v=38"></script>
+<script src="js/league-rounds.js?v=39"></script>
 <script src="js/my-zone.js?v=2"></script>
 <script src="js/ranks.js?v=3"></script>
 <script src="js/notifications.js?v=6"></script>
-<script src="js/community.js?v=6"></script>
+<script src="js/community.js?v=7"></script>
 <script src="js/settings.js?v=2"></script>
 <script src="js/avatars.js?v=1"></script>
 </body>

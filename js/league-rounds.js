@@ -687,8 +687,24 @@
     renderPanel();
   }
 
-  /* Accepting moves you on: the next question on this card, or the next match
-     when the card has none left. */
+  /* The first question in the round that has not been accepted yet, walking
+     forward from a card and wrapping past the end — the same way the daily
+     slip comes back for the ones you skipped. */
+  function nextOpenSpot(round, fromIndex) {
+    for (var step = 1; step <= round.matches.length; step += 1) {
+      var index = (fromIndex + step) % round.matches.length;
+      var pick = pickOf(round, round.matches[index]);
+      var ids = blocksOf(round.matches[index]);
+      for (var q = 0; q < ids.length; q += 1) {
+        if (!isAccepted(pick, ids[q])) return { index: index, question: q };
+      }
+    }
+    return null;
+  }
+
+  /* Accepting moves you on: the next open question on this card, then the
+     next card that still has one, wrapping back to anything skipped. Once
+     everything is in, confirming a change stays where you are. */
   function acceptOne(round) {
     var spot = currentSpot(round);
     if (!spot.match || !spot.body) return;
@@ -697,12 +713,44 @@
 
     var id = blocksOf(spot.match)[spot.question];
     if (!pick.accepted) pick.accepted = {};
-    pick.accepted[id] = valueOf(pick, spot.match, spot.question);
+    var value = valueOf(pick, spot.match, spot.question);
+    pick.accepted[id] = value;
+    /* Accepting IS the confirmation, so the stored answer follows it even
+       when the question was answered before — keepCard only guards drafts. */
+    if (id === 'score') {
+      var scoreParts = String(value).split(':');
+      pick.answers.score = { home: Number(scoreParts[0]), away: Number(scoreParts[1]) };
+    } else {
+      pick.answers[id] = value;
+    }
+
+    /* A result and an exact score describe the same match, so an accepted
+       pair can never disagree. A new result that contradicts the accepted
+       score reopens the score question; a new score simply rewrites the
+       result it implies — exactly what the daily card does. */
+    function impliedOutcome(score) {
+      var parts = String(score).split(':');
+      var home = Number(parts[0]), away = Number(parts[1]);
+      return home > away ? 'home' : (home < away ? 'away' : 'draw');
+    }
+    if (id === 'result' && pick.accepted.score !== undefined &&
+        impliedOutcome(pick.accepted.score) !== pick.accepted.result) {
+      delete pick.accepted.score;
+      delete pick.answers.score;
+    }
+    if (id === 'score') {
+      var implied = impliedOutcome(pick.accepted.score);
+      if (pick.accepted.result !== implied) {
+        pick.accepted.result = implied;
+        pick.answers.result = implied;
+      }
+    }
+
     savePicks();
     paintProgress(round);
 
     for (var next = spot.question + 1; next < spot.blocks.length; next += 1) {
-      if (blockAnswered(pick, spot.match, next)) continue;
+      if (isAccepted(pick, blocksOf(spot.match)[next])) continue;
       if (spot.card) spot.card.dataset.question = String(next);
       spot.body.scrollLeft = next * spot.body.clientWidth;
       window.setTimeout(function () { paintBar(round); }, 340);
@@ -710,12 +758,24 @@
     }
 
     var track = panel && panel.querySelector('.round-track');
-    if (track && spot.index + 1 < round.matches.length) {
-      track.scrollLeft = (spot.index + 1) * track.clientWidth;
-      window.setTimeout(function () { paintBar(round); }, 340);
+    if (roundComplete(round)) {
+      finishRound(round, track);
+      paintBar(round);
       return;
     }
-    finishRound(round, track);
+
+    var onward = nextOpenSpot(round, spot.index);
+    if (track && onward) {
+      var cards = $$('.mcard--round', panel);
+      var target = cards[onward.index];
+      if (target) {
+        target.dataset.question = String(onward.question);
+        var body = target.querySelector('.mcard__body');
+        if (body) body.scrollLeft = onward.question * body.clientWidth;
+      }
+      track.scrollLeft = onward.index * track.clientWidth;
+      window.setTimeout(function () { paintBar(round); }, 340);
+    }
   }
 
   /* Every question in the round answered: the last card slides away and the

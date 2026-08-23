@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "the90",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["/Users/jackmilka/Desktop/THE90/.claude/serve.mjs"],
+      "port": 4173
+    }
+  ]
+}

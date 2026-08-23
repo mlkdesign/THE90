@@ -20,667 +20,10 @@
 
 .leagues-scroll::-webkit-scrollbar { display: none; }
 
-.leagues-content {
-  width: 390px;
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  /* the footer carries the nav *and* the Create league button here */
-  padding: 126px 16px 178px;
-}
-
-/* ---------------------------------------------------------
-   Joined Leagues / My Leagues — Figma › Leagues – Main (515:11718)
-   --------------------------------------------------------- */
-
-.leagues-tabs {
-  height: 40px;
-  flex: none;
-  align-self: center;
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  border-radius: 99px;
-  background: rgba(255, 255, 255, .1);
-}
-.leagues-tab {
-  width: 120px;
-  height: 100%;
-  padding: 0 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 99px;
-  color: rgba(255, 255, 255, .5);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 18px;
-  white-space: nowrap;
-  transition: background .2s ease, color .2s ease;
-}
-.leagues-tab.is-on {
-  background: var(--brand-primary);
-  color: var(--text-on-brand);
-  font-weight: 600;
-}
-
-.leagues-stack[data-leagues-panel] { animation: leagues-panel-in .22s ease; }
-@keyframes leagues-panel-in {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: none; }
-}
-
-/* Create league lives in the footer on this screen, above the nav bar */
-.leagues-create { display: none; }
-.shell-footer.is-leagues .leagues-create { display: flex; flex: none; }
-
-
-/* ---------------------------------------------------------
-   The league card — Figma › Leagues – Main › League (671:5167)
-
-   A cover photo that fades out top and bottom into the card,
-   then the name, the line under it, a rule, and three figures:
-   where you stand, how loud the chat is, how long it runs.
-   --------------------------------------------------------- */
-
-.lcard {
-  position: relative;
-  width: 358px;
-  flex: none;
-  border: 1px solid rgba(255, 255, 255, .1);
-  border-radius: 24px;
-  background: var(--bg-primary);
-  overflow: hidden;
-}
-.lcard__open {
-  width: 100%;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  color: var(--text-primary);
-  text-align: center;
-}
-
-.lcard__cover {
-  position: relative;
-  display: block;
-  width: 100%;
-  height: 150px;
-  overflow: hidden;
-}
-/* The cover comes out of Figma as one exported image — the photo and the two
-   58px fades into the card colour are baked in, so nothing here has to
-   re-stage that composition. */
-.lcard__banner {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.lcard__body {
-  width: 100%;
-  padding: 0 16px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.lcard__title {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  color: #fff;
-}
-.lcard__title strong {
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: -.18px;
-  line-height: 23px;
-}
-.lcard__title small {
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 15px;
-}
-
-.lcard__rule {
-  height: 1px;
-  background: rgba(255, 255, 255, .1);
-}
-
-.lcard__stats {
-  width: 100%;
-  display: flex;
-  align-items: center;
-}
-.lcard__stat {
-  flex: 1 0 0;
-  min-width: 1px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-}
-.lcard__stat b {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 26px;
-  color: #fff;
-}
-.lcard__stat i {
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 15px;
-  color: var(--text-primary);
-  opacity: .5;
-}
-.lcard__stat--rank b {
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -.2px;
-  line-height: 25px;
-  color: var(--brand-primary);
-}
-/* same red plate as the unread counters elsewhere */
-.lcard__new {
-  height: 16px;
-  padding: 0 4px;
-  display: flex;
-  align-items: center;
-  border-radius: 8px;
-  background: var(--input-border-error);
-  color: #fff;
-  font-size: 10px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 16px;
-  white-space: nowrap;
-}
-
-/* bare on the cover now — no plate behind it, just the blur. Pulled out over
-   the border so it sits in the card's outer corner, as the frame has it. */
-.lcard__menu {
-  position: absolute;
-  z-index: 2;
-  top: -1px;
-  right: -1px;
-  width: 40px;
-  height: 40px;
-  display: grid;
-  place-items: center;
-  border-radius: 20px;
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-  transition: background .18s ease;
-}
-.lcard__menu:hover { background: rgba(255, 255, 255, .12); }
-
-/* the sheet the ... opens, anchored under the button */
-.lcard__sheet {
-  position: absolute;
-  z-index: 3;
-  top: 44px;
-  right: 8px;
-  min-width: 168px;
-  padding: 4px;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid rgba(255, 255, 255, .1);
-  border-radius: 16px;
-  background: rgba(20, 20, 20, .92);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, .9);
-  animation: lcard-sheet-in .16s ease;
-}
-@keyframes lcard-sheet-in {
-  from { opacity: 0; transform: translateY(-6px); }
-  to   { opacity: 1; transform: none; }
-}
-.lcard__sheet button {
-  height: 40px;
-  padding: 0 12px;
-  display: flex;
-  align-items: center;
-  border-radius: 12px;
-  color: var(--text-primary);
-  font-size: 13px;
-  line-height: 18px;
-  text-align: left;
-}
-.lcard__sheet button:hover { background: rgba(255, 255, 255, .08); }
-/* leaving and deleting are the two that cannot be taken back */
-.lcard__sheet button.is-danger { color: var(--input-border-error); }
-.lcard__sheet button.is-danger:hover { background: rgba(240, 93, 93, .12); }
-
-/* the shared modal doubles as the confirm for those two */
+/* the shared modal doubles as the confirm for anything destructive */
 .modal__cta.is-danger {
   background: var(--input-border-error);
   color: #fff;
-}
-
-.leagues-section-label {
-  min-height: 18px;
-  margin: 0;
-  color: var(--text-primary);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 18px;
-}
-
-/* No blur under the bar — content scrolling beneath is only dimmed, and the
-   dimming fades out smoothly instead of ending on a hard edge. */
-.leagues-topbar {
-  height: 152px;
-  background: linear-gradient(
-  180deg,
-  var(--bg-primary) 30%,
-  rgba(14, 14, 14, 0) 100%
-  );
-}
-.leagues-topbar .iconbtn,
-.leagues-topbar .balance {
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-}
-
-/* =========================================================
-   Live tournament banner
-   ========================================================= */
-
-.arena-event {
-  position: relative;
-  width: 358px;
-  height: 203px;
-  flex: none;
-  padding: 16px;
-  border: 1px solid rgba(255, 255, 255, .1);
-  border-radius: 24px;
-  overflow: visible;
-  isolation: isolate;
-}
-
-.arena-event__surface {
-  position: absolute;
-  z-index: -1;
-  inset: -1px;
-  overflow: hidden;
-  border-radius: 24px;
-  background:
-    radial-gradient(105% 115% at 94% 93%, rgba(91, 229, 0, .72) 0%, rgba(32, 96, 8, .5) 37%, rgba(20, 20, 20, 0) 68%),
-    linear-gradient(110deg, #2f3330 0%, #303530 42%, #141714 100%);
-}
-
-.arena-event__surface::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(90deg, rgba(14, 14, 14, .12), rgba(14, 14, 14, 0) 55%),
-    linear-gradient(0deg, rgba(14, 14, 14, .15), rgba(14, 14, 14, 0));
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .04);
-}
-
-.arena-event__copy {
-  position: relative;
-  z-index: 2;
-  width: 210px;
-}
-
-.arena-event__meta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 28px;
-  margin-bottom: 8px;
-}
-
-.arena-live,
-.arena-players {
-  height: 28px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  border-radius: 12px;
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 20px;
-  letter-spacing: .5px;
-}
-
-.arena-live {
-  padding: 4px 8px;
-  color: var(--brand-primary);
-  border: 1px solid var(--brand-primary);
-  background: #101a15;
-  box-shadow: inset 0 0 23px rgba(36, 255, 0, .6);
-}
-
-.arena-live i {
-  width: 4px;
-  height: 4px;
-  border-radius: 2px;
-  background: currentColor;
-  box-shadow: 0 0 8px currentColor;
-  animation: arena-live-blink 1.15s steps(1, end) infinite;
-}
-
-@keyframes arena-live-blink {
-  0%, 52% { opacity: 1; transform: scale(1); }
-  53%, 100% { opacity: .18; transform: scale(.7); }
-}
-
-.arena-players {
-  min-width: 52px;
-  padding: 4px 8px;
-  color: var(--text-primary);
-  background: rgba(255, 255, 255, .1);
-  border: 1px solid rgba(255, 255, 255, .1);
-}
-
-.arena-players svg { width: 12px; height: 12px; opacity: .9; }
-
-.arena-event h1 {
-  margin: 0 0 8px;
-  color: #fff;
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 25px;
-  letter-spacing: -.2px;
-}
-
-.arena-event__copy p {
-  width: 205px;
-  margin: 0;
-  color: #fff;
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 15px;
-}
-
-.arena-event__prize {
-  position: absolute;
-  z-index: 1;
-  top: -30px;
-  right: -10px;
-  width: 190px;
-  height: 232px;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.arena-event__prize img {
-  position: absolute;
-  top: -13px;
-  right: -3px;
-  width: 188px;
-  height: auto;
-  transform: rotate(14.5deg);
-  transform-origin: 58% 48%;
-  filter: drop-shadow(0 12px 14px rgba(0, 0, 0, .5));
-}
-
-.arena-event__button {
-  position: absolute;
-  z-index: 4;
-  left: 16px;
-  right: 16px;
-  bottom: 16px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 16px;
-  background: var(--brand-primary);
-  color: var(--text-on-brand);
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 18px;
-  transition: transform .12s ease, filter .18s ease;
-}
-
-.arena-event__button:hover { filter: brightness(1.06); }
-.arena-event__button:active { transform: scale(.97); }
-
-/* =========================================================
-   League cards + iOS-style swipe actions
-   ========================================================= */
-
-.arena-swipe-row {
-  position: relative;
-  width: 358px;
-  height: 100px;
-  flex: none;
-  border-radius: 24px;
-  transition: height .24s ease, opacity .2s ease, margin .24s ease;
-}
-
-.arena-swipe-actions {
-  position: absolute;
-  z-index: 1;
-  top: 0;
-  right: 8px;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.arena-action {
-  width: 48px;
-  height: 48px;
-  flex: none;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, .32);
-  transition: transform .12s ease, filter .15s ease;
-}
-
-.arena-action:active { transform: scale(.9); }
-.arena-action--pin { background: #0a84ff; }
-.arena-action--exit { background: #ff453a; }
-.arena-action img { width: 22px; height: 22px; object-fit: contain; }
-.arena-action--pin img { width: 23px; height: 23px; }
-
-.arena-league {
-  position: relative;
-  z-index: 2;
-  width: 358px;
-  height: 100px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding-right: 4px;
-  overflow: hidden;
-  border: none;
-  border-radius: 24px;
-  background: #172c2d;
-  touch-action: pan-y;
-  user-select: none;
-  -webkit-user-select: none;
-  will-change: transform;
-  transition: transform .3s cubic-bezier(.2, .82, .22, 1), box-shadow .22s ease;
-}
-
-.arena-swipe-row.is-dragging .arena-league { transition: none; }
-.arena-swipe-row.is-open .arena-league { transform: translateX(-112px); }
-.arena-swipe-row.is-open .arena-league { box-shadow: 12px 0 26px rgba(0, 0, 0, .28); }
-
-.arena-swipe-row.is-exiting {
-  height: 0;
-  margin-bottom: -16px;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.arena-swipe-row.is-exiting .arena-league { transform: translateX(-390px); }
-
-.arena-league--office {
-  background:
-    linear-gradient(18deg, rgba(31, 203, 114, .95) 0%, rgba(31, 203, 114, 0) 52%),
-    linear-gradient(90deg, #0c5a62 0%, #123945 62%, #0f2e38 100%);
-}
-
-.arena-league--fans {
-  background:
-    linear-gradient(90deg, rgba(24, 26, 21, .3), rgba(15, 17, 14, .08)),
-    linear-gradient(112deg, #2f3427 0%, #697061 100%);
-}
-
-.arena-league::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  background: linear-gradient(90deg, rgba(0, 0, 0, .02), rgba(0, 0, 0, .18));
-  pointer-events: none;
-}
-
-.arena-league__art {
-  position: relative;
-  width: 100px;
-  height: 100px;
-  flex: none;
-  overflow: hidden;
-  align-self: stretch;
-}
-
-.arena-league__art > img {
-  position: absolute;
-  left: 13px;
-  top: 3px;
-  width: 78px;
-  height: auto;
-  filter: drop-shadow(0 7px 8px rgba(0, 0, 0, .35));
-}
-
-.arena-league__art--person > img {
-  left: 0;
-  top: 0;
-  width: 100px;
-  height: 150px;
-  object-fit: cover;
-  object-position: 54% 7%;
-}
-
-.arena-league__copy {
-  position: relative;
-  z-index: 1;
-  flex: 1 1 auto;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 8px 0;
-  color: #fff;
-}
-
-.arena-league__copy strong {
-  max-width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  overflow: hidden;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 20px;
-  letter-spacing: -.16px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-
-.arena-league__copy small {
-  display: -webkit-box;
-  overflow: hidden;
-  color: #fff;
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 15px;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-}
-
-.arena-league__copy b {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  color: var(--brand-primary);
-  font-size: 10px;
-  font-weight: 400;
-  line-height: 20px;
-  letter-spacing: .5px;
-  white-space: nowrap;
-}
-
-.arena-chat-icon {
-  width: 16px;
-  height: 16px;
-  flex: none;
-}
-
-.arena-league__place {
-  position: relative;
-  z-index: 1;
-  width: 60px;
-  min-height: 68px;
-  flex: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 8px 6px;
-  border-radius: 11px;
-  background: rgba(255, 255, 255, .1);
-}
-
-.arena-league__place strong {
-  color: var(--brand-primary);
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 25px;
-  letter-spacing: -.2px;
-}
-
-.arena-league__place small {
-  color: var(--text-primary);
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 20px;
-  letter-spacing: .5px;
-}
-
-.arena-league__chevron {
-  position: relative;
-  z-index: 1;
-  width: 20px;
-  height: 20px;
-  flex: none;
-  opacity: .5;
-  transform: rotate(-90deg);
-}
-
-.shell-footer.is-leagues .pickbar { display: none !important; }
-
-@media (prefers-reduced-motion: reduce) {
-  .arena-live i { animation: none; }
-  .arena-league,
-  .arena-swipe-row { transition-duration: .01ms; }
 }
 
 /* =========================================================
@@ -688,7 +31,6 @@
    Figma › THELEAGUES - Main (712:8963)
    ========================================================= */
 
-.leagues-legacy { display: none; }
 .theleagues-content {
   width: 390px;
   min-height: 100%;
@@ -794,7 +136,6 @@
 .theleagues-card__avatars img:first-child { margin-left: 0; }
 .theleagues-card__more { display: grid; place-items: center; border: 0; background: #313131; color: rgba(247, 250, 248, .5); font-size: 10px; }
 .theleagues-card__invite { position: absolute; z-index: 2; right: 8px; bottom: 8px; height: 32px; padding: 0 12px; border-radius: 12px; background: rgba(255, 255, 255, .1); color: var(--text-primary); font-size: 10px; line-height: 18px; }
-.theleagues-divider { height: 1px; margin: 0; background: rgba(255, 255, 255, .1); }
 .theleagues-create-card {
   position: relative;
   min-height: 150px;
@@ -821,10 +162,17 @@
 .theleagues-card__invite:focus-visible,
 .theleagues-create-card button:focus-visible { outline: 2px solid var(--brand-primary); outline-offset: 2px; }
 
+/* The bar itself carries nothing — the dimming and the blur belong to the
+   scrim under it, so it fades out smoothly instead of ending on a hard edge.
+   The icons sit bare on that scrim, the way they do on Main. */
 .leagues-topbar {
   z-index: 15;
   height: var(--topbar-h);
   background: none;
+}
+.leagues-topbar .iconbtn {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 .leagues-topbar .topbar__scrim {
   background: linear-gradient(180deg, #0e0e0e 30%, rgba(14, 14, 14, 0) 100%);
@@ -834,7 +182,6 @@
   mask-image: linear-gradient(180deg, #000 0%, #000 62%, transparent 100%);
 }
 .leagues-topbar .balance { -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
-.shell-footer.is-leagues .leagues-create { display: none !important; }
 
 
 /* =========================================================
@@ -971,7 +318,7 @@
 }
 .round-pill--published,
 .round-pill--open { background: rgba(74, 222, 128, .16); color: var(--brand-primary); }
-.round-pill--live { background: rgba(255, 92, 92, .16); color: #ff6b6b; }
+.round-pill--live { background: rgba(240, 93, 93, .16); color: var(--status-error-text); }
 .round-pill--completed { background: rgba(255, 255, 255, .08); color: var(--text-dim); }
 
 .rounds-empty {
@@ -1019,7 +366,7 @@
 .round-match__badges img { width: 24px; height: 24px; object-fit: contain; }
 .round-match__badges img + img { margin-left: -6px; }
 .round-match__drop { padding: 0; color: var(--text-dim); font-size: 11px; line-height: 16px; }
-.round-match__drop:hover { color: #ff6b6b; }
+.round-match__drop:hover { color: var(--status-error-text); }
 .round-questions { display: flex; flex-direction: column; gap: 6px; }
 .round-questions > span { color: var(--text-dim); font-size: 11px; line-height: 16px; }
 .round-q {
@@ -1080,18 +427,22 @@
 
 .round-picker { max-height: 620px; display: flex; flex-direction: column; }
 .round-picker .settings-sheet__content { min-height: 0; flex: 1; }
+/* the approved field shape from registration, a step lighter so it reads
+   against the sheet it sits on */
 .round-search {
   width: 100%;
-  height: 48px;
+  height: 52px;
   padding: 0 16px;
-  border: 1px solid rgba(255, 255, 255, .1);
-  border-radius: 16px;
+  border: 1px solid var(--input-border);
+  border-radius: var(--r-input);
   outline: none;
-  background: var(--bg-surface);
-  color: var(--text-primary);
-  font-size: 13px;
+  background: var(--input-bg-active);
+  color: var(--input-text);
+  font-size: 14px;
+  transition: background .2s ease, border-color .2s ease;
 }
-.round-search::placeholder { color: var(--text-dim); }
+.round-search::placeholder { color: var(--input-placeholder); }
+.round-search:focus { border-color: var(--input-border-active); }
 .round-days { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
 .round-days::-webkit-scrollbar { display: none; }
 .round-day {
@@ -1154,14 +505,6 @@
 
 /* --- a round, as it is played ---------------------------- */
 
-.league-round-card--play { padding: 16px 0; gap: 12px; }
-.league-round-card--play > h2,
-.league-round-card--play > p,
-.league-round-card--play > .league-round-card__head,
-.league-round-card--play > .round-head,
-.league-round-card--play > .round-head__note,
-.league-round-card--play > .league-round-note { padding: 0 16px; }
-
 /* Figma › LEAGUES › League (748:2284): which round, how long is left, and
    how much of it is answered. */
 /* The rhythm Main keeps between its picks header and the cards under it. */
@@ -1169,18 +512,6 @@
 .round-head { display: flex; flex-direction: column; gap: 4px; padding: 0 8px; }
 .round-head__row { display: flex; align-items: center; gap: 8px; }
 .round-head__row .round-pill { margin-left: auto; }
-/* the way back into a round that is already in */
-.round-head__edit {
-  margin-left: auto;
-  padding: 0;
-  color: var(--brand-primary);
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 18px;
-  text-decoration: underline;
-}
-.round-head__row .round-pill + .round-head__edit { margin-left: 8px; }
-.round-head__note { color: var(--text-dim); font-size: 12px; line-height: 18px; }
 .round-head__row strong { color: var(--text-primary); font-size: 16px; font-weight: 600; line-height: 23px; }
 .round-head__clock { display: flex; align-items: center; gap: 6px; color: var(--text-dim); font-size: 12px; line-height: 15px; }
 .round-head__clock b { font-weight: 400; font-variant-numeric: tabular-nums; }

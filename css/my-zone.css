@@ -533,8 +533,6 @@ button.mz-showcase__item:active { transform: scale(.94); }
 .myzone-topbar { z-index: 40; }
 .myzone-topbar .topbar__row { padding: 8px 16px; }
 
-.myzone-footer { gap: 0; }
-
 /* compact feedback without shifting the Figma layout */
 .mz-heading button:hover,
 .mz-history__more:hover { opacity: .85; }

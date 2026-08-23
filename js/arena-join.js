@@ -56,6 +56,13 @@
     var description = tournament ? tournament.description : textFrom(card, '.thearena-tournament__copy p, .thearena-featured__copy p', detailDescription ? detailDescription.textContent.trim() : 'Make your predictions and compete for prizes.');
     var kind = tournament ? tournament.label : (tag ? tag.textContent.trim() : (detailKind ? detailKind.textContent.trim() : 'Open'));
 
+    var live = tournament ? !!tournament.live : !!(card && card.dataset.tournamentPhase === 'live');
+    var liveTime = '45h 35m';
+    if (tournament && tournament.liveEndsAt) {
+      var minutesLeft = Math.max(0, Math.ceil((tournament.liveEndsAt - Date.now()) / 60000));
+      liveTime = Math.floor(minutesLeft / 60) + 'h ' + String(minutesLeft % 60).padStart(2, '0') + 'm';
+    }
+
     return {
       id: id,
       card: card,
@@ -67,7 +74,9 @@
       participants: participants,
       capacity: tournament && tournament.capacity ? tournament.capacity : '40',
       rounds: rounds,
-      time: textFrom(card, '.thearena-time', detailTime ? detailTime.textContent.trim() : '2d 14h').replace(/^Live now$/i, '2d 14h'),
+      live: live,
+      time: live ? liveTime
+        : textFrom(card, '.thearena-time', detailTime ? detailTime.textContent.trim() : '2d 14h'),
       entry: tournament && tournament.entry ? tournament.entry : entryFromLabel(join ? join.textContent : 'Free')
     };
   }
@@ -96,6 +105,7 @@
     setText('participants', info.participants);
     setText('capacity', info.capacity);
     setText('rounds', info.rounds);
+    setText('time-label', info.live ? 'Ends in' : 'Starts in');
     setText('time', info.time);
     setText('entry', info.entry);
     setText('success-title', info.title);

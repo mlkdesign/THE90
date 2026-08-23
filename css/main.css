@@ -114,13 +114,19 @@
   background: rgba(255, 255, 255, .1);
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
+  transition: background .18s ease, transform .12s ease;
 }
+/* one plate, one press, wherever it floats — the tournament, a league, the
+   chat, the setup screens */
+.iconbtn:hover { background: rgba(255, 255, 255, .16); }
+.iconbtn:active { transform: scale(.94); }
 /* in the top bar the icons sit bare on the scrim */
 .status-header .iconbtn {
   background: none;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
+.status-header .iconbtn:hover { background: none; }
 .iconbtn__badge {
   position: absolute;
   top: 0; right: 0;
@@ -353,16 +359,6 @@
   font-variant-numeric: tabular-nums;
   line-height: 18px;
 }
-.section-head__dot {
-  width: 4px;
-  height: 4px;
-  border-radius: 2px;
-  background: var(--brand-primary);
-  opacity: 0;
-  transition: opacity .2s ease;
-}
-.section-head__dot.is-on { opacity: 1; }
-
 /* =========================================================
    Daily picks — Figma › Main – Full Scroll › Picks-bar + match-card
    ========================================================= */
@@ -394,8 +390,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
 }
-.picksbar__progress { gap: 16px; }
 .picksbar__count {
   flex: none;
   display: flex;
@@ -504,12 +500,13 @@
   content: '';
   position: absolute;
   z-index: 1;
+  top: 0;
   left: 0;
   width: 100%;
   height: 40px;
+  background: linear-gradient(180deg, rgba(6, 18, 13, .78), rgba(6, 18, 13, 0));
   pointer-events: none;
 }
-.mcard__head::before { top: 0; background: linear-gradient(180deg, rgba(6, 18, 13, .78), rgba(6, 18, 13, 0)); }
 
 .pitch {
   position: absolute;
@@ -924,13 +921,6 @@
 }
 
 
-/* --- expanded accepted card: read-only recap --- */
-.mcard.is-locked .seg__btn      { cursor: default; }
-.mcard.is-locked .seg__btn:hover:not(.is-on) { background: none; color: var(--text-dim); }
-.mcard.is-locked .stepper__btn  { display: none; }
-.mcard.is-locked .stepper__field { pointer-events: none; }
-
-
 /* =========================================================
    Sponsored AD
    ========================================================= */
@@ -1000,7 +990,7 @@
   padding: 0 16px;
   border-radius: 10px;
   background: #fff;
-  color: #06120d;
+  color: var(--text-on-brand);
   font-size: 12px;
   font-weight: 600;
   transition: filter .18s ease;
@@ -1597,15 +1587,6 @@
 
 
 /* Everything on this screen moves; none of it has to. */
-@media (prefers-reduced-motion: reduce) {
-  .picks { scroll-behavior: auto; }
-  .mcard,
-  .drum__reel,
-  .drum__cell,
-  .picksbar__meter i,
-  .winbar { transition: none !important; }
-  .winbar__cta.is-nudging { animation: none; }
-}
 
 
 /* =========================================================
@@ -1698,8 +1679,8 @@
 .mcard--round .mcard__bodywrap { padding: 0 0 8px; }
 .mcard--round .mcard__body {
   /* No frame of its own: the question card is the thing with edges, and it is
-     the thing that slides. */
-  padding: 0;
+     the thing that slides. The side padding is the gutter a snapped card
+     rests in. */
   display: flex;
   flex-direction: row;
   gap: 8px;
@@ -1743,11 +1724,6 @@
 .mcard--round .scores { width: 100%; }
 /* the info sits on the question it explains, not over the pitch */
 .mcard--round .mcard__info { z-index: 3; top: 8px; right: 8px; }
-
-/* a question that is already in: the answer stands, the choosing does not */
-.mcard--round .mcard__block.is-locked .seg,
-.mcard--round .mcard__block.is-locked .scores { opacity: .55; }
-.mcard--round .mcard__block.is-locked .seg__btn.is-on { opacity: 1; }
 
 .mcard__dots {
   display: flex;

@@ -476,20 +476,18 @@
 }
 .support-form-field textarea {
   width: 100%;
+  height: 100px;
+  padding: 16px;
   border: 1px solid var(--input-border);
   outline: 0;
-  border-radius: 16px;
+  border-radius: var(--r-input);
   background: var(--input-bg);
   color: var(--input-text);
   font: inherit;
   font-size: 14px;
   line-height: 18px;
-  transition: border-color .18s ease, background .18s ease;
-}
-.support-form-field textarea {
-  height: 100px;
-  padding: 16px;
   resize: none;
+  transition: border-color .18s ease, background .18s ease;
 }
 .support-form-field textarea::placeholder { color: var(--input-placeholder); }
 .support-form-field textarea:focus {
@@ -736,7 +734,7 @@
   background: var(--brand-primary);
   color: var(--text-on-brand);
 }
-.support-message__bubble p { margin: 0; font-size: 14px; line-height: 20px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.support-message__bubble p { margin: 0; font-size: 12px; line-height: 18px; white-space: pre-wrap; overflow-wrap: anywhere; }
 .support-message__bubble time { font-size: 10px; line-height: 12px; color: rgba(255, 255, 255, .5); }
 .support-message--user time { color: rgba(6, 18, 13, .6); }
 .support-message--typing .support-message__bubble { width: auto; flex-direction: row; gap: 5px; }
@@ -772,9 +770,9 @@
 .support-chat-input label > img { flex: none; margin-bottom: 2px; opacity: .5; }
 .support-chat-input textarea {
   min-width: 0;
-  height: 20px;
-  min-height: 20px;
-  max-height: 100px;
+  height: 18px;
+  min-height: 18px;
+  max-height: 90px;
   flex: 1;
   padding: 0;
   border: 0;
@@ -785,8 +783,8 @@
   background: transparent;
   color: var(--text-primary);
   font: inherit;
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 12px;
+  line-height: 18px;
   scrollbar-width: thin;
 }
 .support-chat-input textarea::placeholder { color: var(--text-dim); }
@@ -806,7 +804,3 @@
 .support-chat-input > button:not(:disabled) img { opacity: 1; filter: none; }
 .support-chat-input > button:not(:disabled):active { transform: scale(.92); }
 
-@media (prefers-reduced-motion: reduce) {
-  .support-message--typing i { animation: none; }
-  .support-faq > button small { transition: none; }
-}

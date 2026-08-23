@@ -52,7 +52,7 @@
 
   function generatedUser(rank) {
     if (rank === YOUR_RANK) {
-      return { name: 'Your Name', handle: '@yournickname', avatar: 'assets/img/avatar.png', isYou: true };
+      return { name: 'Your Name', handle: '@yournickname', avatar: 'assets/my-zone/avatar.png', isYou: true };
     }
     if (known[rank]) {
       return Object.assign({ avatar: avatars[(rank - 4) % avatars.length] }, known[rank]);

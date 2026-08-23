@@ -64,18 +64,6 @@
 }
 .league-menu img { opacity: .9; }
 
-.league-back,
-.league-menu,
-.league-chat-head .iconbtn {
-  transition: background .18s ease, transform .12s ease;
-}
-.league-back:hover,
-.league-menu:hover,
-.league-chat-head .iconbtn:hover { background: rgba(255, 255, 255, .16); }
-.league-back:active,
-.league-menu:active,
-.league-chat-head .iconbtn:active { transform: scale(.94); }
-
 /* the sheet it opens, anchored under the button */
 .league-sheet {
   position: absolute;
@@ -110,7 +98,7 @@
   text-align: left;
 }
 .league-sheet button:hover { background: rgba(255, 255, 255, .08); }
-.league-sheet button.is-danger { color: #ff6b6b; }
+.league-sheet button.is-danger { color: var(--input-border-error); }
 
 .league-hero {
   position: absolute;
@@ -225,9 +213,6 @@
   display: flex;
   gap: 8px;
 }
-/* the only action in the block, and not the loudest thing on the screen:
-   the league itself is */
-.league-actions__invite { width: 100%; }
 .league-actions button,
 .league-join {
   height: 44px;
@@ -247,7 +232,9 @@
   font-size: 15px !important;
   font-weight: 600;
 }
-.league-actions__invite { background: rgba(255, 255, 255, .1); color: var(--text-primary); }
+/* the only action in the block, and not the loudest thing on the screen:
+   the league itself is */
+.league-actions__invite { width: 100%; background: rgba(255, 255, 255, .1); color: var(--text-primary); }
 .league-actions button:active,
 .league-join:active { transform: scale(.97); }
 .league-actions button:hover,
@@ -298,6 +285,7 @@
   padding: 0 16px;
   overflow-x: auto;
   overflow-y: clip;
+  scroll-padding-inline: 16px;
   border-bottom: 1px solid rgba(255, 255, 255, .1);
   background: var(--bg-primary);
   scrollbar-width: none;
@@ -311,8 +299,14 @@
   font-size: 13px;
   line-height: 18px;
   white-space: nowrap;
-  transition: color .18s ease;
+  transition: color .18s ease, opacity .18s ease;
 }
+/* The tournament's own edges: the first tab starts level with the content it
+   heads, and only the last one carries a gutter. Without this the four tabs
+   overran the strip by exactly the 16 the first one was indented by, and the
+   ribbon slid that far across on every tab change with nothing to reveal. */
+.league-tabs button:first-child { padding-left: 0; }
+.league-tabs button:last-of-type { padding-right: 16px; }
 .league-tabs button.is-active { color: var(--text-primary); font-weight: 600; }
 .league-tabs__indicator {
   position: absolute;
@@ -392,8 +386,7 @@
   flex-direction: column;
   gap: 16px;
 }
-.league-participants h2,
-.league-prizes h2 {
+.league-participants h2 {
   margin: 0;
   color: var(--text-primary);
   font-size: 12px;
@@ -505,23 +498,6 @@
   white-space: nowrap;
 }
 .league-member__score img { width: 16px; height: 16px; flex: none; }
-.league-participants__all {
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  color: rgba(247, 250, 248, .6);
-  font-size: 12px;
-  line-height: 18px;
-}
-.league-participants__all img {
-  width: 16px;
-  height: 16px;
-  transition: transform .22s ease;
-}
-.league-participants__all[aria-expanded="true"] img { transform: rotate(180deg); }
-
 /* =========================================================
    Rules
    ========================================================= */
@@ -646,123 +622,12 @@
 
 
 
-/* =========================================================
-   Prizes
-   ========================================================= */
-
-.league-prizes {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-/* ---------------------------------------------------------
-   Winners' prize — Figma › League › match-card-prize (680:6437)
-
-   The whole thing stands on a floodlit pitch with the cup in
-   the corner: first place written straight onto it, the two
-   runners-up on frosted rows underneath with their badges.
-   --------------------------------------------------------- */
-
-.prizecard {
-  position: relative;
-  width: 100%;
-  padding: 64px 16px 16px;
-  border: 1px solid rgba(255, 255, 255, .1);
-  border-radius: 24px;
-  background: var(--bg-primary);
-  overflow: hidden;
-}
-/* pitch and cup come out of Figma as one exported image */
-.prizecard__bg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center top;
-  pointer-events: none;
-}
-.prizecard__body {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-/* first place is not a row — it is the card */
-.prizecard__first {
-  width: 210px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  color: #fff;
-}
-.prizecard__first strong {
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: -.18px;
-  line-height: 23px;
-}
-.prizecard__first p {
-  margin: 0;
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 15px;
-}
-
-.prizerow {
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, .1);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-}
-.prizerow__copy {
-  flex: 1 0 0;
-  min-width: 1px;
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  color: var(--text-primary);
-}
-.prizerow__copy strong {
-  font-size: 10px;
-  font-weight: 600;
-  line-height: 18px;
-  white-space: nowrap;
-}
-.prizerow__copy small {
-  font-size: 10px;
-  font-weight: 400;
-  line-height: 13px;
-  opacity: .6;
-}
-.prizerow__art {
-  width: 100px;
-  flex: none;
-  align-self: stretch;
-  display: grid;
-  place-items: center;
-}
-.prizerow__art img { width: 70px; height: 70px; object-fit: contain; }
-.prizerow--third .prizerow__art img { width: 66px; height: 66px; }
-
 /* Shared app footer variants for League and League Chat. */
 .league-join,
 .league-chat-input { display: none; }
-.shell-footer.is-league .pickbar,
 .shell-footer.is-league .rankings-pin,
-.shell-footer.is-league-chat .pickbar,
 .shell-footer.is-league-chat .rankings-pin,
 .shell-footer.is-league-chat .league-join,
-.shell-footer.is-league-rules .pickbar,
-.shell-footer.is-league-rules .rankings-pin,
-.shell-footer.is-league-participants .pickbar,
 .shell-footer.is-league-participants .rankings-pin,
 .shell-footer.is-league-participants .league-join { display: none !important; }
 .shell-footer.is-league .league-join { display: flex; width: 100%; flex: none; }
@@ -834,6 +699,12 @@
   left: 0;
   margin: 0;
 }
+/* While the finger owns them they follow it exactly — a control that eases
+   towards the pointer lags behind the screen it is travelling with. */
+.shell-footer.is-paging .league-chat-input,
+.shell-footer.is-paging .navbar,
+.shell-footer.is-paging .league-join { transition: none; }
+
 /* and they flick home on the same curve the screens do */
 .shell-footer.is-settling .league-chat-input,
 .shell-footer.is-settling .navbar,
@@ -862,9 +733,9 @@
 .league-chat-input label > img { flex: none; margin-bottom: 2px; opacity: .5; }
 .league-chat-input textarea {
   min-width: 0;
-  height: 20px;
-  min-height: 20px;
-  max-height: 100px;
+  height: 18px;
+  min-height: 18px;
+  max-height: 90px;
   flex: 1;
   padding: 0;
   border: 0;
@@ -875,8 +746,8 @@
   background: transparent;
   color: var(--text-primary);
   font: inherit;
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 12px;
+  line-height: 18px;
 }
 .league-chat-input textarea::placeholder { color: var(--text-dim); }
 .league-chat-input > button {
@@ -1082,23 +953,23 @@
   background: var(--brand-primary);
   color: var(--text-on-brand);
 }
-.league-chat-message--user .league-chat-message__bubble time { align-self: flex-end; }
-.league-chat-message__bubble p { margin: 0; font-size: 14px; line-height: 20px; white-space: pre-wrap; overflow-wrap: anywhere; }
-.league-chat-message__bubble time { color: var(--text-dim); font-size: 10px; line-height: 12px; }
-.league-chat-message--user time { color: rgba(6, 18, 13, .6); }
-
-@media (prefers-reduced-motion: reduce) {
-  .league-actions button,
-  .league-join,
-  .league-chat-input > button { transition: none; }
+.league-chat-message__bubble p { margin: 0; font-size: 12px; line-height: 18px; white-space: pre-wrap; overflow-wrap: anywhere; }
+/* under the bubble, on the side the bubble is on */
+.league-chat-message__time {
+  padding: 0 4px;
+  color: var(--text-dim);
+  font-size: 10px;
+  line-height: 12px;
 }
+.league-chat-message--user .league-chat-message__time { align-self: flex-end; }
+
 
 
 /* =========================================================
    Create your league
    ========================================================= */
 
-.content--create {
+.content--league-create {
   align-items: stretch;
   justify-content: flex-start;
   gap: 20px;
@@ -1107,8 +978,8 @@
   overflow-y: auto;
   scrollbar-width: none;
 }
-.content--create::-webkit-scrollbar { display: none; }
-.content--create .offer { margin-bottom: 4px; }
+.content--league-create::-webkit-scrollbar { display: none; }
+.content--league-create .offer { margin-bottom: 4px; }
 
 .league-cover {
   position: relative;
@@ -1176,13 +1047,6 @@
    Same card as Main, turned on its side: the round is a short
    list you swipe through rather than a page you scroll.
    ========================================================= */
-
-.league-picks {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.league-picks .section-head { padding: 0; }
 
 .picks-track {
   /* each card keeps its own height: a taller neighbour — the tick at the end

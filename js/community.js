@@ -373,7 +373,7 @@
 
   var messages = loadMessages();
   var replyPending = false;
-  var CHAT_LINE_HEIGHT = 20;
+  var CHAT_LINE_HEIGHT = 18;
   var CHAT_MAX_LINES = 5;
 
   function updateChatComposer() {

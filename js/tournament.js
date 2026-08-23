@@ -146,9 +146,23 @@
       card.dataset.tournamentState = 'joined';
       var button = card.querySelector('[data-arena-join]');
       if (button && !button.classList.contains('is-locked')) {
+        if (!button.dataset.idleLabel) button.dataset.idleLabel = button.textContent;
         button.classList.add('is-joined');
         button.textContent = 'Joined';
         button.setAttribute('aria-pressed', 'true');
+      }
+    });
+  }
+
+  /* Leaving puts the card back the way it was before you joined. */
+  function resetArenaCard(id) {
+    Array.prototype.slice.call(arena.querySelectorAll('[data-tournament-id="' + id + '"]')).forEach(function (card) {
+      card.dataset.tournamentState = 'open';
+      var button = card.querySelector('[data-arena-join]');
+      if (button && !button.classList.contains('is-locked')) {
+        button.classList.remove('is-joined');
+        button.textContent = button.dataset.idleLabel || 'Join for FREE';
+        button.setAttribute('aria-pressed', 'false');
       }
     });
   }
@@ -166,7 +180,7 @@
   function tournamentUser(rank, tournament) {
     var yourRank = tournament.joined ? Number(tournament.place.replace('#', '')) : 0;
     if (rank === yourRank) {
-      return { name: 'Your Name', handle: '@yournickname', avatar: 'assets/img/avatar.png', isYou: true };
+      return { name: 'Your Name', handle: '@yournickname', avatar: 'assets/my-zone/avatar.png', isYou: true };
     }
     var seed = rankingNames[rank - 1] || ['Tournament Player ' + rank, '@player' + rank];
     return {
@@ -345,6 +359,35 @@
     });
   }
 
+  /* Where the round stands, in the three numbers the bar is decided by:
+     how much has been answered, whether anything is waiting to be accepted,
+     and whether there is nothing left to do. */
+  function roundBarState(state) {
+    var shape = { answered: 0, pending: false, done: true };
+    state.forEach(function (question) {
+      if (question.selected >= 0) shape.answered += 1;
+      if (!question.confirmed) shape.done = false;
+      if (question.selected >= 0 &&
+          (!question.confirmed || question.selected !== question.acceptedIndex)) {
+        shape.pending = true;
+      }
+    });
+    // a confirmed answer you have since changed reopens a finished round
+    if (shape.pending) shape.done = false;
+    return shape;
+  }
+
+  /* Which question the bar speaks for: whatever is waiting to be accepted,
+     or else the next one still to answer. */
+  function barQuestionIndex(state) {
+    var pending = selectedQuestionIndex(state);
+    if (pending >= 0) return pending;
+    for (var i = 0; i < state.length; i += 1) {
+      if (state[i].selected < 0) return i;
+    }
+    return -1;
+  }
+
   function paintRoundQuestionCard(card, state) {
     if (!card || !state) return;
     card.classList.toggle('is-picked', state.selected >= 0);
@@ -382,83 +425,68 @@
      questions. Writing its copy on every scroll frame is what made it slide
      in at a different point each time; content is set once, here, and
      visibility is decided separately by syncRoundBar(). */
+  var roundBarReady = false;
+  var roundBarDismissed = false;
+
+  /* The bar belongs to the round, not to any one question. It comes up with
+     the first answer and stays there for the rest of the round — on a question
+     with nothing to confirm its button simply goes quiet, exactly as the daily
+     slip's does. It leaves on two things only: the last answer going in, and
+     the X. */
   function showRoundPickBar(tournament, questionIndex) {
     if (!sharedPickBar || !sharedPickBar.element) return;
     var state = getRoundPickState(tournament);
     var question = state[questionIndex];
     if (!question) return hideRoundPickBar();
 
-    // nothing to confirm until something has been chosen that is not already in
-    var started = state.some(function (q) {
-      return q.selected >= 0 && (!q.confirmed || q.selected !== q.acceptedIndex);
-    });
-    if (!started) return hideRoundPickBar();
+    var shape = roundBarState(state);
+    if (roundBarDismissed || !shape.answered || shape.done) return hideRoundPickBar();
 
     activeRoundPick = { id: activeId, round: tournament.currentRound, index: questionIndex };
     sharedPickBar.element.classList.add('winbar--round-picks');
-    if (sharedPickBar.label) sharedPickBar.label.textContent = 'Estimated win:';
+    if (sharedPickBar.label) sharedPickBar.label.textContent = 'Potential win:';
     // every answered question is worth +40
     if (sharedPickBar.points) {
-      var answered = state.reduce(function (sum, q) { return sum + (q.selected >= 0 ? 1 : 0); }, 0);
-      sharedPickBar.points.textContent = '+' + (40 * answered);
+      sharedPickBar.points.textContent = '+' + (40 * shape.answered);
     }
     if (sharedPickBar.next) {
       var ready = question.selected >= 0 &&
         (!question.confirmed || question.selected !== question.acceptedIndex);
-      sharedPickBar.next.textContent = ready ? 'Accept pick?' : 'Select your prediction';
+      sharedPickBar.next.textContent = 'Accept pick';
       sharedPickBar.next.disabled = !ready;
+      // the same pulse the daily slip gives the button as it arms
+      if (ready && !roundBarReady) {
+        sharedPickBar.next.classList.remove('is-nudging');
+        void sharedPickBar.next.offsetWidth;
+        sharedPickBar.next.classList.add('is-nudging');
+      }
+      if (!ready) sharedPickBar.next.classList.remove('is-nudging');
+      roundBarReady = ready;
     }
     syncRoundBar();
   }
 
   function hideRoundPickBar() {
     activeRoundPick = null;
+    roundBarReady = false;
     if (!sharedPickBar || !sharedPickBar.element || !sharedPickBar.element.classList.contains('winbar--round-picks')) return;
     sharedPickBar.show(false);
   }
 
-  /* The bar belongs to the question card: it stays up for as long as that
-     card is genuinely readable, and steps aside once the card has scrolled
-     away or the bar itself is covering half of it. Scrolling back brings it
-     straight back, because this is a pure function of the scroll position.
+  /* The bar belongs to the round, not to the card that happens to be under
+     the eye. Once a round owns it, it is up — scrolling the page does not
+     take it away, the same way the daily slip keeps its bar while you scroll
+     Main down to the news. What takes it away is decided in one place, by
+     showRoundPickBar: the round being finished, or the X.
 
-     The bar's own rect is deliberately not used as the reference — when it is
-     hidden it sits off-screen, which would flip the answer and set the two
-     into a loop. Its resting top edge is derived from the frame instead. */
-  var lastBarHeight = 0;
-
-  function barHeight() {
-    // hidden, the bar measures zero — remember the last real height so the
-    // answer does not change the moment it appears
-    var measured = sharedPickBar.element.offsetHeight;
-    if (measured) lastBarHeight = measured;
-    return lastBarHeight || 96;
-  }
-
-  function roundCardIsReadable() {
-    var scroller = screen.querySelector('.round-questions-scroller');
-    if (!scroller || !scroll || !sharedPickBar || !sharedPickBar.element) return false;
-
-    var card = scroller.querySelector('[data-round-question="' +
-      (activeRoundPick ? activeRoundPick.index : -1) + '"]') || nearestQuestionCard(scroller);
-    if (!card) return false;
-
-    // rects come back scaled by the device fit; offsetHeight does not
-    var frame = scroll.getBoundingClientRect();
-    var scale = frame.width / scroll.offsetWidth || 1;
-    var barTop = frame.bottom - barHeight() * scale;
-
-    var rect = card.getBoundingClientRect();
-    var top = Math.max(rect.top, frame.top);
-    var bottom = Math.min(rect.bottom, barTop);
-    return (bottom - top) >= rect.height * 0.5;
-  }
-
+     activeRoundPick is the ownership: hideRoundPickBar clears it, so leaving
+     the tab, the screen or the tournament all put the bar down through the
+     same door. */
   function syncRoundBar() {
     if (!sharedPickBar || !sharedPickBar.element) return;
     if (!sharedPickBar.element.classList.contains('winbar--round-picks')) return;
     if (!activeRoundPick || activeRoundPick.id !== activeId) return;
-    sharedPickBar.show(roundCardIsReadable());
+    sharedPickBar.show(true);
   }
 
   function restoreDailyPickBar() {
@@ -539,6 +567,8 @@
         // a confirmed answer can still be changed; the bar asks whether you
         // meant it, and leaving the question puts the old one back
         state.selected = answerIndex;
+        // answering is what calls the bar back after you have closed it
+        roundBarDismissed = false;
         // Keep the native rail in place. Rebuilding it here resets its scroll
         // position and makes a previously selected card flash out of view.
         paintRoundQuestionCard(card, state);
@@ -621,7 +651,13 @@
   function finishRound(tournament) {
     var eventItem = currentRoundItem(tournament.currentRound);
     var scroller = eventItem && eventItem.querySelector('.round-questions-scroller');
-    if (!scroller || scroller.querySelector('[data-round-done]')) return;
+    if (!scroller) return;
+
+    /* Nothing is left to confirm, so the bar goes — including when the round
+       was already closed and this is a changed answer being put back in. The
+       tick below is only built the first time. */
+    hideRoundPickBar();
+    if (scroller.querySelector('[data-round-done]')) return;
 
     var done = makeRoundDoneCard(tournament);
     // the same height as the questions it follows, so the rail does not grow
@@ -629,8 +665,6 @@
     if (first) done.card.style.height = first.offsetHeight + 'px';
     scroller.appendChild(done.card);
     fitPanelHeight();
-
-    hideRoundPickBar();
 
     window.requestAnimationFrame(function () {
       var first = scroller.querySelector('[data-round-question="0"]');
@@ -659,6 +693,8 @@
     });
     holder.appendChild(scroller);
     eventItem.appendChild(holder);
+    // only now does the round need the taller two-row shape
+    eventItem.classList.add('is-playing');
     wireRoundQuestionScroller(scroller, tournament);
     fitPanelHeight();
   }
@@ -670,7 +706,9 @@
 
     var state = getRoundPickState(tournament);
     var question = state[activeRoundPick.index];
-    if (!question || question.confirmed || question.selected < 0) return;
+    if (!question || question.selected < 0) return;
+    // a confirmed answer can be changed — re-accepting simply replaces it
+    if (question.confirmed && question.selected === question.acceptedIndex) return;
 
     question.confirmed = true;
     question.acceptedIndex = question.selected;
@@ -683,35 +721,36 @@
         break;
       }
     }
-    // Keep the shared winbar visible but disable its confirm button for
-    // the newly confirmed question. Update the summed estimated win.
     paintRoundQuestionStates(tournament);
-    showRoundPickBar(tournament, confirmedIndex);
 
-    // Nothing left to answer — the round is done, so close it on its own card
+    // Nothing left to answer — the round is done, so close it on its own card.
+    // Checked before the bar is repainted, or it would flash back on for the
+    // frame between the last answer landing and the tick arriving.
     if (nextIndex < 0) {
       finishRound(tournament);
       return;
     }
 
+    // The bar stays up and now speaks for the question being scrolled to: its
+    // button goes quiet until that one is answered, and the running total
+    // already counts what has been accepted.
+    showRoundPickBar(tournament, nextIndex);
+
     // Move to the following unanswered card, wrapping to an earlier skipped
     // question after the fifth card. The existing rail stays mounted, so its
     // position and every other selected answer remain stable.
-    if (nextIndex >= 0) {
-      window.requestAnimationFrame(function () {
-        var eventItem = currentRoundItem(tournament.currentRound);
-        var scroller = eventItem && eventItem.querySelector('.round-questions-scroller');
-        var nextCard = scroller && scroller.querySelector('[data-round-question="' + nextIndex + '"]');
-        if (scroller && nextCard) {
-          var firstCard = scroller.querySelector('[data-round-question="0"]');
-          scroller.scrollTo({
-            left: Math.max(0, nextCard.offsetLeft - (firstCard ? firstCard.offsetLeft : 0)),
-            behavior: 'smooth'
-          });
-          showRoundPickBar(tournament, nextIndex);
-        }
+    window.requestAnimationFrame(function () {
+      var eventItem = currentRoundItem(tournament.currentRound);
+      var scroller = eventItem && eventItem.querySelector('.round-questions-scroller');
+      var nextCard = scroller && scroller.querySelector('[data-round-question="' + nextIndex + '"]');
+      if (!scroller || !nextCard) return;
+      var firstCard = scroller.querySelector('[data-round-question="0"]');
+      scroller.scrollTo({
+        left: Math.max(0, nextCard.offsetLeft - (firstCard ? firstCard.offsetLeft : 0)),
+        behavior: 'smooth'
       });
-    }
+      showRoundPickBar(tournament, nextIndex);
+    });
   }
 
   function renderTournamentEvents(tournament) {
@@ -726,6 +765,8 @@
       var questions = item.querySelector('.tournament-events__questions');
 
       if (questions) questions.remove();
+      // the rail decides this, not the round's state — see renderRoundQuestions
+      item.classList.remove('is-playing');
       item.classList.toggle('is-complete', complete);
       item.classList.toggle('is-current', current);
       if (marker) marker.textContent = complete ? '✓' : String(round);
@@ -734,10 +775,11 @@
     });
 
     renderRoundQuestions(tournament, liveEventItem);
-    var selected = tournament.live && tournament.joined && currentRound
-      ? selectedQuestionIndex(getRoundPickState(tournament))
+    // coming back to a round already under way puts the bar back where it was
+    var index = tournament.live && tournament.joined && currentRound
+      ? barQuestionIndex(getRoundPickState(tournament))
       : -1;
-    if (selected >= 0) showRoundPickBar(tournament, selected);
+    if (index >= 0) showRoundPickBar(tournament, index);
     else hideRoundPickBar();
   }
 
@@ -1111,10 +1153,14 @@
     startLiveCountdown(tournament);
     rounds.textContent = tournament.currentRound;
     if (roundTotal) roundTotal.textContent = '/' + tournament.rounds;
-    entry.hidden = tournament.joined || tournament.live;
+    entry.hidden = tournament.joined;
     place.hidden = !tournament.joined;
     place.querySelector('[data-tournament-place]').textContent = tournament.place;
-    join.hidden = tournament.joined || tournament.live;
+    /* One button, two directions: the way in while you are out, and the way
+       out while you are in — a live tournament allows both. */
+    join.hidden = false;
+    join.textContent = tournament.joined ? 'Leave tournament' : 'Join Tournament';
+    join.classList.toggle('is-leave', tournament.joined);
     renderTournamentEvents(tournament);
     renderTournamentLeaderboard();
   }
@@ -1143,6 +1189,8 @@
     if (!tournaments[id]) return;
 
     activeId = id;
+    // a different tournament is a different round: the bar starts fresh
+    roundBarDismissed = false;
     tournaments[id].joined = source.dataset.tournamentState === 'joined';
     tournaments[id].live = source.dataset.tournamentPhase === 'live';
     renderTournament();
@@ -1218,19 +1266,16 @@
     }, { passive: false });
   }
 
-  if (scroll) {
-    scroll.addEventListener('scroll', syncRoundBar, { passive: true });
-  }
-  window.addEventListener('resize', syncRoundBar);
-
-  /* The X on the bar is the way back out of a pick you have not accepted:
-     it clears the selection and takes the bar with it, exactly as the daily
-     slip does. main.js leaves it alone while the round owns the bar. */
+  /* The X is the way to put the bar away yourself: it drops whatever has not
+     been accepted and keeps the bar down until the next answer calls it back,
+     exactly as the daily slip does. main.js leaves it alone while the round
+     owns the bar. */
   if (sharedPickBar && sharedPickBar.close) {
     sharedPickBar.close.addEventListener('click', function () {
       if (!sharedPickBar.element ||
           !sharedPickBar.element.classList.contains('winbar--round-picks')) return;
       if (!screen.classList.contains('is-active')) return;
+      roundBarDismissed = true;
       discardUnconfirmedRoundPicks(currentTournament());
     });
   }
@@ -1245,6 +1290,31 @@
   if (join) {
     join.addEventListener('click', function () {
       var tournament = currentTournament();
+
+      if (tournament.joined) {
+        var leave = function () {
+          tournament.joined = false;
+          tournament.participants = Math.max(0, tournament.participants - 1);
+          // your picks go with you — rejoining starts a clean round
+          Object.keys(roundPickStates).forEach(function (key) {
+            if (key.indexOf(activeId + ':') === 0) delete roundPickStates[key];
+          });
+          resetArenaCard(activeId);
+          hideRoundPickBar();
+          renderTournament();
+        };
+        if (window.THE90 && window.THE90.confirm) {
+          window.THE90.confirm('Leave ' + tournament.title + '?',
+            'The rating you have earned in this tournament is reset to zero. Your picks and '
+            + 'your place on the board go with it. You can join again while it is open, but '
+            + 'the rounds already played will not be given back.',
+            'Leave tournament', leave);
+        } else {
+          leave();
+        }
+        return;
+      }
+
       if (window.THE90 && typeof window.THE90.openArenaJoinModal === 'function') {
         window.THE90.openArenaJoinModal(activeId);
         return;

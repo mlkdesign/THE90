@@ -88,10 +88,15 @@
         'translate3d(' + (left.left + (right.left - left.left) * progress) + 'px, 0, 0)';
     }
 
+    /* Colour and opacity only — the same two the tournament's strip paints.
+       Weight is left to .is-active in the stylesheet: font-weight is a layout
+       property, and rewriting it every frame re-measured the strip under the
+       indicator and under its own scroll position, which is what made both
+       drift while a tab was still travelling. */
     buttons.forEach(function (button, index) {
       var near = Math.max(0, 1 - Math.abs(at - index));
+      button.style.opacity = String(.5 + near * .5);
       button.style.color = 'rgba(247, 250, 248, ' + (.5 + near * .5).toFixed(3) + ')';
-      button.style.fontWeight = near > .5 ? '600' : '400';
     });
 
     // the strip travels its own overflow in step with the rail, so the tab
