@@ -927,14 +927,13 @@
 
 /* --- manage rounds -------------------------------------- */
 
+/* Under the list rather than in the header: the settings header positions its
+   one button on the left, and a second one lands on top of the way back. */
 .rounds-new {
-  position: absolute;
-  right: 16px;
-  padding: 0;
-  color: var(--brand-primary);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 20px;
+  width: calc(100% - 32px);
+  margin: 12px 16px 0;
+  background: rgba(255, 255, 255, .1);
+  color: var(--text-primary);
 }
 .settings-scroll .rounds-list,
 .settings-scroll .rounds-empty { padding: 20px 16px 0; }

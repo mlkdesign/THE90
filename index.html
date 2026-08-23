@@ -18,7 +18,7 @@
 <link rel="stylesheet" href="css/style.css?v=4">
 <link rel="stylesheet" href="css/main.css?v=42">
 <link rel="stylesheet" href="css/rankings.css?v=13">
-    <link rel="stylesheet" href="css/leagues.css?v=20">
+    <link rel="stylesheet" href="css/leagues.css?v=21">
   <link rel="stylesheet" href="css/arena.css?v=59">
 <link rel="stylesheet" href="css/live.css?v=4">
 <link rel="stylesheet" href="css/league.css?v=27">
@@ -1238,10 +1238,12 @@
                 <img src="assets/icons/chevron-down.svg" alt="" width="20" height="20">
               </button>
               <h1>Manage rounds</h1>
-              <button class="rounds-new" type="button" data-round-new>Create round</button>
             </header>
             <div class="settings-scroll">
               <div class="rounds-list" data-rounds-list></div>
+              <!-- the way to a new round sits under the ones already there,
+                   where the header has no room for it -->
+              <button class="btn rounds-new" type="button" data-round-new data-rounds-add hidden>Create round</button>
               <div class="rounds-empty" data-rounds-empty hidden>
                 <strong>No rounds yet</strong>
                 <p>Choose matches, add prediction questions and publish when you are ready.</p>
@@ -2188,7 +2190,7 @@
 <script src="js/league-round.js?v=3"></script>
 <script src="js/league-menu.js?v=4"></script>
 <script src="js/league-participants.js?v=2"></script>
-<script src="js/league-rounds.js?v=4"></script>
+<script src="js/league-rounds.js?v=5"></script>
 <script src="js/my-zone.js?v=2"></script>
 <script src="js/ranks.js?v=3"></script>
 <script src="js/notifications.js?v=6"></script>

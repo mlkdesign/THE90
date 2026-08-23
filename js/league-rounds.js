@@ -584,6 +584,9 @@
 
     list.replaceChildren(fragment);
     if (listEmpty) listEmpty.hidden = rounds.length > 0;
+    // the empty state carries its own; this one is for when there are already some
+    var add = $('[data-rounds-add]');
+    if (add) add.hidden = !rounds.length;
   }
 
 
