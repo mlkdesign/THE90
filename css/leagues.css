@@ -1236,3 +1236,7 @@
 }
 .pick-score__btn:disabled { opacity: .4; }
 .pick-confirm { height: 40px; font-size: 13px; }
+
+
+/* the create button stands the app's own height */
+.create-submit { height: 44px; min-height: 44px; }

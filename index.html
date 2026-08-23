@@ -18,10 +18,10 @@
 <link rel="stylesheet" href="css/style.css?v=4">
 <link rel="stylesheet" href="css/main.css?v=42">
 <link rel="stylesheet" href="css/rankings.css?v=13">
-    <link rel="stylesheet" href="css/leagues.css?v=21">
+    <link rel="stylesheet" href="css/leagues.css?v=22">
   <link rel="stylesheet" href="css/arena.css?v=59">
 <link rel="stylesheet" href="css/live.css?v=4">
-<link rel="stylesheet" href="css/league.css?v=27">
+<link rel="stylesheet" href="css/league.css?v=28">
 <link rel="stylesheet" href="css/my-zone.css?v=7">
 <link rel="stylesheet" href="css/ranks.css?v=1">
 <link rel="stylesheet" href="css/notifications.css">
@@ -966,7 +966,7 @@
 
                 <div class="league-tabs-sticky">
                   <div class="league-tabs" role="tablist" aria-label="League sections" data-league-tabs>
-                    <button class="is-active" type="button" role="tab" aria-selected="true" data-league-tab="picks">Daily picks</button>
+                    <button class="is-active" type="button" role="tab" aria-selected="true" data-league-tab="picks">League picks</button>
                     <button type="button" role="tab" aria-selected="false" data-league-tab="participants">Participants</button>
                     <button type="button" role="tab" aria-selected="false" data-league-tab="prizes">Prizes</button>
                     <button type="button" role="tab" aria-selected="false" data-league-tab="rules">Rules</button>
@@ -979,17 +979,6 @@
                 <!-- rounds: what the owner runs and the members play -->
                 <div class="league-rounds" data-league-rounds></div>
 
-                <!-- the round's picks — only once you are in the league -->
-                <section class="league-picks" data-league-picks hidden aria-label="Daily picks">
-                  <div class="section-head">
-                    <span>Daily picks</span>
-                    <span class="picks-deadline">
-                      <img src="assets/icons/timer.svg" alt="" width="16" height="16">
-                      <b data-league-deadline>Closes in 12:15:38</b>
-                    </span>
-                  </div>
-                  <div class="picks-track" data-league-picks-track></div>
-                </section>
                     <div class="league-about">
                       <h2>About this league</h2>
                       <p>DIAMOND CUP is an invite-only VIP tournament over five rounds of top matches. Call the outcome or go for the exact score — fixed points, no odds — and the board settles as soon as results are confirmed.</p>
@@ -1022,10 +1011,7 @@
                     </article>
                   </div>
                   <div class="league-participants__full" data-league-full hidden></div>
-                  <button class="league-participants__all" type="button" aria-expanded="false" data-league-all>
-                    <span data-league-all-label>All participants</span>
-                    <img src="assets/league/league-chevron.svg" alt="">
-                  </button>
+
                 </section>
                   </section>
 
@@ -1147,6 +1133,14 @@
                 <i aria-hidden="true">Manage</i>
               </button>
             </main>
+          </div>
+          <!-- your own seat, held at the foot of the screen until the board
+               scrolls far enough to show the real one -->
+          <div class="league-pin" data-league-pin hidden>
+            <span class="league-member__rank" data-league-pin-rank>15</span>
+            <img src="assets/league/your-avatar.png" alt="Your Name">
+            <span class="league-member__copy"><strong>Your Name</strong><small>@yournickname</small></span>
+            <span class="league-member__score" data-league-pin-score>5 125 <img src="assets/league/coin.svg" alt="Coins"></span>
           </div>
           <div class="screen-topfade" aria-hidden="true"></div>
         </section>
@@ -2180,7 +2174,7 @@
 <script src="js/thearena.js?v=7"></script>
 <script src="js/tournament.js?v=44"></script>
 <script src="js/arena-join.js?v=2"></script>
-<script src="js/league.js?v=12"></script>
+<script src="js/league.js?v=14"></script>
 <script src="js/leagues.js?v=4"></script>
 <script src="js/league-create.js?v=21"></script>
 <script src="js/league-picks.js?v=1"></script>

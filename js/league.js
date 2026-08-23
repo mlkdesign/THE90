@@ -325,7 +325,7 @@
     fullBlock.replaceChildren(fragment);
   }
 
-  if (allButton && topBlock && fullBlock) {
+  if (topBlock && fullBlock) {
     renderFull();
     document.addEventListener('the90:league-membership', function (event) {
       joined = event.detail.joined;
@@ -341,29 +341,75 @@
       yourScoreCell.appendChild(pinnedCoin);
     }
 
-    var expanded = false;
-    function setExpanded(value) {
-      expanded = value;
-      topBlock.hidden = expanded;
-      fullBlock.hidden = !expanded;
-      allButton.setAttribute('aria-expanded', String(expanded));
-      if (allLabel) allLabel.textContent = expanded ? 'Hide participants' : 'All participants';
-      if (sectionTitle) sectionTitle.textContent = expanded ? 'All Participants' : 'Top Participants';
+    /* The board opens open: a league is small enough that the whole thing is
+       the interesting part, and hiding it behind a control only asks a
+       question everybody answers the same way. */
+    topBlock.hidden = true;
+    fullBlock.hidden = false;
+    if (sectionTitle) sectionTitle.textContent = 'Participants';
+
+
+    /* ---------------------------------------------------------
+       Your own seat, the way the global board does it: held at
+       the foot of the screen while the real row is further down,
+       and given up the moment the board scrolls far enough to
+       show it in its own place.
+       --------------------------------------------------------- */
+
+    var pin = document.querySelector('[data-league-pin]');
+    var pinRank = document.querySelector('[data-league-pin-rank]');
+    var pinScore = document.querySelector('[data-league-pin-score]');
+    var queued = false;
+
+    function yourRow() {
+      return fullBlock.querySelector('.league-member--you') ||
+        document.querySelector('[data-league-panel="participants"] .league-member--you');
     }
 
-    allButton.addEventListener('click', function () {
-      setExpanded(!expanded);
-      if (!expanded && leagueScroll) {
-        allButton.scrollIntoView({ block: 'center', behavior: 'smooth' });
-      }
+    function fillPin() {
+      var row = yourRow();
+      if (!row || !pin) return;
+      var rank = row.querySelector('.league-member__rank');
+      var score = row.querySelector('.league-member__score');
+      if (rank && pinRank) pinRank.textContent = rank.textContent;
+      if (score && pinScore) pinScore.innerHTML = score.innerHTML;
+    }
+
+    function updatePin() {
+      queued = false;
+      if (!pin || !leagueScroll) return;
+      var screen = document.querySelector('[data-screen="league"]');
+      var row = yourRow();
+      var onPicks = document.querySelector('[data-league-panel="participants"]');
+      var showing = screen && screen.classList.contains('is-active') && row &&
+        onPicks && onPicks.getAttribute('aria-hidden') !== 'true';
+      if (!showing) { pin.hidden = true; return; }
+
+      var frame = leagueScroll.getBoundingClientRect();
+      var rect = row.getBoundingClientRect();
+      // hidden once the real row has come up past where the plate sits
+      pin.hidden = rect.top < frame.bottom - 132;
+    }
+
+    function schedulePin() {
+      if (queued) return;
+      queued = true;
+      window.requestAnimationFrame(updatePin);
+    }
+
+    if (leagueScroll) leagueScroll.addEventListener('scroll', schedulePin, { passive: true });
+    document.addEventListener('click', function (event) {
+      if (event.target.closest('[data-league-tab]')) window.setTimeout(schedulePin, 60);
     });
 
-    // The league always opens on the short list, however it was left last time.
     window.addEventListener('the90:screen', function (event) {
-      if (event.detail !== 'league' || !expanded) return;
-      setExpanded(false);
-      if (leagueScroll) leagueScroll.scrollTop = 0;
+      if (event.detail !== 'league') { if (pin) pin.hidden = true; return; }
+      fillPin();
+      window.setTimeout(schedulePin, 80);
     });
+
+    fillPin();
+    schedulePin();
   }
 
 
