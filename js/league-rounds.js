@@ -105,6 +105,74 @@
     return found.day.weekday + ' · ' + found.match.kickoff;
   }
 
+  /* Fixtures carry a day key and a kickoff; a round needs real times to know
+     where it is in its own life. */
+  function kickoffAt(match) {
+    var found = fixtureById(match.id);
+    var key = found ? found.day.key : '';
+    var parts = key.split('-');
+    var clock = (found ? found.match.kickoff : match.kickoff || '00:00').split(':');
+    if (parts.length !== 3) return null;
+    return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]),
+      Number(clock[0]), Number(clock[1]));
+  }
+
+  function deadlineOf(round) {
+    var earliest = null;
+    round.matches.forEach(function (match) {
+      var at = kickoffAt(match);
+      if (!at) return;
+      var locks = new Date(at.getTime() - Number(round.lock) * 60000);
+      if (!earliest || locks < earliest) earliest = locks;
+    });
+    return earliest;
+  }
+
+  function lastWhistle(round) {
+    var latest = null;
+    round.matches.forEach(function (match) {
+      var at = kickoffAt(match);
+      if (!at) return;
+      var ends = new Date(at.getTime() + 115 * 60000);   // 90 plus the rest of it
+      if (!latest || ends > latest) latest = ends;
+    });
+    return latest;
+  }
+
+  /* draft is the owner's; everything else is the clock's. */
+  function stateOf(round) {
+    if (round.state === 'draft') return 'draft';
+    var now = Date.now();
+    var locks = deadlineOf(round);
+    var ends = lastWhistle(round);
+    if (!locks || !ends) return 'published';
+    if (now < locks.getTime()) return 'open';
+    if (now < ends.getTime()) return 'locked';
+    if (now < ends.getTime() + 30 * 60000) return 'pending';
+    return 'completed';
+  }
+
+  function countdown(to) {
+    var left = Math.max(0, to.getTime() - Date.now());
+    var hours = Math.floor(left / 3600000);
+    var minutes = Math.floor(left % 3600000 / 60000);
+    var seconds = Math.floor(left % 60000 / 1000);
+    return String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0') +
+      ':' + String(seconds).padStart(2, '0');
+  }
+
+  function statusLine(round) {
+    var state = stateOf(round);
+    if (state === 'open') {
+      var locks = deadlineOf(round);
+      return locks ? 'Locks in ' + countdown(locks) : 'Open';
+    }
+    if (state === 'locked') return 'Picks locked';
+    if (state === 'pending') return 'Results pending';
+    if (state === 'completed') return 'Completed';
+    return STATE_LABEL[state] || state;
+  }
+
   function lockLabel(round, match) {
     var minutes = Number(round.lock);
     var at = match.kickoff || '';
@@ -117,6 +185,84 @@
     return (home ? home.name : match.home) + ' vs ' + (away ? away.name : match.away);
   }
 
+
+  /* =======================================================
+     Answers
+
+     One store, keyed by league, round and match. A pick is a
+     choice; confirming it is what locks it in and what the
+     progress line counts.
+     ======================================================= */
+
+  var PICK_KEY = 'the90.leaguePicks.v1';
+
+  function loadPicks() {
+    try {
+      var saved = JSON.parse(localStorage.getItem(PICK_KEY));
+      return saved && typeof saved === 'object' ? saved : {};
+    } catch (error) { return {}; }
+  }
+
+  var picks = loadPicks();
+
+  function savePicks() {
+    try { localStorage.setItem(PICK_KEY, JSON.stringify(picks)); } catch (error) { /* storage may be unavailable */ }
+  }
+
+  function pickKey(round, match) { return keyFor(league()) + '|' + round.id + '|' + match.id; }
+
+  function pickOf(round, match) {
+    var key = pickKey(round, match);
+    if (!picks[key]) picks[key] = { answers: {}, locked: false };
+    return picks[key];
+  }
+
+  function answeredCount(round) {
+    return round.matches.reduce(function (total, match) {
+      var pick = pickOf(round, match);
+      return total + match.questions.filter(function (id) {
+        return pick.answers[id] !== undefined;
+      }).length;
+    }, 0);
+  }
+
+  function lockedCount(round) {
+    return round.matches.reduce(function (total, match) {
+      var pick = pickOf(round, match);
+      if (!pick.locked) return total;
+      return total + match.questions.filter(function (id) {
+        return pick.answers[id] !== undefined;
+      }).length;
+    }, 0);
+  }
+
+  function template(id) {
+    return TEMPLATES.filter(function (item) { return item.id === id; })[0];
+  }
+
+  /* What a question offers. The exact score is the one that is not a choice
+     between things, so it gets the app's own stepper shape instead. */
+  function optionsFor(question, match) {
+    var home = T.club(match.home), away = T.club(match.away);
+    if (question === 'result') {
+      return [
+        { value: 'home', label: home ? home.short : 'Home' },
+        { value: 'draw', label: 'Draw' },
+        { value: 'away', label: away ? away.short : 'Away' }
+      ];
+    }
+    if (question === 'btts') {
+      return [{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }];
+    }
+    if (question === 'scorer') {
+      return [
+        { value: 'home', label: home ? home.short : 'Home' },
+        { value: 'away', label: away ? away.short : 'Away' },
+        { value: 'none', label: 'No goals' }
+      ];
+    }
+    return null;   // exact score
+  }
 
   /* =======================================================
      Who is looking
@@ -197,18 +343,8 @@
         'draft'));
     }
 
-    var live = publishedOf(league());
-    live.forEach(function (round) {
-      var box = card(round.name,
-        round.matches.length + ' ' + (round.matches.length === 1 ? 'match' : 'matches') +
-        ' · ' + (Number(round.lock) ? 'Picks lock ' + round.lock + ' min before kickoff'
-                                    : 'Picks lock at kickoff'),
-        [], round.state);
-      if (round.state === 'open' || round.state === 'published') {
-        box.appendChild(el('p', 'league-round-note',
-          '0 / ' + questionCount(round) + ' picks locked'));
-      }
-      panel.appendChild(box);
+    publishedOf(league()).forEach(function (round) {
+      panel.appendChild(playCard(round));
     });
 
     panel.appendChild(el('p', 'league-round-note',
@@ -219,6 +355,194 @@
         if (T.go) T.go('league-rounds');
       }));
     }
+  }
+
+
+  /* =======================================================
+     A published round, as it is played
+
+     The same card for everyone: what the round is, where it is
+     in its life, and the questions under it. Before the
+     deadline they answer; after it they only read.
+     ======================================================= */
+
+  function scoreOf(round, match, question, answer) {
+    var result = resultOf(match);
+    if (!result) return null;
+    if (question === 'result') return answer === result.outcome ? template('result').points : 0;
+    if (question === 'btts') return answer === result.btts ? template('btts').points : 0;
+    if (question === 'scorer') return answer === result.first ? template('scorer').points : 0;
+    if (question === 'score') {
+      var exact = answer && answer.home === result.home && answer.away === result.away;
+      return exact ? template('score').points : 0;
+    }
+    return 0;
+  }
+
+  /* The result comes out of the same model the rest of the app predicts
+     with, so a finished match settles the same way everywhere. */
+  function resultOf(match) {
+    if (stateOfMatch(match) !== 'done') return null;
+    var seed = 0;
+    for (var i = 0; i < match.id.length; i++) seed = (seed * 31 + match.id.charCodeAt(i)) >>> 0;
+    var home = seed % 4;
+    var away = (seed >> 3) % 3;
+    return {
+      home: home, away: away,
+      outcome: home > away ? 'home' : (home < away ? 'away' : 'draw'),
+      btts: home > 0 && away > 0 ? 'yes' : 'no',
+      first: home + away === 0 ? 'none' : (home >= away ? 'home' : 'away')
+    };
+  }
+
+  function stateOfMatch(match) {
+    var at = kickoffAt(match);
+    if (!at) return 'upcoming';
+    return Date.now() > at.getTime() + 115 * 60000 ? 'done' : 'upcoming';
+  }
+
+  function roundScore(round) {
+    var total = 0;
+    round.matches.forEach(function (match) {
+      var pick = pickOf(round, match);
+      if (!pick.locked) return;
+      match.questions.forEach(function (id) {
+        var got = scoreOf(round, match, id, pick.answers[id]);
+        if (got) total += got;
+      });
+    });
+    return total;
+  }
+
+  function chip(label, on, run) {
+    var button = el('button', 'pick-chip' + (on ? ' is-on' : ''), label);
+    button.type = 'button';
+    if (run) button.addEventListener('click', run);
+    else button.disabled = true;
+    return button;
+  }
+
+  function scoreStepper(pick, run, live) {
+    var box = el('div', 'pick-score');
+    ['home', 'away'].forEach(function (side) {
+      var current = pick.answers.score || { home: 0, away: 0 };
+      var group = el('span', 'pick-score__side');
+      var minus = el('button', 'pick-score__btn', '–');
+      var value = el('b', null, String(current[side]));
+      var plus = el('button', 'pick-score__btn', '+');
+      minus.type = plus.type = 'button';
+      if (!live) { minus.disabled = plus.disabled = true; }
+      [[minus, -1], [plus, 1]].forEach(function (pair) {
+        pair[0].addEventListener('click', function () {
+          var next = pick.answers.score || { home: 0, away: 0 };
+          next[side] = Math.max(0, Math.min(9, next[side] + pair[1]));
+          pick.answers.score = next;
+          run();
+        });
+      });
+      group.appendChild(minus);
+      group.appendChild(value);
+      group.appendChild(plus);
+      box.appendChild(group);
+    });
+    return box;
+  }
+
+  function playCard(round) {
+    var state = stateOf(round);
+    var live = state === 'open';
+    var box = el('article', 'league-round-card');
+
+    var head = el('div', 'league-round-card__head');
+    head.appendChild(el('h2', null, round.name));
+    head.appendChild(pill(state));
+    box.appendChild(head);
+    box.appendChild(el('p', null, statusLine(round)));
+    if (round.description) box.appendChild(el('p', null, round.description));
+
+    round.matches.forEach(function (match) {
+      var pick = pickOf(round, match);
+      var open = live && !pick.locked;
+      var block = el('section', 'pick-match');
+
+      var top = el('div', 'pick-match__head');
+      [match.home, match.away].forEach(function (slug) {
+        var logo = document.createElement('img');
+        logo.src = T.logo(slug);
+        logo.alt = '';
+        top.appendChild(logo);
+      });
+      var copy = el('span', 'pick-match__copy');
+      copy.appendChild(el('strong', null, teamsOf(match)));
+      copy.appendChild(el('small', null, kickoffLabel(match) + ' · ' + lockLabel(round, match)));
+      top.appendChild(copy);
+      block.appendChild(top);
+
+      var result = resultOf(match);
+      if (result) block.appendChild(el('p', 'pick-match__result',
+        'Final score ' + result.home + ' – ' + result.away));
+
+      match.questions.forEach(function (id) {
+        var meta = template(id);
+        if (!meta) return;
+        var row = el('div', 'pick-q');
+        var label = el('span', 'pick-q__label', meta.label);
+        var points = el('b', null, '+' + meta.points);
+        var got = result ? scoreOf(round, match, id, pick.answers[id]) : null;
+        if (got !== null && pick.locked) {
+          points.textContent = '+' + got;
+          points.className = got ? 'is-hit' : 'is-miss';
+        }
+        label.appendChild(points);
+        row.appendChild(label);
+
+        var options = optionsFor(id, match);
+        var host = el('div', 'pick-q__options');
+        if (options) {
+          options.forEach(function (option) {
+            host.appendChild(chip(option.label, pick.answers[id] === option.value,
+              open ? function () {
+                pick.answers[id] = option.value;
+                savePicks();
+                renderPanel();
+              } : null));
+          });
+        } else {
+          host.appendChild(scoreStepper(pick, function () {
+            savePicks();
+            renderPanel();
+          }, open));
+        }
+        row.appendChild(host);
+        block.appendChild(row);
+      });
+
+      if (open) {
+        var answered = match.questions.filter(function (id) {
+          return pick.answers[id] !== undefined;
+        }).length;
+        var confirm = action(answered ? 'Confirm ' + answered + ' ' +
+          (answered === 1 ? 'pick' : 'picks') : 'Make your picks',
+          'btn--primary pick-confirm', function () {
+            if (!answered) return;
+            pick.locked = true;
+            savePicks();
+            renderPanel();
+          });
+        confirm.disabled = !answered;
+        block.appendChild(confirm);
+      } else if (pick.locked) {
+        block.appendChild(el('p', 'league-round-note', 'Your picks are in.'));
+      }
+
+      box.appendChild(block);
+    });
+
+    var total = questionCount(round);
+    box.appendChild(el('p', 'league-round-note',
+      lockedCount(round) + ' / ' + total + ' picks locked' +
+      (state === 'completed' ? ' · you scored +' + roundScore(round) : '')));
+    return box;
   }
 
 
@@ -242,7 +566,7 @@
       var numbered = /^round\s/i.test(round.name.trim());
       head.appendChild(el('span', 'round-row__title',
         numbered ? round.name : 'Round ' + (index + 1) + ' · ' + round.name));
-      head.appendChild(pill(round.state));
+      head.appendChild(pill(stateOf(round)));
       row.appendChild(head);
 
       var first = round.matches[0];
@@ -295,10 +619,13 @@
     };
   }
 
+  var creating = false;
+
   function openEditor(id) {
     var rounds = roundsOf(league());
     editing = id ? rounds.filter(function (round) { return round.id === id; })[0] : blankRound();
     if (!editing) return;
+    creating = rounds.indexOf(editing) === -1;
     dressEditor();
     if (T.go) T.go('league-round-edit');
   }
@@ -307,7 +634,7 @@
 
   function dressEditor() {
     if (!editing) return;
-    if (head) head.textContent = editable() ? (editing.name ? 'Edit round' : 'Create round') : editing.name;
+    if (head) head.textContent = editable() ? (creating ? 'Create round' : 'Edit round') : editing.name;
     if (nameInput) { nameInput.value = editing.name; nameInput.disabled = !editable(); }
     if (descInput) { descInput.value = editing.description || ''; descInput.disabled = !editable(); }
     countDescription();
@@ -581,6 +908,20 @@
   });
 
   renderPanel();
+
+  /* Once a second while a league is open in front of you: the status line is
+     a countdown, and a countdown that does not move is a label. */
+  window.setInterval(function () {
+    var active = document.querySelector('.screen.is-active');
+    if (!active || active.dataset.screen !== 'league') return;
+    if (!panel || !panel.children.length) return;
+    $$('.league-round-card', panel).forEach(function (box, index) {
+      var round = publishedOf(league())[index - (draftOf(league()) && isOwner() ? 1 : 0)];
+      if (!round) return;
+      var line = box.querySelector('p');
+      if (line) line.textContent = statusLine(round);
+    });
+  }, 1000);
 
   T.leagueRounds = {
     of: function () { return roundsOf(league()); },

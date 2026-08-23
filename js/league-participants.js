@@ -13,6 +13,14 @@
   var list = document.querySelector('[data-participants-list]');
   if (!list) return;
 
+  /* Taking someone out of a league is the owner's call. A member opens the
+     same page and reads it. */
+  var owner = false;
+  document.addEventListener('the90:league-membership', function (event) {
+    owner = !!(event.detail && event.detail.own);
+    paint();
+  });
+
   var PEOPLE = [
     ['Zara Volkov', 'zara.volkov@gmail.com', 'assets/invite/avatar-zara.png'],
     ['Kai Tanaka', 'kai.tanaka@gmail.com', 'assets/invite/avatar-kai.png'],
@@ -64,10 +72,15 @@
     item.appendChild(avatar);
     item.appendChild(copy);
     item.appendChild(remove);
+    remove.hidden = !owner;
     return item;
   }
 
-  var fragment = document.createDocumentFragment();
-  PEOPLE.forEach(function (person) { fragment.appendChild(row(person)); });
-  list.replaceChildren(fragment);
+  function paint() {
+    var fragment = document.createDocumentFragment();
+    PEOPLE.forEach(function (person) { fragment.appendChild(row(person)); });
+    list.replaceChildren(fragment);
+  }
+
+  paint();
 })();

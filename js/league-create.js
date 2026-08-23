@@ -574,10 +574,16 @@
         label: 'Set up first round',
         second: 'Do this later',
         onConfirm: function () {
-          var created = leagues[leagues.length - 1];
-          document.dispatchEvent(new CustomEvent('the90:league-membership', {
-            detail: { joined: true, own: true, league: created }
-          }));
+          /* Straight into the league you just made, as its owner — the same
+             state a tap on its card would have set, so anything that asks
+             later gets the same answer. */
+          viewing = {
+            joined: true,
+            own: true,
+            index: leagues.length - 1,
+            league: leagues[leagues.length - 1]
+          };
+          applyMembership();
           if (window.THE90.go) window.THE90.go('league-rounds');
         }
       });
