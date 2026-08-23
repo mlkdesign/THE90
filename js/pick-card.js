@@ -111,6 +111,9 @@
         options: [['home', home.name], ['away', away.name], ['none', 'No goals']] }
     };
 
+    var asked = opts.questions || null;
+    function asks(id) { return !asked || asked.indexOf(id) > -1; }
+
     var extrasMarkup = (opts.extras || []).map(function (id) {
       var meta = EXTRAS[id];
       if (!meta) return '';
@@ -172,6 +175,7 @@
               '</div>' +
             '</div>' +
 
+            (asks('score') ?
             '<div class="mcard__block">' +
               '<div class="exact__head">' +
                 scoreCopy +
@@ -182,7 +186,7 @@
                   drumMarkup('away', away.name) +
                 '</div>' +
               '</div>' +
-            '</div>' +
+            '</div>' : '') +
             extrasMarkup +
           '</div>' +
           (isRound ? '<div class="mcard__dots" data-dots aria-hidden="true"></div>' : '') +

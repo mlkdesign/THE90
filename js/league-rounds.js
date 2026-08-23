@@ -497,6 +497,7 @@
       var card = T.pickCard.create(match, pick.card, {
         when: kickoffLabel(match).split(' · ')[0],
         round: true,
+        questions: match.questions,
         extras: extras,
         editable: function () { return live; },
         onChange: function () {
@@ -517,6 +518,10 @@
     track.addEventListener('scroll', function () { paintBar(round); }, { passive: true });
     box.appendChild(track);
 
+    if (roundComplete(round)) {
+      track.appendChild(doneCard(round));
+      window.setTimeout(function () { track.scrollLeft = track.scrollWidth; }, 0);
+    }
     window.setTimeout(function () { paintBar(round); }, 0);
     return box;
   }
@@ -575,14 +580,22 @@
     return match.questions.filter(function (id) { return id === 'btts' || id === 'scorer'; });
   }
 
+  /* The order the card draws them in: the result, the score if the round
+     asks for it, then whatever else it asks. */
+  function blocksOf(match) {
+    var list = ['result'];
+    if (match.questions.indexOf('score') > -1) list.push('score');
+    return list.concat(extrasOf(match));
+  }
+
   function blockAnswered(pick, match, index) {
     if (!pick.card) return false;
-    if (index === 0) return !!pick.card.outcome;
-    if (index === 1) {
+    var id = blocksOf(match)[index];
+    if (id === 'result') return !!pick.card.outcome;
+    if (id === 'score') {
       var score = pick.card.score;
       return !!(score && score.home !== null && score.away !== null);
     }
-    var id = extrasOf(match)[index - 2];
     return !!(id && pick.card.extras && pick.card.extras[id]);
   }
 
@@ -592,12 +605,10 @@
     var spot = currentSpot(round);
     if (!spot.match) return;
     var pick = pickOf(round, spot.match);
-    if (spot.question === 0) pick.card.outcome = null;
-    else if (spot.question === 1) pick.card.score = { home: null, away: null };
-    else {
-      var id = extrasOf(spot.match)[spot.question - 2];
-      if (id && pick.card.extras) pick.card.extras[id] = null;
-    }
+    var id = blocksOf(spot.match)[spot.question];
+    if (id === 'result') pick.card.outcome = null;
+    else if (id === 'score') pick.card.score = { home: null, away: null };
+    else if (id && pick.card.extras) pick.card.extras[id] = null;
     keepCard(round, spot.match, pick);
     renderPanel();
   }
@@ -624,7 +635,62 @@
       window.setTimeout(function () { paintBar(round); }, 340);
       return;
     }
-    paintBar(round);
+    finishRound(round, track);
+  }
+
+  /* Every question in the round answered: the last card slides away and the
+     tick takes its place, the way the daily slip ends. */
+  function finishRound(round, track) {
+    var bar = T.pickConfirmationBar;
+    if (!track) return;
+    if (!roundComplete(round)) { paintBar(round); return; }
+    var tick = track.querySelector('.mcard--done');
+    if (!tick) {
+      tick = doneCard(round);
+      track.appendChild(tick);
+    }
+    // the last card slides away and the tick takes its place
+    track.scrollLeft = Math.max(0, tick.offsetLeft - track.offsetLeft);
+    if (bar) bar.show(false);
+  }
+
+  function roundComplete(round) {
+    return round.matches.every(function (match) {
+      var pick = pickOf(round, match);
+      var blocks = blocksOf(match).length;
+      for (var index = 0; index < blocks; index += 1) {
+        if (!blockAnswered(pick, match, index)) return false;
+      }
+      return true;
+    });
+  }
+
+  function doneCard(round) {
+    var card = el('article', 'mcard mcard--done');
+    var done = el('div', 'donecard');
+    var art = el('div', 'donecard__art');
+    art.setAttribute('aria-hidden', 'true');
+
+    var worth = 0;
+    round.matches.forEach(function (match) {
+      var pick = pickOf(round, match);
+      match.questions.forEach(function (id) {
+        if (pick.answers[id] === undefined) return;
+        var meta = template(id);
+        if (meta) worth += meta.points;
+      });
+    });
+
+    var win = el('p', 'donecard__win');
+    win.appendChild(document.createTextNode('League points: '));
+    win.appendChild(el('b', null, '+' + worth));
+
+    done.appendChild(art);
+    done.appendChild(el('p', 'donecard__title', 'All ' + round.name + ' picks are in.'));
+    done.appendChild(win);
+    card.appendChild(done);
+    if (T.playDoneTick) window.setTimeout(function () { T.playDoneTick(art); }, 60);
+    return card;
   }
 
   /* The shared confirmation surface, in the league's own currency. It says
@@ -635,7 +701,10 @@
   function paintBar(round) {
     var bar = T.pickConfirmationBar;
     if (!bar || !bar.element) return;
-    if (!answeredCount(round) || stateOf(round) !== 'open') {
+    /* The bar stays up for the last answer — its button is what ends the
+       round. It goes when the tick is on the rail, not a moment before. */
+    var finished = panel && panel.querySelector('.round-track .mcard--done');
+    if (!answeredCount(round) || finished || stateOf(round) !== 'open') {
       bar.show(false);
       barReady = false;
       return;
@@ -1057,6 +1126,10 @@
   window.setInterval(function () {
     var active = document.querySelector('.screen.is-active');
     if (!active || active.dataset.screen !== 'league') return;
+    /* The bar is shared, and the daily slip puts it away when its own state
+       says so. While a league round is on screen, this puts it back. */
+    var round = publishedOf(league())[0];
+    if (round) paintBar(round);
     $$('[data-round-clock]', panel || document).forEach(function (cell) {
       var round = roundsOf(league()).filter(function (item) {
         return item.id === cell.dataset.roundClock;

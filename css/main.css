@@ -1695,6 +1695,7 @@
    the question.
    ========================================================= */
 
+.mcard--round .mcard__bodywrap { padding: 0 0 8px; }
 .mcard--round .mcard__body {
   /* No frame of its own: the question card is the thing with edges, and it is
      the thing that slides. */
@@ -1709,6 +1710,8 @@
   background: none;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
+  padding: 0 8px;
+  scroll-padding: 0 8px;
   scroll-snap-type: x mandatory;
   /* the slide is the stylesheet's, so moving between questions in code is
      one line and still animates */
