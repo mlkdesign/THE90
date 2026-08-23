@@ -10,9 +10,7 @@
      draft      only the owner sees it, everything editable
      published  members see it, picks not open yet
      open       picks can be made and confirmed
-     locked     the deadline has passed
-     pending    played, not yet scored
-     completed  scored, read only
+     completed  the matches are played
 
    Publishing is the door: matches, questions and the lock rule
    are fixed on the way through it.
@@ -40,8 +38,7 @@
   ];
 
   var STATE_LABEL = {
-    draft: 'Draft', published: 'Published', open: 'Open',
-    pending: 'Results pending', completed: 'Completed'
+    draft: 'Draft', published: 'Published', open: 'Open', completed: 'Completed'
   };
 
 
@@ -148,9 +145,7 @@
     if (!locks || !ends) return 'published';
     /* No locked window for now: a pick can be changed for as long as the
        matches are still to be played. */
-    if (now < ends.getTime()) return 'open';
-    if (now < ends.getTime() + 30 * 60000) return 'pending';
-    return 'completed';
+    return now < ends.getTime() ? 'open' : 'completed';
   }
 
   function countdown(to) {
@@ -169,7 +164,6 @@
       if (!locks) return 'Open';
       return locks.getTime() > Date.now() ? 'Closes in ' + countdown(locks) : 'In play';
     }
-    if (state === 'pending') return 'Results pending';
     if (state === 'completed') return 'Completed';
     return STATE_LABEL[state] || state;
   }
@@ -501,7 +495,8 @@
         round: true,
         questions: match.questions,
         extras: extras,
-        editable: function () { return live; },
+        // a league round does not shut you out: the pick is yours to change
+      editable: function () { return true; },
         onChange: function () {
           keepCard(round, match, pick);
           paintBar(round);
@@ -747,7 +742,7 @@
     /* The bar stays up for the last answer — its button is what ends the
        round. It goes when the tick is on the rail, not a moment before. */
     var finished = panel && panel.querySelector('.round-track .mcard--done');
-    if (!answeredCount(round) || finished || stateOf(round) !== 'open') {
+    if (!answeredCount(round) || finished) {
       bar.show(false);
       barReady = false;
       return;
