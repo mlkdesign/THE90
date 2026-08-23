@@ -540,13 +540,20 @@
   }
 
   function keepCard(round, match, pick) {
-    pick.answers.result = pick.card.outcome || undefined;
-    if (pick.card.score && pick.card.score.home !== null && pick.card.score.away !== null) {
-      pick.answers.score = pick.card.score;
-    } else {
-      delete pick.answers.score;
+    /* An accepted answer is settled: entering a score derives an outcome on
+       the card, and that must not quietly rewrite a result already in. */
+    function open(id) { return !(pick.accepted && pick.accepted[id]); }
+
+    if (open('result')) pick.answers.result = pick.card.outcome || undefined;
+    if (open('score')) {
+      if (pick.card.score && pick.card.score.home !== null && pick.card.score.away !== null) {
+        pick.answers.score = pick.card.score;
+      } else {
+        delete pick.answers.score;
+      }
     }
     ['btts', 'scorer'].forEach(function (id) {
+      if (!open(id)) return;
       if (pick.card.extras && pick.card.extras[id]) pick.answers[id] = pick.card.extras[id];
       else delete pick.answers[id];
     });
@@ -1148,10 +1155,64 @@
     if (bar.restoreDaily) bar.restoreDaily();
   }
 
+  /* A choice you did not accept is a thought, not a pick: it goes when you
+     leave, and the round picks up at the first question still open. */
+  function dropUnconfirmed(round) {
+    if (!round) return;
+    var changed = false;
+    round.matches.forEach(function (match) {
+      var pick = pickOf(round, match);
+      blocksOf(match).forEach(function (id) {
+        if (pick.accepted && pick.accepted[id]) return;
+        if (pick.answers[id] === undefined) return;
+        delete pick.answers[id];
+        changed = true;
+      });
+      if (pick.card) {
+        if (!(pick.accepted && pick.accepted.result)) pick.card.outcome = null;
+        if (!(pick.accepted && pick.accepted.score)) pick.card.score = { home: null, away: null };
+        ['btts', 'scorer'].forEach(function (id) {
+          if (pick.accepted && pick.accepted[id]) return;
+          if (pick.card.extras) pick.card.extras[id] = null;
+        });
+      }
+    });
+    if (changed) savePicks();
+  }
+
+  /* Where a round is picked up: the first question nobody has accepted. */
+  function resume(round) {
+    if (!panel) return;
+    var cards = $$('.mcard--round', panel);
+    for (var i = 0; i < round.matches.length; i += 1) {
+      var match = round.matches[i];
+      var pick = pickOf(round, match);
+      var ids = blocksOf(match);
+      for (var j = 0; j < ids.length; j += 1) {
+        if (pick.accepted && pick.accepted[ids[j]]) continue;
+        var card = cards[i];
+        var track = panel.querySelector('.round-track');
+        if (card) {
+          card.dataset.question = String(j);
+          var body = card.querySelector('.mcard__body');
+          if (body) body.scrollLeft = j * body.clientWidth;
+        }
+        if (track && card) track.scrollLeft = Math.max(0, card.offsetLeft - track.offsetLeft);
+        return;
+      }
+    }
+  }
+
   window.addEventListener('the90:screen', function (event) {
     if (event.detail === 'league-rounds') renderList();
-    if (event.detail === 'league') renderPanel();
-    else releaseBar();
+    if (event.detail === 'league') {
+      renderPanel();
+      var round = publishedOf(league())[0];
+      if (round) window.setTimeout(function () { resume(round); paintBar(round); }, 0);
+    } else {
+      dropUnconfirmed(publishedOf(league())[0]);
+      releaseBar();
+    }
     if (event.detail !== 'league-round-edit') closePicker();
   });
 
@@ -1162,10 +1223,6 @@
   window.setInterval(function () {
     var active = document.querySelector('.screen.is-active');
     if (!active || active.dataset.screen !== 'league') return;
-    /* The bar is shared, and the daily slip puts it away when its own state
-       says so. While a league round is on screen, this puts it back. */
-    var round = publishedOf(league())[0];
-    if (round) paintBar(round);
     $$('[data-round-clock]', panel || document).forEach(function (cell) {
       var round = roundsOf(league()).filter(function (item) {
         return item.id === cell.dataset.roundClock;
