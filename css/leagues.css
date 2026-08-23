@@ -1184,17 +1184,11 @@
 .round-head__count b { color: var(--text-primary); font-size: 12px; font-weight: 600; line-height: 18px; }
 .round-head__count small { color: var(--text-dim); font-size: 10px; line-height: 15px; }
 
-.round-track {
-  width: 100%;
-  padding: 0 16px;
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-}
-.round-track::-webkit-scrollbar { display: none; }
-.round-track > .mcard { flex: 0 0 100%; scroll-snap-align: center; }
+/* The rail is the app's own: it breaks out of the column's margins so a card
+   is a full 358 and the next one waits at the edge of the screen rather than
+   being cut off by the column — see .picks-track in league.css, which this
+   shares. Nothing to add here but the room under it for the dots. */
+.round-track { padding-bottom: 4px; }
 
 /* league points are not coins: the bar says so in words */
 .winbar--points .winbar__points b img { display: none; }
