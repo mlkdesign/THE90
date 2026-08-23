@@ -328,8 +328,8 @@
         'draft'));
     }
 
-    publishedOf(league()).forEach(function (round) {
-      panel.appendChild(playCard(round));
+    publishedOf(league()).forEach(function (round, index) {
+      panel.appendChild(index === 0 ? playCard(round) : lockedCard(round, index));
     });
 
     panel.appendChild(el('p', 'league-round-note',
@@ -430,6 +430,50 @@
       box.appendChild(group);
     });
     return box;
+  }
+
+  /* The ring is how much of the wait is behind you, in one line: a day out
+     is an empty circle, the deadline is a full one. */
+  function paintRing(ring, round) {
+    var radius = parseFloat(ring.getAttribute('r')) || 40;
+    var circumference = 2 * Math.PI * radius;
+    var locks = deadlineOf(round);
+    var left = locks ? Math.max(0, locks.getTime() - Date.now()) : 0;
+    var done = 1 - Math.min(1, left / (24 * 3600000));
+    ring.style.strokeDasharray = circumference.toFixed(2);
+    ring.style.strokeDashoffset = (circumference * (1 - done)).toFixed(2);
+  }
+
+  /* A round that has not opened yet: barely there, with a lock in the middle
+     and the wait drawn around it. */
+  function lockedCard(round, index) {
+    var box = el('section', 'round-locked');
+    box.appendChild(el('strong', 'round-locked__name', round.name));
+
+    var dial = el('span', 'round-locked__dial');
+    dial.innerHTML =
+      '<svg viewBox="0 0 88 88" width="88" height="88" aria-hidden="true">' +
+        '<circle class="round-locked__track" cx="44" cy="44" r="40"></circle>' +
+        '<circle class="round-locked__fill" cx="44" cy="44" r="40" data-round-ring="' + round.id + '"></circle>' +
+      '</svg>' +
+      '<svg class="round-locked__lock" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">' +
+        '<path d="M17 10V8a5 5 0 0 0-10 0v2H6a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1h-1zm-8-2a3 3 0 0 1 6 0v2H9V8zm4 8.7V18a1 1 0 0 1-2 0v-1.3a1.5 1.5 0 1 1 2 0z" fill="currentColor"/>' +
+      '</svg>' +
+      '<b data-round-clock="' + round.id + '">' + waitFor(round) + '</b>';
+    box.appendChild(dial);
+    box.appendChild(el('p', 'round-locked__note', 'Opens when the round before it is done.'));
+    return box;
+  }
+
+  /* How long until a locked round opens: its own deadline is the moment it
+     stops being a thing you are waiting for. */
+  function waitFor(round) {
+    var locks = deadlineOf(round);
+    if (!locks) return '--:--';
+    var left = Math.max(0, locks.getTime() - Date.now());
+    var hours = Math.floor(left / 3600000);
+    var minutes = Math.floor(left % 3600000 / 60000);
+    return hours + 'h ' + String(minutes).padStart(2, '0') + 'm';
   }
 
   /* The round's own header: which round, how long is left, and how much of
@@ -679,7 +723,8 @@
       track.appendChild(tick);
     }
     // the last card slides away and the tick takes its place
-    track.scrollLeft = Math.max(0, tick.offsetLeft - track.offsetLeft);
+    var first = track.querySelector('.mcard');
+    track.scrollLeft = Math.max(0, tick.offsetLeft - (first ? first.offsetLeft : 0));
     if (bar) bar.show(false);
   }
 
@@ -720,7 +765,7 @@
     });
 
     var win = el('p', 'donecard__win');
-    win.appendChild(document.createTextNode('League points: '));
+    win.appendChild(document.createTextNode('Estimated points win: '));
     win.appendChild(el('b', null, '+' + worth));
 
     done.appendChild(art);
@@ -1203,7 +1248,13 @@
     if (event.detail === 'league') {
       renderPanel();
       var round = publishedOf(league())[0];
-      if (round) window.setTimeout(function () { resume(round); paintBar(round); }, 0);
+        if (round) window.setTimeout(function () { resume(round); paintBar(round); }, 0);
+      window.setTimeout(function () {
+        $$('[data-round-ring]', panel || document).forEach(function (ring) {
+          var item = roundsOf(league()).filter(function (r) { return r.id === ring.dataset.roundRing; })[0];
+          if (item) paintRing(ring, item);
+        });
+      }, 0);
     } else {
       dropUnconfirmed(publishedOf(league())[0]);
       releaseBar();
@@ -1222,7 +1273,12 @@
       var round = roundsOf(league()).filter(function (item) {
         return item.id === cell.dataset.roundClock;
       })[0];
-      if (round) cell.textContent = statusLine(round);
+      if (!round) return;
+      var locked = cell.closest('.round-locked');
+      cell.textContent = locked ? waitFor(round) : statusLine(round);
+      if (!locked) return;
+      var ring = panel.querySelector('[data-round-ring="' + round.id + '"]');
+      if (ring) paintRing(ring, round);
     });
   }, 1000);
 

@@ -381,6 +381,9 @@
     var question = state[questionIndex];
     if (!question) return hideRoundPickBar();
 
+    // a finished round has nothing left to confirm, whatever is on screen
+    if (state.every(function (q) { return q.confirmed; })) return hideRoundPickBar();
+
     // nothing to confirm until the round has been started
     var started = state.some(function (q) { return q.selected >= 0; });
     if (!started) return hideRoundPickBar();
