@@ -1578,7 +1578,8 @@
 .shell-footer.is-rankings .winbar,
 .shell-footer.is-arena:not(.is-arena-tournament) .winbar,
 .shell-footer.is-leagues .winbar,
-.shell-footer.is-league .winbar,
+/* not is-league: a league round confirms its picks on this same surface,
+   the way the tournament does */
 .shell-footer.is-league-chat .winbar,
 .shell-footer.is-live-match .winbar { display: none !important; }
 
