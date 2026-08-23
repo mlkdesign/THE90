@@ -494,7 +494,7 @@
         return id === 'btts' || id === 'scorer';
       });
 
-      track.appendChild(T.pickCard.create(match, pick.card, {
+      var card = T.pickCard.create(match, pick.card, {
         when: kickoffLabel(match).split(' · ')[0],
         round: true,
         extras: extras,
@@ -503,8 +503,18 @@
           keepCard(round, match, pick);
           paintBar(round);
         }
-      }));
+      });
+      var slider = card.querySelector('.mcard__body');
+      if (slider) {
+        slider.addEventListener('scroll', function () {
+          card.dataset.question =
+            String(Math.round(slider.scrollLeft / Math.max(1, slider.clientWidth)));
+          paintBar(round);
+        }, { passive: true });
+      }
+      track.appendChild(card);
     });
+    track.addEventListener('scroll', function () { paintBar(round); }, { passive: true });
     box.appendChild(track);
 
     window.setTimeout(function () { paintBar(round); }, 0);
@@ -536,65 +546,100 @@
     savePicks();
   }
 
-  /* The shared confirmation surface, in the league's own currency. */
-  /* And the way back out of it: the card in front of you loses what has not
-     been confirmed, and the bar goes with it. */
+  /* Where the eye is: which match is under the rail, and which question is
+     under the card's own slider. */
+  function currentSpot(round) {
+    var track = panel && panel.querySelector('.round-track');
+    var cards = panel ? $$('.mcard--round', panel) : [];
+    var index = track ? Math.round(track.scrollLeft / Math.max(1, track.clientWidth)) : 0;
+    index = Math.max(0, Math.min(cards.length - 1, index));
+    var card = cards[index];
+    var body = card && card.querySelector('.mcard__body');
+    var blocks = card ? $$('.mcard__block', card) : [];
+    var question = card && card.dataset.question !== undefined
+      ? Number(card.dataset.question)
+      : (body ? Math.round(body.scrollLeft / Math.max(1, body.clientWidth)) : 0);
+    return {
+      index: index,
+      match: round.matches[index],
+      card: card,
+      body: body,
+      blocks: blocks,
+      question: Math.max(0, Math.min(blocks.length - 1, question))
+    };
+  }
+
+  /* The card always draws the result and the score; anything else the round
+     asks follows in the order the owner turned it on. */
+  function extrasOf(match) {
+    return match.questions.filter(function (id) { return id === 'btts' || id === 'scorer'; });
+  }
+
+  function blockAnswered(pick, match, index) {
+    if (!pick.card) return false;
+    if (index === 0) return !!pick.card.outcome;
+    if (index === 1) {
+      var score = pick.card.score;
+      return !!(score && score.home !== null && score.away !== null);
+    }
+    var id = extrasOf(match)[index - 2];
+    return !!(id && pick.card.extras && pick.card.extras[id]);
+  }
+
+  /* The way back out: the question in front of you loses what has not been
+     accepted yet. */
   function clearCurrent(round) {
-    var track = panel && panel.querySelector('.round-track');
-    var index = track ? Math.round(track.scrollLeft / Math.max(1, track.clientWidth)) : 0;
-    var match = round.matches[index] || round.matches[0];
-    if (!match) return;
-    var pick = pickOf(round, match);
-    pick.answers = {};
-    if (pick.card) {
-      pick.card.outcome = null;
-      pick.card.score = { home: null, away: null };
-      pick.card.extras = {};
+    var spot = currentSpot(round);
+    if (!spot.match) return;
+    var pick = pickOf(round, spot.match);
+    if (spot.question === 0) pick.card.outcome = null;
+    else if (spot.question === 1) pick.card.score = { home: null, away: null };
+    else {
+      var id = extrasOf(spot.match)[spot.question - 2];
+      if (id && pick.card.extras) pick.card.extras[id] = null;
     }
-    savePicks();
+    keepCard(round, spot.match, pick);
     renderPanel();
   }
 
-  /* Confirming works the way the daily slip does: the card in front of you is
-     banked, and the rail moves on to the next one still waiting. */
+  /* Accepting moves you on: the next question on this card, or the next match
+     when the card has none left. */
   function acceptOne(round) {
-    var track = panel && panel.querySelector('.round-track');
-    var index = track ? Math.round(track.scrollLeft / Math.max(1, track.clientWidth)) : 0;
-    var match = round.matches[index] || round.matches[0];
-    if (!match) return;
+    var spot = currentSpot(round);
+    if (!spot.match || !spot.body) return;
+    var pick = pickOf(round, spot.match);
+    if (!blockAnswered(pick, spot.match, spot.question)) return;
 
-    var pick = pickOf(round, match);
-    pick.seen = true;
-    savePicks();
-
-    // on to the next match nobody has answered yet
-    var next = -1;
-    for (var i = 0; i < round.matches.length; i += 1) {
-      var other = pickOf(round, round.matches[i]);
-      var answered = round.matches[i].questions.some(function (id) {
-        return other.answers[id] !== undefined;
-      });
-      if (!answered) { next = i; break; }
+    for (var next = spot.question + 1; next < spot.blocks.length; next += 1) {
+      if (blockAnswered(pick, spot.match, next)) continue;
+      if (spot.card) spot.card.dataset.question = String(next);
+      spot.body.scrollLeft = next * spot.body.clientWidth;
+      window.setTimeout(function () { paintBar(round); }, 340);
+      return;
     }
-    renderPanel();
 
-    if (next < 0) return;
-    var rail = panel && panel.querySelector('.round-track');
-    if (!rail) return;
-    /* The rail has just been rebuilt, so there is nothing to animate from —
-       put the next card in front of you and let the slide be the one the
-       finger makes. */
-    rail.scrollLeft = next * rail.clientWidth;
+    var track = panel && panel.querySelector('.round-track');
+    if (track && spot.index + 1 < round.matches.length) {
+      track.scrollLeft = (spot.index + 1) * track.clientWidth;
+      window.setTimeout(function () { paintBar(round); }, 340);
+      return;
+    }
+    paintBar(round);
   }
+
+  /* The shared confirmation surface, in the league's own currency. It says
+     what the round is worth, and its button is about the question in front of
+     you: accept it, or go and answer it. */
+  var barReady = false;
 
   function paintBar(round) {
     var bar = T.pickConfirmationBar;
     if (!bar || !bar.element) return;
-
-    /* What is answered and not yet in. Once it is all locked there is nothing
-       left to confirm and the bar has no business being up. */
-    var pending = answeredCount(round);
-    if (!pending || stateOf(round) !== 'open') { bar.show(false); return; }
+    if (!answeredCount(round) || stateOf(round) !== 'open') {
+      bar.show(false);
+      barReady = false;
+      return;
+    }
 
     var worth = 0;
     round.matches.forEach(function (match) {
@@ -606,19 +651,28 @@
       });
     });
 
-    bar.element.classList.add('winbar--round-picks');
+    bar.element.classList.add('winbar--round-picks', 'winbar--points');
     if (bar.label) bar.label.textContent = 'Potential win:';
     if (bar.points) bar.points.textContent = '+' + worth;
-    bar.element.classList.add('winbar--points');
+
+    var spot = currentSpot(round);
+    var ready = !!(spot.match &&
+      blockAnswered(pickOf(round, spot.match), spot.match, spot.question));
+
     if (bar.next) {
-      bar.next.textContent = 'Next pick';
-      /* The tournament leaves this button disabled when its own round has
-         nothing selected, and a disabled button never sees a click — so the
-         league has to take it back as well as rename it. */
-      bar.next.disabled = false;
+      bar.next.textContent = ready ? 'Accept pick' : 'Choose your pick';
+      bar.next.disabled = !ready;
       bar.next.onclick = function () { acceptOne(round); };
+      // one nudge as it comes alive, the way the daily slip does it
+      if (ready && !barReady) {
+        bar.next.classList.remove('is-nudging');
+        void bar.next.offsetWidth;
+        bar.next.classList.add('is-nudging');
+      }
+      if (!ready) bar.next.classList.remove('is-nudging');
     }
     if (bar.close) bar.close.onclick = function () { clearCurrent(round); };
+    barReady = ready;
     bar.show(true);
   }
 

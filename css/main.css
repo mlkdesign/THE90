@@ -1710,7 +1710,9 @@
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
   scroll-snap-type: x mandatory;
-  scroll-behavior: auto;
+  /* the slide is the stylesheet's, so moving between questions in code is
+     one line and still animates */
+  scroll-behavior: smooth;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
 }

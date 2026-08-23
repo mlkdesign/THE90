@@ -1188,7 +1188,7 @@
    is a full 358 and the next one waits at the edge of the screen rather than
    being cut off by the column — see .picks-track in league.css, which this
    shares. Nothing to add here but the room under it for the dots. */
-.round-track { padding-bottom: 4px; }
+.round-track { padding-bottom: 4px; scroll-behavior: smooth; }
 
 /* league points are not coins: the bar says so in words */
 .winbar--points .winbar__points b img { display: none; }
