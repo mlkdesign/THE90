@@ -778,14 +778,12 @@
 .shell-footer.is-league-chat::before {
   content: '';
   position: absolute;
-  top: -48px;
+  top: 0px;
   right: 0;
   bottom: 0;
   left: 0;
   background: linear-gradient(0deg,
-    rgba(14, 14, 14, .9) 0,
-    rgba(14, 14, 14, .82) 46%,
-    rgba(14, 14, 14, .5) 72%,
+    rgba(14, 14, 14) 0,
     rgba(14, 14, 14, 0) 100%);
   pointer-events: none;
 }
@@ -953,16 +951,7 @@
   transition: background .18s ease, transform .12s ease;
 }
 /* and dims on its way under, so nothing arrives at the plate at full strength */
-.league-round::after {
-  content: '';
-  position: absolute;
-  top: 100%;
-  right: -8px;
-  left: -8px;
-  height: 44px;
-  background: linear-gradient(180deg, rgba(14, 14, 14, .88), rgba(14, 14, 14, 0));
-  pointer-events: none;
-}
+
 .league-round:hover { background: rgba(255, 255, 255, .1); }
 .league-round:active { transform: scale(.99); }
 .league-round__copy { color: var(--text-primary); font-size: 14px; line-height: 20px; }
@@ -1173,7 +1162,12 @@
   font-weight: 600;
   line-height: 18px;
 }
-.create-submit { margin-top: 4px; }
+/* the app's own button height — it was inheriting a slimmer form control */
+.create-submit {
+  height: 44px;
+  min-height: 44px;
+  margin-top: 4px;
+}
 
 
 /* =========================================================

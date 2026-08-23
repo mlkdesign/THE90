@@ -583,6 +583,7 @@
             index: leagues.length - 1,
             league: leagues[leagues.length - 1]
           };
+          rememberViewing();
           applyMembership();
           if (window.THE90.go) window.THE90.go('league-rounds');
         }
@@ -620,7 +621,15 @@
   var prizes = $('.league-prizes');
   var joinButton = $('[data-league-join]');
   var youRow = $('.league-member--you');
-  var viewing = { joined: true, own: false };
+  /* Which league you last opened. The app can come back to the league screen
+     on its own — a reload restores the screen you were on — and without this
+     it would arrive with no idea whose league it is showing. */
+  var VIEWING_KEY = 'the90.viewingLeague.v1';
+  var viewing = load(VIEWING_KEY, null) || { joined: true, own: false };
+
+  function rememberViewing() {
+    save(VIEWING_KEY, viewing);
+  }
 
   /* Which league was opened, and what you are to it. A card you made carries
      its index into the stored list; a seeded one carries only what the markup
@@ -640,6 +649,7 @@
       index: own ? index : -1,
       league: record
     };
+    rememberViewing();
   }, true);
 
   var invite = $('.league-actions__invite');

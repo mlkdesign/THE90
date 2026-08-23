@@ -479,10 +479,10 @@
   /* The round's own header: which round, how long is left, and how much of
      it is answered — Figma › LEAGUES › League (748:2284). */
   function editLink(round) {
-    var edit = el('button', 'round-head__edit', editing[round.id] ? 'Done' : 'Edit');
+    var edit = el('button', 'round-head__edit', editingRounds[round.id] ? 'Done' : 'Edit');
     edit.type = 'button';
     edit.addEventListener('click', function () {
-      editing[round.id] = !editing[round.id];
+      editingRounds[round.id] = !editingRounds[round.id];
       renderPanel();
     });
     return edit;
@@ -494,7 +494,7 @@
     top.appendChild(el('strong', null, round.name));
     if (state) top.appendChild(pill(state));
 
-    if (acceptedCount(round)) top.appendChild(editLink(round));
+    if (roundComplete(round)) top.appendChild(editLink(round));
     var clock = el('span', 'round-head__clock');
     var timer = document.createElement('img');
     timer.src = 'assets/icons/timer.svg';
@@ -586,7 +586,7 @@
     blocksOf(match).forEach(function (id, index) {
       var block = blocks[index];
       if (!block) return;
-      var locked = !editing[round.id] && !!(pick.accepted && pick.accepted[id]);
+      var locked = !editingRounds[round.id] && !!(pick.accepted && pick.accepted[id]);
       block.classList.toggle('is-locked', locked);
       $$('button', block).forEach(function (button) { button.disabled = locked; });
     });
@@ -637,7 +637,9 @@
     if (rail) rail.style.width = (total ? Math.round(done / total * 100) : 0) + '%';
 
     var row = panel.querySelector('.round-head__row');
-    if (row && done && !row.querySelector('.round-head__edit')) row.appendChild(editLink(round));
+    if (row && roundComplete(round) && !row.querySelector('.round-head__edit')) {
+      row.appendChild(editLink(round));
+    }
     if (count) {
       count.replaceChildren();
       count.appendChild(el('b', null, String(done)));
@@ -712,7 +714,7 @@
      when the card has none left. */
   function acceptOne(round) {
     var spot = currentSpot(round);
-    editing[round.id] = false;
+    editingRounds[round.id] = false;
     if (!spot.match || !spot.body) return;
     var pick = pickOf(round, spot.match);
     if (!blockAnswered(pick, spot.match, spot.question)) return;
@@ -810,7 +812,7 @@
      what the round is worth, and its button is about the question in front of
      you: accept it, or go and answer it. */
   var barReady = false;
-  var editing = {};
+  var editingRounds = {};
 
   function paintBar(round) {
     var bar = T.pickConfirmationBar;
