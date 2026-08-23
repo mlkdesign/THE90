@@ -123,8 +123,11 @@
     if (from || here === name) return;
     var to = name === 'league' ? 1 : 0;
     paint(1 - to, false);
-    // a frame at the starting position, or there is nothing to animate from
-    window.requestAnimationFrame(function () { land(to, done); });
+    /* A beat at the starting position, or there is nothing to animate from.
+       A timer rather than a frame: a frame that never comes — a tab in the
+       background, a stalled compositor — would leave the pair stranded
+       halfway with no way back. */
+    window.setTimeout(function () { land(to, done); }, 20);
   }
 
   T.leaguePage = { go: slideTo };
