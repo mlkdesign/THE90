@@ -41,29 +41,46 @@
 /* Positioned against the scrolling column, not the scroller, so it travels
    with the page and dissolves into the top fade like everything else instead
    of being pinned over it. (The tournament's back button borrows this rule,
-   which is why the offset is stated against the screen and not the column.) */
+   which is why the offset is stated against the screen and not the column.)
+
+   The line is My Zone's: the same 40 round plate its bell and gear sit on,
+   at the height that row puts them — 62 of status bar, then the row's own
+   8 of padding and 4 to centre a 40 in it. */
 .league-back {
   position: absolute;
   z-index: 8;
-  top: 62px;
+  top: 74px;
   left: 16px;
 }
+.league-back img { transform: rotate(90deg); }
 /* its mirror image, and the only thing in the top block that is not about
    the league itself: what you can do to it */
 .league-menu {
   position: absolute;
   z-index: 8;
-  top: 62px;
+  top: 74px;
   right: 16px;
   left: auto;
 }
-.league-menu img { transform: none; opacity: .9; }
+.league-menu img { opacity: .9; }
+
+.league-back,
+.league-menu,
+.league-chat-head .iconbtn {
+  transition: background .18s ease, transform .12s ease;
+}
+.league-back:hover,
+.league-menu:hover,
+.league-chat-head .iconbtn:hover { background: rgba(255, 255, 255, .16); }
+.league-back:active,
+.league-menu:active,
+.league-chat-head .iconbtn:active { transform: scale(.94); }
 
 /* the sheet it opens, anchored under the button */
 .league-sheet {
   position: absolute;
   z-index: 9;
-  top: 110px;
+  top: 122px;
   right: 16px;
   min-width: 176px;
   padding: 4px;
@@ -849,20 +866,22 @@
 .league-chat-input > button:not(:disabled) img { opacity: 1; filter: none; }
 .league-chat-input > button:not(:disabled):active { transform: scale(.92); }
 
+/* The same row My Zone pins its wordmark and buttons in: 64 tall, 8 of
+   padding, starting under the status bar — which lands the two buttons on
+   exactly the line the bell and the gear sit on over there. */
 .league-chat-head {
   position: absolute;
   z-index: 12;
   top: 62px;
-  left: 16px;
-  width: 358px;
-  height: 40px;
+  left: 0;
+  width: 390px;
+  height: 64px;
+  padding: 8px 16px;
   display: grid;
   grid-template-columns: 40px 1fr 40px;
   align-items: center;
 }
-/* the two buttons are the app's own back button, one of them carrying a
-   letter instead of the chevron */
-.league-chat-head .setup-back { position: static; }
+.league-chat-back img { transform: rotate(90deg); }
 .league-chat-info b {
   color: var(--text-primary);
   font-size: 17px;
@@ -885,7 +904,7 @@
 .league-round {
   position: absolute;
   z-index: 11;
-  top: 110px;
+  top: 122px;
   right: 8px;
   left: 8px;
   height: 56px;
@@ -953,10 +972,10 @@
   top: 0;
   left: 0;
   width: 390px;
-  height: 124px;
+  height: 136px;
   background: linear-gradient(180deg,
     var(--bg-primary) 0,
-    var(--bg-primary) 74%,
+    var(--bg-primary) 78%,
     rgba(14, 14, 14, 0) 100%);
   pointer-events: none;
 }
@@ -975,7 +994,7 @@
 .league-chat-list {
   width: 390px;
   min-height: 100%;
-  padding: 182px 16px 104px;
+  padding: 194px 16px 104px;
   display: flex;
   flex-direction: column;
   gap: 20px;
