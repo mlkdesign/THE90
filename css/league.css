@@ -343,12 +343,10 @@
 .league-panel {
   min-width: 0;
   flex: 0 0 100%;
-  /* A tab needs a screenful underneath the strip before the strip can reach
-     the top of the screen — 852 of screen, less the 119 the sticky block
-     occupies and the 188 the column already pads at the foot. Short tabs run
-     out of content first, and then the hero can never scroll away and the
-     strip never covers what is above it. This buys them the room. */
-  min-height: 545px;
+  /* No floor under a tab: a short one is short. Holding a screenful open so
+     the strip could always reach the top of the screen bought that at the
+     price of a field of nothing under the content, which is the more
+     obvious of the two. */
   padding: 0 16px;
   display: flex;
   flex-direction: column;
