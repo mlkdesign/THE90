@@ -521,6 +521,7 @@
     box.appendChild(el('p', 'league-round-note',
       lockedCount(round) + ' / ' + questionCount(round) + ' picks locked' +
       (state === 'completed' ? ' · you scored +' + roundScore(round) + ' points' : '')));
+    window.setTimeout(function () { paintBar(round); }, 0);
     return box;
   }
 
@@ -550,15 +551,36 @@
   }
 
   /* The shared confirmation surface, in the league's own currency. */
+  function lockRound(round) {
+    round.matches.forEach(function (match) {
+      var pick = pickOf(round, match);
+      var answered = match.questions.some(function (id) { return pick.answers[id] !== undefined; });
+      if (answered) pick.locked = true;
+    });
+    savePicks();
+    renderPanel();
+  }
+
   function paintBar(round) {
     var bar = T.pickConfirmationBar;
     if (!bar || !bar.element) return;
-    var answered = answeredCount(round);
-    if (!answered || stateOf(round) !== 'open') { bar.show(false); return; }
+
+    /* What is answered and not yet in. Once it is all locked there is nothing
+       left to confirm and the bar has no business being up. */
+    var pending = 0;
+    round.matches.forEach(function (match) {
+      var pick = pickOf(round, match);
+      if (pick.locked) return;
+      pending += match.questions.filter(function (id) {
+        return pick.answers[id] !== undefined;
+      }).length;
+    });
+    if (!pending || stateOf(round) !== 'open') { bar.show(false); return; }
 
     var worth = 0;
     round.matches.forEach(function (match) {
       var pick = pickOf(round, match);
+      if (pick.locked) return;
       match.questions.forEach(function (id) {
         if (pick.answers[id] === undefined) return;
         var meta = template(id);
@@ -570,25 +592,16 @@
     if (bar.label) bar.label.textContent = 'Potential win:';
     if (bar.points) bar.points.textContent = '+' + worth;
     bar.element.classList.add('winbar--points');
-    if (bar.next) bar.next.textContent = 'Accept picks';
+    if (bar.next) {
+      bar.next.textContent = 'Accept picks';
+      /* The tournament leaves this button disabled when its own round has
+         nothing selected, and a disabled button never sees a click — so the
+         league has to take it back as well as rename it. */
+      bar.next.disabled = false;
+      bar.next.onclick = function () { lockRound(round); };
+    }
     bar.show(true);
   }
-
-  if (T.pickConfirmationBar && T.pickConfirmationBar.next) {
-    T.pickConfirmationBar.next.addEventListener('click', function () {
-      var here = document.querySelector('.screen.is-active');
-      if (!here || here.dataset.screen !== 'league') return;
-      var round = publishedOf(league())[0];
-      if (!round || stateOf(round) !== 'open') return;
-      round.matches.forEach(function (match) {
-        var pick = pickOf(round, match);
-        if (Object.keys(pick.answers).length) pick.locked = true;
-      });
-      savePicks();
-      renderPanel();
-    });
-  }
-
 
   /* =======================================================
      Manage rounds
@@ -948,9 +961,18 @@
      Wiring
      ======================================================= */
 
+  function releaseBar() {
+    var bar = T.pickConfirmationBar;
+    if (!bar || !bar.element) return;
+    bar.element.classList.remove('winbar--points');
+    if (bar.next) bar.next.onclick = null;
+    if (bar.restoreDaily) bar.restoreDaily();
+  }
+
   window.addEventListener('the90:screen', function (event) {
     if (event.detail === 'league-rounds') renderList();
     if (event.detail === 'league') renderPanel();
+    else releaseBar();
     if (event.detail !== 'league-round-edit') closePicker();
   });
 
