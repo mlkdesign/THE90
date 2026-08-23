@@ -487,7 +487,41 @@
               </section>
 
               <section class="theleagues-panel" role="tabpanel" data-leagues-panel="joined" hidden>
-                <p class="theleagues-empty">You have not joined any leagues yet.</p>
+                <header class="theleagues-section-head">
+                  <h2>Joined Leagues <span>(1)</span></h2>
+                </header>
+                <!-- A league somebody else runs: you play in it, and the only
+                     things it lets you do are invite and leave. -->
+                <div class="theleagues-list">
+                  <article class="theleagues-card">
+                    <button class="theleagues-card__open" type="button" data-go="league-chat"
+                            data-league-joined="true" data-league-privacy="open"
+                            aria-label="Open Office League">
+                      <span class="theleagues-card__art">
+                        <img src="assets/leagues/theleagues-bronze-trophy.png" alt="">
+                      </span>
+                      <span class="theleagues-card__body">
+                        <span class="theleagues-card__copy">
+                          <h3 class="theleagues-card__title">Office League</h3>
+                          <p>Colleagues on the field, friends in life. Only forward!</p>
+                        </span>
+                        <span class="theleagues-card__rule"></span>
+                        <span class="theleagues-card__footer">
+                          <span class="theleagues-card__avatars">
+                            <img src="assets/leagues/theleagues-member-1.png" alt="">
+                            <img src="assets/leagues/theleagues-member-2.png" alt="">
+                            <img src="assets/leagues/theleagues-member-3.png" alt="">
+                            <img src="assets/leagues/theleagues-member-4.png" alt="">
+                            <span class="theleagues-card__more">+24</span>
+                          </span>
+                        </span>
+                      </span>
+                    </button>
+                    <button class="theleagues-card__invite" type="button" data-share-league
+                            data-league-name="Office League"
+                            aria-label="Share invite link for Office League">Invite friends</button>
+                  </article>
+                </div>
                 <article class="theleagues-create-card">
                   <img src="assets/leagues/theleagues-create-trophy.png" alt="">
                   <div><h2>Create Your Own League</h2><p>Set your rules, invite friends and compete for the top spot.</p></div>
