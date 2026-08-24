@@ -548,7 +548,8 @@
     place.dataset.prizePlace = '';
     head.appendChild(place);
 
-    if (index > 2) {
+    // any place can go, including one of the three a league starts with
+    if (prizeList) {
       var drop = el('button', 'prize-block__drop', 'Remove');
       drop.type = 'button';
       drop.addEventListener('click', function () {

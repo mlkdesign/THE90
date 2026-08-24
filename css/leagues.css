@@ -427,22 +427,38 @@
 
 .round-picker { max-height: 620px; display: flex; flex-direction: column; }
 .round-picker .settings-sheet__content { min-height: 0; flex: 1; }
-/* the approved field shape from registration, a step lighter so it reads
-   against the sheet it sits on */
+/* the search field the app already has — the one the club picker
+   in registration and the language list are built on */
 .round-search {
-  width: 100%;
+  flex: 0 0 52px;
   height: 52px;
   padding: 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   border: 1px solid var(--input-border);
   border-radius: var(--r-input);
-  outline: none;
-  background: var(--input-bg-active);
-  color: var(--input-text);
-  font-size: 14px;
-  transition: background .2s ease, border-color .2s ease;
+  background: var(--input-bg);
+  transition: border-color .2s ease;
 }
-.round-search::placeholder { color: var(--input-placeholder); }
-.round-search:focus { border-color: var(--input-border-active); }
+.round-search img { opacity: .55; }
+.settings-sheet__content .round-search input {
+  min-width: 0;
+  flex: 1;
+  width: auto;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--input-text);
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 20px;
+}
+.settings-sheet__content .round-search input::placeholder { color: var(--input-placeholder); }
+.round-search:focus-within { border-color: var(--input-border-active); }
 /* the calendar from Main, in the sheet's own margins */
 .round-days {
   display: flex;

@@ -986,7 +986,17 @@
   gap: 16px;
   cursor: pointer;
 }
-.league-cover input { position: absolute; opacity: 0; pointer-events: none; }
+/* the file input is only here to be opened by the label — a file field
+   carries a wide intrinsic size, so it is given none of its own */
+.league-cover input {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
 .league-cover__preview {
   width: 72px;
   height: 72px;
