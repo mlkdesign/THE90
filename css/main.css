@@ -1740,3 +1740,62 @@
   transition: background .18s ease;
 }
 .mcard__dots i.is-on { background: var(--brand-primary); }
+
+/* =========================================================
+   A round card's three states
+   Figma › League-cards (748:2299, 764:3758)
+
+   Live, it is outlined in the brand green — the card you are
+   playing. In, it goes under a scrim with the tick on it.
+   Shut, the same scrim carries the lock and the wait.
+   ========================================================= */
+
+.mcard--round.is-live {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 1px rgba(36, 255, 0, .2), 0 12px 34px -18px rgba(36, 255, 0, .55);
+}
+.mcard--round.is-done,
+.mcard--round.is-shut { border-color: rgba(255, 255, 255, .1); box-shadow: none; }
+
+.mcard__over {
+  position: absolute;
+  z-index: 6;
+  inset: 0;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: inherit;
+  background: rgba(14, 14, 14, .8);
+  text-align: center;
+}
+/* the message has to read over a pitch and a row of answers, so a card that
+   is in goes a shade further down than one that is merely shut */
+.mcard__over--done { background: rgba(14, 14, 14, .9); }
+.mcard__over--done .donecard { min-height: 0; padding: 0; gap: 6px; }
+.mcard__over--done .donecard__art { width: 120px; height: 120px; margin-bottom: 0; }
+.mcard__over--done .donecard__title { font-size: 15px; line-height: 21px; }
+
+/* the wait, drawn around the lock that is holding the round shut */
+.mcard__dial {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  display: grid;
+  place-items: center;
+  color: var(--text-primary);
+}
+.mcard__dial svg:first-child { position: absolute; inset: 0; transform: rotate(-90deg); }
+.mcard__dial circle { fill: none; stroke-width: 3; }
+.mcard__dialtrack { stroke: rgba(255, 255, 255, .12); }
+.mcard__dialfill { stroke: var(--brand-primary); stroke-linecap: round; transition: stroke-dashoffset .5s linear; }
+.mcard__lockicon { position: relative; opacity: .9; }
+.mcard__opens {
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 300;
+  line-height: 18px;
+  font-variant-numeric: tabular-nums;
+}
