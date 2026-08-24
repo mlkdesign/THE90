@@ -12,8 +12,8 @@
      open       picks can be made and confirmed
      completed  the matches are played
 
-   Publishing is the door: matches, questions and the lock rule
-   are fixed on the way through it.
+   Publishing is the door: matches and questions are fixed on
+   the way through it.
    ========================================================= */
 
 (function () {
@@ -166,13 +166,6 @@
     }
     if (state === 'completed') return 'Completed';
     return STATE_LABEL[state] || state;
-  }
-
-  function lockLabel(round, match) {
-    var minutes = Number(round.lock);
-    var at = match.kickoff || '';
-    if (!minutes) return 'Picks lock at kickoff (' + at + ')';
-    return 'Picks lock ' + minutes + ' min before kickoff (' + at + ')';
   }
 
   function teamsOf(match) {
@@ -979,9 +972,7 @@
         (first ? kickoffLabel(first) + ' · ' : '') +
         round.matches.length + ' ' + (round.matches.length === 1 ? 'match' : 'matches')));
       row.appendChild(el('span', 'round-row__meta',
-        questionCount(round) + ' questions · ' +
-        (Number(round.lock) ? 'Picks lock ' + round.lock + ' min before kickoff'
-                            : 'Picks lock at kickoff')));
+        questionCount(round) + ' questions'));
 
       row.addEventListener('click', function () { openEditor(round.id); });
       fragment.appendChild(row);
@@ -1009,7 +1000,6 @@
   var descCount = $('[data-round-desc-count]');
   var matchList = $('[data-round-matches]');
   var matchesEmpty = $('[data-round-matches-empty]');
-  var lockSeg = $('[data-round-lock]');
   var actions = $('[data-round-actions]');
   var readonlyNote = $('[data-round-readonly]');
   var addButton = $('[data-round-add]');
@@ -1046,8 +1036,6 @@
     if (nameInput) { nameInput.value = editing.name; nameInput.disabled = !editable(); }
     if (descInput) { descInput.value = editing.description || ''; descInput.disabled = !editable(); }
     countDescription();
-    selectLock(editing.lock);
-    $$('.seg__btn', lockSeg).forEach(function (button) { button.disabled = !editable(); });
     if (addButton) addButton.hidden = !editable();
     if (actions) actions.hidden = !editable();
     if (readonlyNote) readonlyNote.hidden = editable();
@@ -1057,13 +1045,6 @@
   function countDescription() {
     if (!descCount || !descInput) return;
     descCount.textContent = descInput.value.length + '/120';
-  }
-
-  function selectLock(value) {
-    if (!lockSeg) return;
-    $$('.seg__btn', lockSeg).forEach(function (button) {
-      button.classList.toggle('is-on', Number(button.dataset.val) === Number(value));
-    });
   }
 
   function renderMatches() {
@@ -1123,7 +1104,6 @@
         questions.appendChild(row);
       });
       box.appendChild(questions);
-      box.appendChild(el('p', 'round-hint', lockLabel(editing, match)));
       fragment.appendChild(box);
     });
 
@@ -1136,16 +1116,6 @@
     descInput.addEventListener('input', function () {
       if (editing) editing.description = descInput.value;
       countDescription();
-    });
-  }
-  if (lockSeg) {
-    $$('.seg__btn', lockSeg).forEach(function (button) {
-      button.addEventListener('click', function () {
-        if (!editable()) return;
-        editing.lock = Number(button.dataset.val);
-        selectLock(editing.lock);
-        renderMatches();
-      });
     });
   }
 
@@ -1270,12 +1240,6 @@
     save();
   }
 
-  function nextDeadline() {
-    if (!editing || !editing.matches.length) return '';
-    var first = editing.matches[0];
-    return lockLabel(editing, first);
-  }
-
   $$('[data-round-save]').forEach(function (button) {
     button.addEventListener('click', function () {
       if (!editing) return;
@@ -1302,8 +1266,8 @@
       if (!T.confirm) return;
       T.confirm('Publish ' + editing.name + '?',
         editing.matches.length + ' ' + (editing.matches.length === 1 ? 'match' : 'matches') +
-        ' · ' + questions + ' questions · ' + nextDeadline() +
-        '. Matches, questions and deadlines can’t be edited after publishing.',
+        ' · ' + questions + ' questions.' +
+        ' Matches and questions can’t be edited after publishing.',
         'Publish round', function () {
           editing.state = 'published';
           keep();

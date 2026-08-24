@@ -425,7 +425,8 @@
 
 /* --- the match picker ----------------------------------- */
 
-.round-picker { max-height: 620px; display: flex; flex-direction: column; }
+/* a height of its own, so filtering the list moves nothing but the list */
+.round-picker { height: 560px; display: flex; flex-direction: column; }
 .round-picker .settings-sheet__content { min-height: 0; flex: 1; }
 /* the search field the app already has — the one the club picker
    in registration and the language list are built on */
