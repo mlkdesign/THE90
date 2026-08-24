@@ -432,6 +432,8 @@
   function resetForm() {
     if (nameInput) nameInput.value = '';
     if (descInput) descInput.value = '';
+    if (rulesBody) rulesBody.innerHTML = '';
+    renderPrizes(null);
     countDescription();
     clearErrors();
     pickedCover = '';
@@ -451,6 +453,205 @@
      submitting writes back over that one instead of adding.
      ======================================================= */
 
+  /* =======================================================
+     Three steps: what the league is, how it is played, what
+     it is played for. The dots in the corner say where you
+     are; the button at the foot moves you on.
+     ======================================================= */
+
+  var stepPanels = $$('[data-create-step]', form);
+  var stepDots = $$('[data-create-steps] i', form);
+  var stepBack = $('.setup-back', form);
+  var step = 1;
+
+  function showStep(next) {
+    step = Math.max(1, Math.min(stepPanels.length, next));
+    stepPanels.forEach(function (panel) {
+      panel.hidden = Number(panel.dataset.createStep) !== step;
+    });
+    stepDots.forEach(function (dot, index) {
+      dot.classList.toggle('is-on', index === step - 1);
+    });
+    dressForm();
+    form.scrollTop = 0;
+  }
+
+  if (stepBack) {
+    stepBack.addEventListener('click', function (event) {
+      // inside the form the back button is a step back, not a way out
+      if (step === 1) return;
+      event.preventDefault();
+      event.stopPropagation();
+      showStep(step - 1);
+    }, true);
+  }
+
+
+  /* =======================================================
+     Rules, written rather than chosen
+     ======================================================= */
+
+  var rulesBody = $('[data-rules-body]', form);
+  var rulesMedia = $('[data-rules-media]', form);
+
+  $$('[data-cmd]', form).forEach(function (button) {
+    button.addEventListener('mousedown', function (event) { event.preventDefault(); });
+    button.addEventListener('click', function () {
+      if (!rulesBody) return;
+      rulesBody.focus();
+      if (button.dataset.cmd === 'size') document.execCommand('fontSize', false, button.dataset.size);
+      else document.execCommand(button.dataset.cmd, false, null);
+    });
+  });
+
+  if (rulesMedia) {
+    rulesMedia.addEventListener('change', function () {
+      var file = rulesMedia.files && rulesMedia.files[0];
+      if (!file || !rulesBody) return;
+      var reader = new FileReader();
+      reader.onload = function () {
+        var node = document.createElement(file.type.indexOf('video') === 0 ? 'video' : 'img');
+        node.src = String(reader.result);
+        if (node.tagName === 'VIDEO') node.controls = true;
+        rulesBody.appendChild(node);
+      };
+      reader.readAsDataURL(file);
+      rulesMedia.value = '';
+    });
+  }
+
+
+  /* =======================================================
+     Prizes, place by place
+
+     Nothing is worked out for you: the place is a line of
+     text like everything else, so a league can pay whoever
+     it likes for whatever it likes.
+     ======================================================= */
+
+  var prizeList = $('[data-prize-list]', form);
+  var prizeAdd = $('[data-prize-add]', form);
+  var ORDINALS = ['1st place', '2nd place', '3rd place'];
+
+  function ordinal(index) {
+    return ORDINALS[index] || (index + 1) + 'th place';
+  }
+
+  function prizeBlock(prize, index) {
+    var box = el('article', 'prize-block');
+
+    var head = el('div', 'prize-block__head');
+    var place = document.createElement('input');
+    place.type = 'text';
+    place.placeholder = ordinal(index);
+    place.value = (prize && prize.place) || ordinal(index);
+    place.dataset.prizePlace = '';
+    head.appendChild(place);
+
+    if (index > 2) {
+      var drop = el('button', 'prize-block__drop', 'Remove');
+      drop.type = 'button';
+      drop.addEventListener('click', function () {
+        box.remove();
+        renumber();
+      });
+      head.appendChild(drop);
+    }
+    box.appendChild(head);
+
+    var title = document.createElement('input');
+    title.type = 'text';
+    title.placeholder = 'What they win';
+    title.value = (prize && prize.title) || '';
+    title.dataset.prizeTitle = '';
+    box.appendChild(title);
+
+    var note = document.createElement('textarea');
+    note.rows = 2;
+    note.placeholder = 'Description (optional)';
+    note.value = (prize && prize.description) || '';
+    note.dataset.prizeNote = '';
+    box.appendChild(note);
+
+    var value = document.createElement('input');
+    value.type = 'text';
+    value.placeholder = 'Value (optional)';
+    value.value = (prize && prize.value) || '';
+    value.dataset.prizeValue = '';
+    box.appendChild(value);
+
+    var photo = el('label', 'prize-block__photo');
+    var picker = document.createElement('input');
+    picker.type = 'file';
+    picker.accept = 'image/*';
+    picker.hidden = true;
+    var caption = el('span', null, 'Add a photo (optional)');
+    photo.appendChild(picker);
+    photo.appendChild(caption);
+    if (prize && prize.image) dressPhoto(photo, caption, prize.image);
+    picker.addEventListener('change', function () {
+      var file = picker.files && picker.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function () { dressPhoto(photo, caption, String(reader.result)); };
+      reader.readAsDataURL(file);
+    });
+    box.appendChild(photo);
+
+    return box;
+  }
+
+  function dressPhoto(photo, caption, src) {
+    photo.dataset.prizeImage = src;
+    photo.classList.add('has-image');
+    var art = photo.querySelector('img') || document.createElement('img');
+    art.src = src;
+    art.alt = '';
+    if (!art.parentNode) photo.insertBefore(art, caption);
+    caption.textContent = 'Change photo';
+  }
+
+  /* The places keep their order when one in the middle goes. */
+  function renumber() {
+    $$('.prize-block', prizeList).forEach(function (box, index) {
+      var place = $('[data-prize-place]', box);
+      if (!place) return;
+      place.placeholder = ordinal(index);
+      if (!place.value.trim() || /^\d+(st|nd|rd|th) place$/.test(place.value.trim())) {
+        place.value = ordinal(index);
+      }
+    });
+  }
+
+  function renderPrizes(list) {
+    if (!prizeList) return;
+    var fragment = document.createDocumentFragment();
+    var prizes = (list && list.length) ? list : [null, null, null];
+    prizes.forEach(function (prize, index) { fragment.appendChild(prizeBlock(prize, index)); });
+    prizeList.replaceChildren(fragment);
+  }
+
+  if (prizeAdd) {
+    prizeAdd.addEventListener('click', function () {
+      var index = $$('.prize-block', prizeList).length;
+      prizeList.appendChild(prizeBlock(null, index));
+    });
+  }
+
+  function collectPrizes() {
+    return $$('.prize-block', prizeList).map(function (box, index) {
+      var photo = $('.prize-block__photo', box);
+      return {
+        place: ($('[data-prize-place]', box).value || '').trim() || ordinal(index),
+        title: ($('[data-prize-title]', box).value || '').trim(),
+        description: ($('[data-prize-note]', box).value || '').trim(),
+        value: ($('[data-prize-value]', box).value || '').trim(),
+        image: (photo && photo.dataset.prizeImage) || ''
+      };
+    }).filter(function (prize) { return prize.title; });
+  }
+
+
   var formTitle = $('.offer__title', form);
   var formSub = $('.offer__sub', form);
   var submitButton = $('[data-league-create-submit]', form);
@@ -463,18 +664,33 @@
     });
   }
 
+  var STEP_TITLES = ['Create your league', 'Rules of your league', 'Prizes to play for'];
+  var STEP_SUBS = [
+    'Set it up once — invite whoever you want.',
+    'How it is played, and anything your players should know.',
+    'What each place wins. Fill in as many as you like.'
+  ];
+
   function dressForm() {
     var isEdit = editing > -1;
-    if (formTitle) formTitle.textContent = isEdit ? 'Edit your league' : 'Create your league';
-    if (formSub) formSub.textContent = isEdit
-      ? 'Change what you need — everyone in it sees the update.'
-      : 'Set it up once — invite whoever you want.';
-    if (submitButton) submitButton.textContent = isEdit ? 'Save changes' : 'Create league';
+    var last = step === (stepPanels.length || 1);
+    if (formTitle) {
+      formTitle.textContent = isEdit && step === 1 ? 'Edit your league' : STEP_TITLES[step - 1];
+    }
+    if (formSub) {
+      formSub.textContent = isEdit && step === 1
+        ? 'Change what you need — everyone in it sees the update.'
+        : STEP_SUBS[step - 1];
+    }
+    if (submitButton) {
+      submitButton.textContent = !last ? 'Continue' : (isEdit ? 'Save changes' : 'Create league');
+    }
   }
 
   function startCreate() {
     editing = -1;
     resetForm();
+    showStep(1);
     selectPrivacy('private');
     floor = MAX_LOW;
     maximum = 12;
@@ -488,6 +704,9 @@
     if (!league) return;
     editing = index;
     resetForm();
+    if (rulesBody) rulesBody.innerHTML = league.rules || '';
+    renderPrizes(league.prizes);
+    showStep(1);
     if (nameInput) nameInput.value = league.name;
     if (descInput) descInput.value = league.description || league.subtitle || '';
     countDescription();
@@ -526,13 +745,21 @@
       return;
     }
 
+    // the first two steps are a way forward, not a way to finish
+    if (step < stepPanels.length) {
+      showStep(step + 1);
+      return;
+    }
+
     var privacy = privacyValue();
     var settings = {
       name: name,
       description: description,
       max: maximum,
       privacy: privacy,
-      privacyLabel: privacy === 'open' ? 'Open' : 'Private'
+      privacyLabel: privacy === 'open' ? 'Open' : 'Private',
+      rules: rulesBody ? rulesBody.innerHTML.trim() : '',
+      prizes: collectPrizes()
     };
 
     var wasEditing = editing > -1;

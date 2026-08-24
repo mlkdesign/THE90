@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="css/style.css?v=8">
 <link rel="stylesheet" href="css/main.css?v=55">
 <link rel="stylesheet" href="css/rankings.css?v=15">
-<link rel="stylesheet" href="css/leagues.css?v=36">
+<link rel="stylesheet" href="css/leagues.css?v=38">
 <link rel="stylesheet" href="css/arena.css?v=66">
 <link rel="stylesheet" href="css/live.css?v=5">
 <link rel="stylesheet" href="css/league.css?v=41">
@@ -1092,7 +1092,13 @@
               <p class="offer__sub">Set it up once — invite whoever you want.</p>
             </div>
 
-            <label class="league-cover">
+            <!-- three steps, and the dots that say which one you are on -->
+            <div class="create-steps" data-create-steps aria-hidden="true">
+              <i class="is-on"></i><i></i><i></i>
+            </div>
+
+            <section class="create-step" data-create-step="1">
+              <label class="league-cover">
               <input type="file" accept="image/*" data-league-cover-input>
               <span class="league-cover__preview" data-league-cover-preview>+</span>
               <span class="league-cover__copy"><strong>Cover image</strong><small>Optional</small></span>
@@ -1138,6 +1144,34 @@
                 </button>
               </div>
             </div>
+            </section>
+
+            <section class="create-step" data-create-step="2" hidden>
+              <div class="field" data-field>
+                <label class="field__label" for="league-rules">Rules</label>
+                <div class="editor">
+                  <div class="editor__bar">
+                    <button type="button" data-cmd="bold" aria-label="Bold"><b>B</b></button>
+                    <button type="button" data-cmd="italic" aria-label="Italic"><i>I</i></button>
+                    <button type="button" data-cmd="size" data-size="5" aria-label="Large text">A+</button>
+                    <button type="button" data-cmd="size" data-size="3" aria-label="Normal text">A</button>
+                    <button type="button" data-cmd="size" data-size="1" aria-label="Small text">a-</button>
+                    <label class="editor__media">
+                      <input type="file" accept="image/*,video/*" data-rules-media hidden>
+                      <span>Photo or video</span>
+                    </label>
+                  </div>
+                  <div class="editor__area" id="league-rules" contenteditable="true"
+                       data-rules-body data-placeholder="How this league is played, how points are counted, anything your players should know."></div>
+                </div>
+                <p class="field__note"><span>Everyone in the league can read this.</span></p>
+              </div>
+            </section>
+
+            <section class="create-step" data-create-step="3" hidden>
+              <div class="prize-list" data-prize-list></div>
+              <button class="btn create-addplace" type="button" data-prize-add>Add another place</button>
+            </section>
 
             <button class="btn btn--primary create-submit" type="submit" data-league-create-submit>Create league</button>
           </form>
@@ -2110,14 +2144,14 @@
 <script src="js/arena-join.js?v=3"></script>
 <script src="js/league.js?v=18"></script>
 <script src="js/leagues.js?v=5"></script>
-<script src="js/league-create.js?v=23"></script>
+<script src="js/league-create.js?v=24"></script>
 <script src="js/league-pager.js?v=8"></script>
 <script src="js/league-rules.js?v=2"></script>
 <script src="js/league-tabs.js?v=7"></script>
 <script src="js/league-round.js?v=4"></script>
 <script src="js/league-menu.js?v=4"></script>
 <script src="js/league-participants.js?v=2"></script>
-<script src="js/league-rounds.js?v=40"></script>
+<script src="js/league-rounds.js?v=41"></script>
 <script src="js/my-zone.js?v=2"></script>
 <script src="js/ranks.js?v=3"></script>
 <script src="js/notifications.js?v=6"></script>

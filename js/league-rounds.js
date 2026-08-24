@@ -262,6 +262,8 @@
   document.addEventListener('the90:league-membership', function (event) {
     viewing = event.detail || viewing;
     renderPanel();
+    if (typeof renderPrizes === 'function') renderPrizes();
+    if (typeof renderRules === 'function') renderRules();
   });
 
   function league() { return viewing.league || { name: 'League' }; }
@@ -1416,6 +1418,52 @@
       if (ring) paintRing(ring, round);
     });
   }, 1000);
+
+  /* =======================================================
+     What a league you made pays out, and how it is played
+
+     Both are written on the way in, so both are shown from
+     the league's own record rather than from the demo.
+     ======================================================= */
+
+  var prizesPanel = document.querySelector('[data-league-panel="prizes"]');
+  var rulesPanel = document.querySelector('[data-league-panel="rules"]');
+  var demoPrizes = prizesPanel ? prizesPanel.innerHTML : '';
+  var demoRules = rulesPanel ? rulesPanel.innerHTML : '';
+
+  function renderPrizes() {
+    if (!prizesPanel) return;
+    var prizes = (viewing.league && viewing.league.prizes) || [];
+    if (!prizes.length) { prizesPanel.innerHTML = demoPrizes; return; }
+
+    var fragment = document.createDocumentFragment();
+    prizes.forEach(function (prize) {
+      var card = el('article', 'arena-prize');
+      if (prize.image) {
+        var art = el('div', 'arena-prize__art');
+        var image = document.createElement('img');
+        image.src = prize.image;
+        image.alt = '';
+        art.appendChild(image);
+        card.appendChild(art);
+      }
+      var copy = el('div', 'arena-prize__copy');
+      copy.appendChild(el('span', 'arena-prize__place', prize.place));
+      copy.appendChild(el('h3', null, prize.title));
+      if (prize.description) copy.appendChild(el('p', null, prize.description));
+      if (prize.value) copy.appendChild(el('span', 'arena-prize__value', 'Value: ' + prize.value));
+      card.appendChild(copy);
+      fragment.appendChild(card);
+    });
+    prizesPanel.replaceChildren(fragment);
+  }
+
+  function renderRules() {
+    if (!rulesPanel) return;
+    var rules = viewing.league && viewing.league.rules;
+    if (!rules) { rulesPanel.innerHTML = demoRules; return; }
+    rulesPanel.innerHTML = '<div class="league-rules-copy">' + rules + '</div>';
+  }
 
   T.leagueRounds = {
     of: function () { return roundsOf(league()); },
