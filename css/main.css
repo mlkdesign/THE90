@@ -1676,51 +1676,63 @@
    the question.
    ========================================================= */
 
+/* Figma › League-cards › match-card-round1 (748:2299): a round on one card.
+   Everything it asks is on the card at once — a label with what the question
+   pays beside it, then the row you answer it on. */
 .mcard--round .mcard__bodywrap { padding: 0 0 8px; }
 .mcard--round .mcard__body {
-  /* No frame of its own: the question card is the thing with edges, and it is
-     the thing that slides. The side padding is the gutter a snapped card
-     rests in. */
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 8px;
-  overflow-x: auto;
-  overflow-y: hidden;
+  padding: 0 16px;
+  overflow: visible;
   border: 0;
   border-radius: 0;
   background: none;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
-  padding: 0 8px;
-  scroll-padding: 0 8px;
-  scroll-snap-type: x mandatory;
-  /* the slide is the stylesheet's, so moving between questions in code is
-     one line and still animates */
-  scroll-behavior: smooth;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
 }
-.mcard--round .mcard__body::-webkit-scrollbar { display: none; }
-
-/* Figma › LEAGUES › League (748:2326): one question, on glass. */
 .mcard--round .mcard__block {
   min-width: 0;
-  flex: 0 0 100%;
-  min-height: 110px;
-  padding: 12px;
+  padding: 0;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  justify-content: center;
-  border: 1px solid rgba(255, 255, 255, .2);
-  border-radius: 24px;
-  background: rgba(255, 255, 255, .1);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-  scroll-snap-align: center;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
-/* the score keeps the height the other questions set rather than adding to it */
-.mcard--round .exact__body { flex: 1; display: flex; align-items: center; }
+/* The pitch belongs to the header. On the daily slip the glass body covers
+   the rest of it; a round card has no glass, so the picture is cut to the
+   header's own 150px and faded into the card under it. */
+.mcard--round .mcard__pitch { height: 150px; bottom: auto; }
+.mcard--round .mcard__head::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 40px;
+  background: linear-gradient(180deg, rgba(14, 14, 14, 0) 0%, var(--card-surface) 100%);
+  pointer-events: none;
+}
+/* what a question is worth is written in the league's own green */
+.mcard--round .mcard__hint { color: var(--brand-primary); }
+/* the score is stepped with two outlines rather than the daily slip's green
+   keys — on a round card the only filled thing is an answer that is in */
+.mcard--round .scorepad__step {
+  border: 1px solid rgba(255, 255, 255, .3);
+  background: none;
+  color: var(--text-primary);
+}
+.mcard--round .scorepad__step:hover { background: rgba(255, 255, 255, .08); }
+.mcard--round .scorepad__step:disabled { background: none; opacity: .4; }
+.mcard--round .scorepad { justify-content: center; }
+.mcard--round .mcard__labelrow,
+.mcard--round .exact__head { justify-content: space-between; gap: 12px; padding: 0 8px; }
 .mcard--round .scores { width: 100%; }
 /* the info sits on the question it explains, not over the pitch */
 .mcard--round .mcard__info { z-index: 3; top: 8px; right: 8px; }

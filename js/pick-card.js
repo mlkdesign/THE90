@@ -189,7 +189,6 @@
             '</div>' : '') +
             extrasMarkup +
           '</div>' +
-          (isRound ? '<div class="mcard__dots" data-dots aria-hidden="true"></div>' : '') +
         '</div>' +
       '</article>'
     );
@@ -282,25 +281,6 @@
         });
       });
     });
-
-
-    /* ---- one question at a time, with dots for the rest ---- */
-
-    var dots = $('[data-dots]', card);
-    if (dots) {
-      var body = $('.mcard__body', card);
-      var blocks = $$('.mcard__block', body);
-      blocks.forEach(function (block, index) {
-        var dot = document.createElement('i');
-        if (!index) dot.className = 'is-on';
-        dots.appendChild(dot);
-      });
-      var marks = $$('i', dots);
-      body.addEventListener('scroll', function () {
-        var at = Math.round(body.scrollLeft / Math.max(1, body.clientWidth));
-        marks.forEach(function (mark, index) { mark.classList.toggle('is-on', index === at); });
-      }, { passive: true });
-    }
 
 
     /* ---- the score drum ---- */
