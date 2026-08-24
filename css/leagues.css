@@ -443,19 +443,20 @@
 }
 .round-search::placeholder { color: var(--input-placeholder); }
 .round-search:focus { border-color: var(--input-border-active); }
-.round-days { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
-.round-days::-webkit-scrollbar { display: none; }
-.round-day {
+/* the calendar from Main, in the sheet's own margins */
+.round-days {
+  display: flex;
+  /* it keeps its own height: the sheet is a flex column and would otherwise
+     squeeze the weekday line off the bottom of the cells */
   flex: none;
-  padding: 8px 12px;
-  border: 1px solid rgba(255, 255, 255, .1);
-  border-radius: 12px;
-  color: var(--text-dim);
-  font-size: 12px;
-  line-height: 16px;
-  white-space: nowrap;
+  gap: 8px;
+  width: calc(100% + 32px);
+  margin: 0 -16px;
+  padding: 2px 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
-.round-day.is-on { border-color: var(--brand-primary); color: var(--brand-primary); }
+.round-days::-webkit-scrollbar { display: none; }
 .round-fixtures {
   min-height: 0;
   flex: 1;

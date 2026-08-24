@@ -1158,21 +1158,35 @@
   var fixtureList = $('[data-round-fixtures]');
   var pickedDay = 0;
 
+  /* The calendar the day strip on Main uses — same cell, same marks, so a
+     date reads the same wherever it is chosen. */
   function renderDays() {
     if (!dayStrip) return;
     var fragment = document.createDocumentFragment();
     days.forEach(function (day, index) {
-      var button = el('button', 'round-day' + (index === pickedDay ? ' is-on' : ''),
-        day.weekday + ' ' + day.date + ' ' + day.month);
-      button.type = 'button';
-      button.addEventListener('click', function () {
+      var cell = el('button', 'datecell');
+      cell.type = 'button';
+      cell.appendChild(el('span', 'datecell__m', day.month));
+      cell.appendChild(el('span', 'datecell__d', String(day.date)));
+      cell.appendChild(el('span', 'datecell__w', day.weekday));
+      cell.classList.toggle('is-active', index === pickedDay);
+      cell.classList.toggle('is-today', !!day.isToday);
+      cell.addEventListener('click', function () {
         pickedDay = index;
         renderDays();
         renderFixtures();
       });
-      fragment.appendChild(button);
+      fragment.appendChild(cell);
     });
     dayStrip.replaceChildren(fragment);
+
+    var active = dayStrip.querySelector('.datecell.is-active');
+    if (active) {
+      dayStrip.scrollTo({
+        left: active.offsetLeft - dayStrip.clientWidth / 2 + active.offsetWidth / 2,
+        behavior: 'smooth'
+      });
+    }
   }
 
   function renderFixtures() {
