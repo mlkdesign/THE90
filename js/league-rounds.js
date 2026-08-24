@@ -99,15 +99,34 @@
 
   function kickoffLabel(match) {
     var found = fixtureById(match.id);
-    if (!found) return match.kickoff || '';
-    return found.day.weekday + ' · ' + found.match.kickoff;
+    if (found) return found.day.weekday + ' · ' + found.match.kickoff;
+    /* Off the end of the calendar the day is worked out from the date the
+       round kept — and a match with no date at all is shown as today's
+       rather than as its own kickoff twice over. */
+    var at = kickoffAt(match);
+    return dayName(at) + ' · ' + (match.kickoff || '');
+  }
+
+  var WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  function dayName(at) {
+    if (!at) return 'Today';
+    var now = new Date();
+    function stamp(date) {
+      return date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate();
+    }
+    var tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+    if (stamp(at) === stamp(now)) return 'Today';
+    if (stamp(at) === stamp(tomorrow)) return 'Tomorrow';
+    return WEEKDAYS[at.getDay()];
   }
 
   /* Fixtures carry a day key and a kickoff; a round needs real times to know
      where it is in its own life. */
   function kickoffAt(match) {
     var found = fixtureById(match.id);
-    var key = found ? found.day.key : '';
+    // the calendar first, then the day the round wrote down when it took it
+    var key = (found ? found.day.key : match.date) || '';
     var parts = key.split('-');
     var clock = (found ? found.match.kickoff : match.kickoff || '00:00').split(':');
     if (parts.length !== 3) return null;
@@ -166,6 +185,9 @@
       return locks.getTime() > Date.now() ? 'Closes in ' + countdown(locks) : 'In play';
     }
     if (state === 'completed') return 'Completed';
+    /* Published with no clock to go by — its fixtures are off the end of the
+       calendar. It is still the round being played, so it says so. */
+    if (state === 'published' && !deadlineOf(round)) return 'In play';
     return STATE_LABEL[state] || state;
   }
 
@@ -573,7 +595,10 @@
      same highlight when an answer lands — with the round's questions in it. */
   function playCard(round) {
     var state = stateOf(round);
-    var live = state === 'open';
+    /* Anything short of played out is played on. A round whose fixtures have
+       aged out of the calendar cannot work out its own deadline and reports
+       itself as published — that is not a reason to shut its questions. */
+    var live = state !== 'completed';
     var box = el('section', 'round-play');
 
     box.appendChild(roundHead(round));
@@ -1336,6 +1361,11 @@
         editing.matches.push({
           id: match.id, home: match.home, away: match.away,
           league: match.league, kickoff: match.kickoff,
+          /* The day is written down with the match. The calendar is built
+             from today outwards, so a fixture picked this morning is not in
+             it next week — and a round that cannot say when it is played
+             cannot say when it closes. */
+          date: day.key,
           questions: ['result']            // the one every round asks
         });
         closePicker();
