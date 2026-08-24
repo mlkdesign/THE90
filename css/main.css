@@ -1704,10 +1704,9 @@
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
-/* The pitch belongs to the header. On the daily slip the glass body covers
-   the rest of it; a round card has no glass, so the picture is cut to the
-   header's own 150px and faded into the card under it. */
-.mcard--round .mcard__pitch { height: 150px; bottom: auto; }
+/* No photograph on a round card — the header is the drawn pitch and the two
+   crests, on the card's own dark, with the dashes fading out under them. */
+.mcard--round .mcard__pitch { display: none; }
 .mcard--round .mcard__head::after {
   content: '';
   position: absolute;
@@ -1731,6 +1730,14 @@
 .mcard--round .scorepad__step:hover { background: rgba(255, 255, 255, .08); }
 .mcard--round .scorepad__step:disabled { background: none; opacity: .4; }
 .mcard--round .scorepad { justify-content: center; }
+
+/* A round already played reads as a record: the answers that went in stay
+   lit, everything else steps back, and nothing on it can be pressed. */
+.mcard--round.is-past { border-color: rgba(255, 255, 255, .1); box-shadow: none; }
+.mcard--round.is-past .mcard__bodywrap { pointer-events: none; }
+.mcard--round.is-past .seg__btn:not(.is-on) { opacity: .4; }
+.mcard--round.is-past .scorepad__step { opacity: .3; }
+.mcard--round.is-past .mcard__head { opacity: .75; }
 .mcard--round .mcard__labelrow,
 .mcard--round .exact__head { justify-content: space-between; gap: 12px; padding: 0 8px; }
 .mcard--round .scores { width: 100%; }

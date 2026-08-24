@@ -71,7 +71,59 @@
   }
 
   function publishedOf(league) {
-    return roundsOf(league).filter(function (round) { return round.state !== 'draft'; });
+    var own = roundsOf(league).filter(function (round) { return round.state !== 'draft'; });
+    if (own.length) return own;
+    /* A league you were invited into arrives mid-season rather than empty: one
+       round played, one being played and one still to open. A league you made
+       yourself keeps its empty screen — that one is asking you for a round. */
+    return isOwner() ? [] : demoSeason();
+  }
+
+  /* The three rounds a joined league is shown with. Built once a session off
+     the calendar in front of it, so round two is always the live one. */
+  var season = null;
+
+  function demoSeason() {
+    if (season) return season;
+    if (!days.length) return [];
+
+    function fixture(day) { return day && day.matches[0]; }
+    var played = fixture(days[0]);
+    var now = fixture(days[1]) || played;
+    var next = fixture(days[3]) || fixture(days[2]) || now;
+    if (!played || !now || !next) return [];
+
+    var yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    var behind = yesterday.getFullYear() + '-' + (yesterday.getMonth() + 1) + '-' + yesterday.getDate();
+
+    season = [
+      /* Round one is off the calendar on purpose: it carries yesterday's date,
+         which is what makes it a round that has been played. */
+      { id: 'season-1', name: 'Round 1', description: '', lock: 15, state: 'published',
+        matches: [{ id: 'season-1-m', home: played.home, away: played.away,
+                    league: played.league, kickoff: '17:00', date: behind,
+                    questions: ['result', 'score'] }] },
+      { id: 'season-2', name: 'Round 2', description: '', lock: 15, state: 'published',
+        matches: [{ id: now.id, home: now.home, away: now.away, league: now.league,
+                    kickoff: now.kickoff, date: days[1] ? days[1].key : days[0].key,
+                    questions: ['result', 'score', 'btts'] }] },
+      { id: 'season-3', name: 'Round 3', description: '', lock: 15, state: 'published',
+        matches: [{ id: next.id, home: next.home, away: next.away, league: next.league,
+                    kickoff: next.kickoff, date: (days[3] || days[2] || days[1]).key,
+                    questions: ['result', 'score'] }] }
+    ];
+
+    // the round that has been played was played: it comes with its picks in
+    var first = season[0];
+    first.matches.forEach(function (match) {
+      var pick = pickOf(first, match);
+      if (pick.accepted) return;
+      pick.accepted = { result: 'home', score: '2:1' };
+      pick.answers = { result: 'home', score: { home: 2, away: 1 } };
+    });
+    savePicks();
+    return season;
   }
 
   function draftOf(league) {
@@ -503,15 +555,18 @@
       two(Math.floor(left % 60000 / 1000));
   }
 
-  /* The round's own header: which round, how long is left, and how much of
-     it is answered — Figma › LEAGUES › League (748:2284). */
-  function roundHead(round, state) {
+  /* The round's own header: which round, how long is left, and which of the
+     league's rounds this is — Figma › LEAGUES › League (748:2284). The rail
+     under the name is the season, not the answers: round two of five is a
+     fifth of the way along, and it is there on every round. */
+  function roundHead(round, index) {
     var box = el('div', 'round-head');
     box.dataset.round = round.id;
+    var mode = modeOf(index);
+
     var top = el('div', 'round-head__row');
     top.appendChild(el('strong', null, round.name));
-    if (state) top.appendChild(pill(state));
-
+    if (mode === 'locked') top.appendChild(pill('locked'));
 
     var clock = el('span', 'round-head__clock');
     var timer = document.createElement('img');
@@ -519,9 +574,9 @@
     timer.alt = '';
     timer.width = timer.height = 16;
     clock.appendChild(timer);
-    var locked = state === 'locked';
-    var ticking = el('b', null, locked ? 'Opens in ' + waitFor(round) : statusLine(round));
-    if (locked) {
+    var ticking = el('b', null,
+      mode === 'locked' ? 'Opens in ' + waitFor(round) : statusLine(round));
+    if (mode === 'locked') {
       ticking.dataset.roundWait = round.id;
       ticking.dataset.waitLabel = 'Opens in ';
     } else {
@@ -531,21 +586,17 @@
     top.appendChild(clock);
     box.appendChild(top);
 
-    // a round nobody can answer yet has no progress to report
-    if (locked) return box;
-
     var bar = el('div', 'round-head__row');
     var rail = el('div', 'round-head__rail');
     var fill = el('i');
-    var total = round.matches.reduce(function (sum, match) {
-      return sum + blocksOf(match).length;
-    }, 0);
-    var done = acceptedCount(round);
-    fill.style.width = (total ? Math.round(done / total * 100) : 0) + '%';
+    var total = stageRounds.length || 1;
+    var place = Math.max(1, index + 1);
+    fill.style.width = Math.round(place / total * 100) + '%';
     rail.appendChild(fill);
     bar.appendChild(rail);
+
     var count = el('span', 'round-head__count');
-    count.appendChild(el('b', null, String(done)));
+    count.appendChild(el('b', null, String(place)));
     count.appendChild(el('small', null, '/' + total));
     bar.appendChild(count);
     box.appendChild(bar);
@@ -553,59 +604,68 @@
   }
 
   /* The rounds of a league, side by side — Figma › League-cards (764:3499).
-     One head above them all, and one rail under it: a card is a round, the
-     round you are on is the one in front of you, and the rounds after it are
-     shut until their turn comes. */
+     One head above them all and one rail under it. A card is a round, and a
+     round is in one of three places: played and closed to changes, the one
+     being played now, or still shut.  */
   var stageHead = null;
   var stageTrack = null;
   var stageRounds = [];
+  var liveIndex = 0;
 
   function playStage(rounds) {
     var box = el('section', 'round-play');
     stageRounds = rounds;
 
-    stageHead = roundHead(rounds[0], rounds.length > 1 && isLocked(rounds[0]) ? 'locked' : null);
+    /* The round being played is the first that has not been played out. */
+    liveIndex = rounds.length - 1;
+    for (var i = 0; i < rounds.length; i += 1) {
+      if (stateOf(rounds[i]) !== 'completed') { liveIndex = i; break; }
+    }
+
+    stageHead = roundHead(rounds[liveIndex], liveIndex);
     box.appendChild(stageHead);
 
     stageTrack = el('div', 'picks-track round-track');
     rounds.forEach(function (round, index) {
-      var locked = index > 0;
       round.matches.forEach(function (match) {
-        stageTrack.appendChild(matchCard(round, match, locked));
+        stageTrack.appendChild(matchCard(round, match, modeOf(index)));
       });
     });
     stageTrack.addEventListener('scroll', onSlide, { passive: true });
     box.appendChild(stageTrack);
 
-    window.setTimeout(paintBar, 0);
+    /* The rail opens on the round being played, not on the first one. */
+    window.setTimeout(function () { resume(); paintBar(); }, 0);
     return box;
   }
 
-  function isLocked(round) {
-    return stageRounds.indexOf(round) > 0;
+  function modeOf(index) {
+    if (index > liveIndex) return 'locked';
+    if (index < liveIndex || stateOf(stageRounds[index]) === 'completed') return 'past';
+    return 'live';
   }
 
-  /* One card per match, the app's own — the same pitch, the same crests, the
-     same highlight when an answer lands — with every question the round asks
-     of that match stacked on it. */
-  function matchCard(round, match, locked) {
+  function indexOfRound(round) {
+    return Math.max(0, stageRounds.indexOf(round));
+  }
+
+  /* One card per match, the app's own — the same dashed pitch, the same
+     crests, the same highlight when an answer lands — with every question the
+     round asks of that match stacked on it. */
+  function matchCard(round, match, mode) {
     var pick = pickOf(round, match);
     if (!pick.card) {
       pick.card = { outcome: null, score: { home: null, away: null }, derived: false, extras: {} };
     }
     restoreCard(round, match, pick);
 
-    /* Anything short of played out is played on. A round whose fixtures have
-       aged out of the calendar cannot work out its own deadline and reports
-       itself as published — that is not a reason to shut its questions. */
-    var live = !locked && stateOf(round) !== 'completed';
-
+    var live = mode === 'live';
     var card = T.pickCard.create(match, pick.card, {
       when: kickoffLabel(match).split(' · ')[0],
       round: true,
       questions: match.questions,
       extras: extrasOf(match),
-      // a league round does not shut you out: the pick is yours to change
+      // the round being played is the only one whose answers can move
       editable: function () { return live; },
       onChange: function () {
         keepCard(round, match, pick);
@@ -615,17 +675,24 @@
     card.dataset.round = round.id;
     card.dataset.match = match.id;
 
-    if (locked) {
+    if (mode === 'locked') {
       card.appendChild(lockOverlay(round));
       card.classList.add('is-shut');
+      return card;
+    }
+
+    /* A round already played is a record of what was picked: it reads, and
+       nothing on it moves. */
+    if (mode === 'past') {
+      card.classList.add('is-past');
       return card;
     }
 
     /* Every question on this card confirmed: the card goes dark and says so,
        with the way back in under it. Coming into a round already played is
        not an occasion, so the tick only runs when one is earned. */
-    if (live && cardComplete(round, match)) dressDone(card, round, match, false);
-    else card.classList.toggle('is-live', live);
+    if (cardComplete(round, match)) dressDone(card, round, match, false);
+    else card.classList.add('is-live');
     return card;
   }
 
@@ -642,7 +709,7 @@
   function paintHead(round) {
     if (!stageHead || !round) return;
     if (stageHead.dataset.round === round.id) return;
-    var fresh = roundHead(round, isLocked(round) ? 'locked' : null);
+    var fresh = roundHead(round, indexOfRound(round));
     stageHead.replaceWith(fresh);
     stageHead = fresh;
   }
@@ -729,7 +796,8 @@
     stageRounds.forEach(function (round) {
       round.matches.forEach(function (match) {
         var card = cardFor(match);
-        if (!card || card === here.card || card.classList.contains('is-shut')) return;
+        if (!card || card === here.card) return;
+        if (card.classList.contains('is-shut') || card.classList.contains('is-past')) return;
         var pick = pickOf(round, match);
         var moved = false;
         blocksOf(match).forEach(function (id, at) {
@@ -813,7 +881,8 @@
       card: card,
       round: round,
       match: match,
-      locked: card.classList.contains('is-shut')
+      mode: card.classList.contains('is-shut') ? 'locked'
+        : (card.classList.contains('is-past') ? 'past' : 'live')
     };
   }
 
@@ -855,7 +924,7 @@
      had in it. */
   function clearCard() {
     var spot = currentCard();
-    if (!spot.match || spot.locked) return;
+    if (!spot.match || spot.mode !== 'live') return;
     var pick = pickOf(spot.round, spot.match);
     blocksOf(spot.match).forEach(function (id, at) {
       if (isAccepted(pick, id)) setValue(pick, spot.match, at, pick.accepted[id]);
@@ -875,7 +944,7 @@
      tick; when it does not, the bar simply goes until the next answer. */
   function acceptCard() {
     var spot = currentCard();
-    if (!spot.match || spot.locked) return;
+    if (!spot.match || spot.mode !== 'live') return;
     var round = spot.round;
     var pick = pickOf(round, spot.match);
     if (!pick.accepted) pick.accepted = {};
@@ -964,7 +1033,7 @@
     if (!bar || !bar.element) return;
 
     var spot = currentCard();
-    if (!spot.match || spot.locked) {
+    if (!spot.match || spot.mode !== 'live') {
       bar.show(false);
       barReady = false;
       return;
@@ -1398,19 +1467,19 @@
     if (changed) savePicks();
   }
 
-  /* Where the rounds are picked up: the first card of the open round that
-     still has a question nobody has confirmed. */
+  /* Where the rounds are picked up: the round being played, at its first card
+     with a question nobody has confirmed. */
   function resume() {
     if (!stageTrack) return;
-    var open = stageRounds[0];
+    var open = stageRounds[liveIndex];
     if (!open) return;
-    for (var i = 0; i < open.matches.length; i += 1) {
-      if (cardComplete(open, open.matches[i])) continue;
-      var card = cardFor(open.matches[i]);
-      if (card) stageTrack.scrollLeft = Math.max(0, card.offsetLeft - stageTrack.offsetLeft);
-      paintHead(open);
-      return;
-    }
+    var target = null;
+    open.matches.forEach(function (match) {
+      if (target || cardComplete(open, match)) return;
+      target = cardFor(match);
+    });
+    if (!target) target = cardFor(open.matches[0]);
+    if (target) stageTrack.scrollLeft = Math.max(0, target.offsetLeft - stageTrack.offsetLeft);
     paintHead(open);
   }
 
