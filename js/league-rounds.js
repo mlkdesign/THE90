@@ -555,18 +555,21 @@
       two(Math.floor(left % 60000 / 1000));
   }
 
-  /* The round's own header: which round, how long is left, and which of the
-     league's rounds this is — Figma › LEAGUES › League (748:2284). The rail
-     under the name is the season, not the answers: round two of five is a
-     fifth of the way along, and it is there on every round. */
-  function roundHead(round, index) {
-    var box = el('div', 'round-head');
-    box.dataset.round = round.id;
+  /* The round's own header — Figma › LEAGUES › League (748:2284).
+
+     The name and its clock ride a rail of their own: one row per card, moved
+     by exactly as much as the cards are, so Round 1 and its clock leave to
+     the left while Round 2 arrives from the right.
+
+     The bar under them does not travel. It says which round the league is on
+     — two of three — and that is true whichever card you are looking at. */
+  function headRow(round, index) {
+    var row = el('div', 'round-head__row');
+    row.dataset.round = round.id;
     var mode = modeOf(index);
 
-    var top = el('div', 'round-head__row');
-    top.appendChild(el('strong', null, round.name));
-    if (mode === 'locked') top.appendChild(pill('locked'));
+    row.appendChild(el('strong', null, round.name));
+    if (mode === 'locked') row.appendChild(pill('locked'));
 
     var clock = el('span', 'round-head__clock');
     var timer = document.createElement('img');
@@ -574,6 +577,7 @@
     timer.alt = '';
     timer.width = timer.height = 16;
     clock.appendChild(timer);
+
     var ticking = el('b', null,
       mode === 'locked' ? 'Opens in ' + waitFor(round) : statusLine(round));
     if (mode === 'locked') {
@@ -583,14 +587,16 @@
       ticking.dataset.roundClock = round.id;
     }
     clock.appendChild(ticking);
-    top.appendChild(clock);
-    box.appendChild(top);
+    row.appendChild(clock);
+    return row;
+  }
 
+  function progressRow() {
     var bar = el('div', 'round-head__row');
     var rail = el('div', 'round-head__rail');
     var fill = el('i');
     var total = stageRounds.length || 1;
-    var place = Math.max(1, index + 1);
+    var place = Math.min(total, liveIndex + 1);
     fill.style.width = Math.round(place / total * 100) + '%';
     rail.appendChild(fill);
     bar.appendChild(rail);
@@ -599,8 +605,7 @@
     count.appendChild(el('b', null, String(place)));
     count.appendChild(el('small', null, '/' + total));
     bar.appendChild(count);
-    box.appendChild(bar);
-    return box;
+    return bar;
   }
 
   /* The rounds of a league, side by side — Figma › League-cards (764:3499).
@@ -609,6 +614,8 @@
      being played now, or still shut.  */
   var stageHead = null;
   var stageTrack = null;
+  var headTop = null;
+  var headSlider = null;
   var stageRounds = [];
   var liveIndex = 0;
 
@@ -622,15 +629,25 @@
       if (stateOf(rounds[i]) !== 'completed') { liveIndex = i; break; }
     }
 
-    stageHead = roundHead(rounds[liveIndex], liveIndex);
-    box.appendChild(stageHead);
-
+    // the cards first — the head carries one row for each of them
+    var order = [];
     stageTrack = el('div', 'picks-track round-track');
     rounds.forEach(function (round, index) {
       round.matches.forEach(function (match) {
+        order.push({ round: round, index: index });
         stageTrack.appendChild(matchCard(round, match, modeOf(index)));
       });
     });
+
+    stageHead = el('div', 'round-head');
+    headTop = el('div', 'round-head__top');
+    headSlider = el('div', 'round-head__slider');
+    order.forEach(function (each) { headSlider.appendChild(headRow(each.round, each.index)); });
+    headTop.appendChild(headSlider);
+    stageHead.appendChild(headTop);
+    stageHead.appendChild(progressRow());
+    box.appendChild(stageHead);
+
     stageTrack.addEventListener('scroll', onSlide, { passive: true });
     box.appendChild(stageTrack);
 
@@ -639,14 +656,25 @@
     return box;
   }
 
+  /* One card's worth of rail — what a slide from one round to the next is
+     measured in. */
+  function stepWidth() {
+    if (!stageTrack) return 1;
+    var cards = $$('.mcard--round', stageTrack);
+    if (cards.length > 1) return Math.max(1, cards[1].offsetLeft - cards[0].offsetLeft);
+    return Math.max(1, stageTrack.clientWidth);
+  }
+
+  function slideHead() {
+    if (!headSlider || !headTop || !stageTrack) return;
+    var moved = stageTrack.scrollLeft / stepWidth();
+    headSlider.style.transform = 'translateX(' + (-moved * headTop.clientWidth) + 'px)';
+  }
+
   function modeOf(index) {
     if (index > liveIndex) return 'locked';
     if (index < liveIndex || stateOf(stageRounds[index]) === 'completed') return 'past';
     return 'live';
-  }
-
-  function indexOfRound(round) {
-    return Math.max(0, stageRounds.indexOf(round));
   }
 
   /* One card per match, the app's own — the same dashed pitch, the same
@@ -699,20 +727,12 @@
   /* Sliding between rounds carries the head with it, settles whatever was
      left half-done behind you, and asks the bar to think again. */
   function onSlide() {
-    var spot = currentCard();
-    if (!spot.round) return;
+    slideHead();
     settle();
-    paintHead(spot.round);
     paintBar();
   }
 
-  function paintHead(round) {
-    if (!stageHead || !round) return;
-    if (stageHead.dataset.round === round.id) return;
-    var fresh = roundHead(round, indexOfRound(round));
-    stageHead.replaceWith(fresh);
-    stageHead = fresh;
-  }
+
 
   /* =======================================================
      A card that is in
@@ -869,7 +889,7 @@
   function currentCard() {
     var cards = stageTrack ? $$('.mcard--round', stageTrack) : [];
     if (!cards.length) return { index: -1 };
-    var index = Math.round(stageTrack.scrollLeft / Math.max(1, stageTrack.clientWidth));
+    var index = Math.round(stageTrack.scrollLeft / stepWidth());
     index = Math.max(0, Math.min(cards.length - 1, index));
     var card = cards[index];
     var round = roundById(card.dataset.round);
@@ -1480,7 +1500,7 @@
     });
     if (!target) target = cardFor(open.matches[0]);
     if (target) stageTrack.scrollLeft = Math.max(0, target.offsetLeft - stageTrack.offsetLeft);
-    paintHead(open);
+    slideHead();
   }
 
   window.addEventListener('the90:screen', function (event) {

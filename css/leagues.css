@@ -529,7 +529,14 @@
 .round-play { display: flex; flex-direction: column; gap: 16px; }
 .round-head { display: flex; flex-direction: column; gap: 4px; padding: 0 8px; }
 .round-head__row { display: flex; align-items: center; gap: 8px; }
-.round-head__row .round-pill { margin-left: auto; }
+/* the clock is the thing on the right; the pill stays with the name */
+.round-head__row .round-pill { margin-left: 0; }
+.round-head__row .round-head__clock { margin-left: auto; }
+/* Which round you are on travels with the card: the name and its clock ride
+   a rail of their own, moved by exactly as much as the cards are. */
+.round-head__top { overflow: hidden; }
+.round-head__slider { display: flex; }
+.round-head__slider .round-head__row { flex: 0 0 100%; min-width: 100%; }
 .round-head__row strong { color: var(--text-primary); font-size: 16px; font-weight: 600; line-height: 23px; }
 .round-head__clock { display: flex; align-items: center; gap: 6px; color: var(--text-dim); font-size: 12px; line-height: 15px; }
 .round-head__clock b { font-weight: 400; font-variant-numeric: tabular-nums; }
