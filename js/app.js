@@ -253,6 +253,10 @@
 
   $$('[data-field]').forEach(function (field) {
     var input = $('.field__input', field);
+    /* Every other form on the page is wired below this loop, so a block that
+       looks like a field but has nothing to type in is skipped rather than
+       allowed to take the rest of the file down with it. */
+    if (!input) return;
     var msgEl = $('[data-msg]', field);
     var eye   = $('[data-eye]', field);
 
