@@ -66,12 +66,13 @@
       return isOpen() ? [share, leave] : [leave];
     }
 
+    /* Rounds are parked along with the picks tab they are played on, so the
+       way in to managing them is parked too. */
     return [
       { label: 'Edit league', run: function () {
         if (T && T.ownLeagues && viewing.index > -1) T.ownLeagues.edit(viewing.index);
         if (T && T.go) T.go('league-create');
       } },
-      { label: 'Manage rounds', run: function () { if (T && T.go) T.go('league-rounds'); } },
       { label: 'Manage participants', run: function () { if (T && T.go) T.go('league-participants'); } },
       share,
       { label: 'Delete league', danger: true, run: function () {

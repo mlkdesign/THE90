@@ -85,7 +85,7 @@
 
             <div class="welcome-main">
               <div class="offer" data-welcome-copy>
-                <h1 class="offer__title offer__title--hero" data-welcome-title>Bet<br>Smarter.</h1>
+                <h1 class="offer__title offer__title--hero" data-welcome-title>Your Sport<br>Zone.</h1>
                 <p class="offer__sub" data-welcome-subtitle>Make every match count with sharp picks, live stats and instant rewards.</p>
                 <div class="dots" data-dots>
                   <span class="dots__dot is-active"></span>
@@ -1162,7 +1162,9 @@
             </div>
             </section>
 
-            <section class="create-step" data-create-step="2" hidden>
+            <!-- Rules and Prizes are parked: making a league is one step for
+                 now, and a parked step is not counted or shown -->
+            <section class="create-step" data-create-step="2" data-parked hidden>
               <!-- the rules are written in an editor, not typed into a field:
                    no data-field here, since there is nothing to validate -->
               <div class="field">
@@ -1186,7 +1188,7 @@
               </div>
             </section>
 
-            <section class="create-step" data-create-step="3" hidden>
+            <section class="create-step" data-create-step="3" data-parked hidden>
               <div class="prize-list" data-prize-list></div>
               <button class="btn create-addplace" type="button" data-prize-add>Add another place</button>
             </section>
@@ -2130,7 +2132,7 @@
 <script src="js/data.js?v=5"></script>
 <script src="js/pick-card.js?v=23"></script>
 <script src="js/leaderboard.js?v=1"></script>
-<script src="js/app.js?v=15"></script>
+<script src="js/app.js?v=16"></script>
 <script src="js/main.js?v=30"></script>
 <script src="js/news.js?v=1"></script>
 <script src="js/live.js?v=3"></script>
@@ -2140,12 +2142,12 @@
 <script src="js/arena-join.js?v=3"></script>
 <script src="js/league.js?v=20"></script>
 <script src="js/leagues.js?v=5"></script>
-<script src="js/league-create.js?v=26"></script>
+<script src="js/league-create.js?v=27"></script>
 <script src="js/league-pager.js?v=9"></script>
 <script src="js/league-rules.js?v=2"></script>
 <script src="js/league-tabs.js?v=8"></script>
 <script src="js/league-round.js?v=4"></script>
-<script src="js/league-menu.js?v=4"></script>
+<script src="js/league-menu.js?v=5"></script>
 <script src="js/league-participants.js?v=2"></script>
 <script src="js/league-rounds.js?v=52"></script>
 <script src="js/my-zone.js?v=2"></script>
@@ -2153,6 +2155,6 @@
 <script src="js/notifications.js?v=6"></script>
 <script src="js/community.js?v=7"></script>
 <script src="js/settings.js?v=2"></script>
-<script src="js/avatars.js?v=1"></script>
+<script src="js/avatars.js?v=2"></script>
 </body>
 </html>

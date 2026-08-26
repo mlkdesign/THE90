@@ -1,8 +1,8 @@
 /* =========================================================
    THE90 — preset avatars
 
-   Three on the house, three behind a price. Uploading your own
-   still works and simply wins over whatever preset was picked.
+   All six are on the house. Uploading your own still works and
+   simply wins over whatever preset was picked.
    ========================================================= */
 
 (function () {
@@ -22,9 +22,9 @@
     { id: 'a1', src: 'assets/avatars/avatar-01.jpg', price: 0 },
     { id: 'a2', src: 'assets/avatars/avatar-02.jpg', price: 0 },
     { id: 'a3', src: 'assets/avatars/avatar-03.jpg', price: 0 },
-    { id: 'a4', src: 'assets/avatars/avatar-04.jpg', price: 120 },
-    { id: 'a5', src: 'assets/avatars/avatar-05.jpg', price: 250 },
-    { id: 'a6', src: 'assets/avatars/avatar-06.jpg', price: 400 }
+    { id: 'a4', src: 'assets/avatars/avatar-04.jpg', price: 0 },
+    { id: 'a5', src: 'assets/avatars/avatar-05.jpg', price: 0 },
+    { id: 'a6', src: 'assets/avatars/avatar-06.jpg', price: 0 }
   ];
 
   function load(key, fallback) {

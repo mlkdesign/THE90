@@ -459,15 +459,21 @@
      are; the button at the foot moves you on.
      ======================================================= */
 
-  var stepPanels = $$('[data-create-step]', form);
-  var stepDots = $$('[data-create-steps] i', form);
+  /* A parked step is not part of the wizard: it stays in the page so it can
+     be brought back, but nothing counts it, shows it or walks through it. */
+  var stepPanels = $$('[data-create-step]', form).filter(function (panel) {
+    return panel.dataset.parked === undefined;
+  });
+  var stepStrip = $('[data-create-steps]', form);
+  var stepDots = $$('[data-create-steps] i', form).slice(0, stepPanels.length);
+  if (stepStrip) stepStrip.hidden = stepPanels.length < 2;
   var stepBack = $('.setup-back', form);
   var step = 1;
 
   function showStep(next) {
     step = Math.max(1, Math.min(stepPanels.length, next));
-    stepPanels.forEach(function (panel) {
-      panel.hidden = Number(panel.dataset.createStep) !== step;
+    stepPanels.forEach(function (panel, index) {
+      panel.hidden = index !== step - 1;
     });
     stepDots.forEach(function (dot, index) {
       dot.classList.toggle('is-on', index === step - 1);
@@ -746,7 +752,7 @@
       return;
     }
 
-    // the first two steps are a way forward, not a way to finish
+    // any step but the last is a way forward, not a way to finish
     if (step < stepPanels.length) {
       showStep(step + 1);
       return;

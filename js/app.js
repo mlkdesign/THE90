@@ -518,7 +518,7 @@
     var welcomeSubtitle = $('[data-welcome-subtitle]');
     var welcomeOffers = [
       {
-        title: 'Bet<br>Smarter.',
+        title: 'Your Sport<br>Zone.',
         subtitle: 'Make every match count with sharp picks, live stats and instant rewards.'
       },
       {
