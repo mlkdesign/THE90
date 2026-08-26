@@ -112,6 +112,16 @@
     return row;
   }
 
+  /* The header counts the room rather than the roll: how much has been said
+     in here, kept in step as it is said. */
+  var counter = document.querySelector('[data-league-chat-count]');
+
+  function paintCount() {
+    if (!counter) return;
+    var said = messages.filter(function (message) { return message.role !== 'system'; }).length;
+    counter.textContent = said + (said === 1 ? ' message' : ' messages');
+  }
+
   function renderMessages() {
     var fragment = document.createDocumentFragment();
     messages.forEach(function (message, index) {
@@ -121,6 +131,7 @@
       fragment.appendChild(createMessage(message, !grouped));
     });
     list.replaceChildren(fragment);
+    paintCount();
   }
 
   function scrollToBottom() {
