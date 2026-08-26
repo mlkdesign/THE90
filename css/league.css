@@ -267,7 +267,6 @@
   color: var(--text-on-brand);
   font-weight: 600;
 }
-.league-actions__chat img { opacity: .8; }
 .league-actions__unread {
   min-width: 18px;
   height: 18px;
