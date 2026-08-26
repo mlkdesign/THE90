@@ -1679,7 +1679,7 @@
 /* Figma › League-cards › match-card-round1 (748:2299): a round on one card.
    Everything it asks is on the card at once — a label with what the question
    pays beside it, then the row you answer it on. */
-.mcard--round .mcard__bodywrap { padding: 0 0 8px; }
+.mcard--round .mcard__bodywrap { padding: 0 0 16px; }
 .mcard--round .mcard__body {
   display: flex;
   flex-direction: column;

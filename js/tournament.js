@@ -452,7 +452,7 @@
     if (sharedPickBar.next) {
       var ready = question.selected >= 0 &&
         (!question.confirmed || question.selected !== question.acceptedIndex);
-      sharedPickBar.next.textContent = 'Accept pick';
+      sharedPickBar.next.textContent = ready ? 'Accept pick' : 'Choose your prediction';
       sharedPickBar.next.disabled = !ready;
       // the same pulse the daily slip gives the button as it arms
       if (ready && !roundBarReady) {

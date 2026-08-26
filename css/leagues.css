@@ -531,12 +531,32 @@
 .round-head__row { display: flex; align-items: center; gap: 8px; }
 /* the clock is the thing on the right; the pill stays with the name */
 .round-head__row .round-pill { margin-left: 0; }
+.round-head__row .round-pill--completed {
+  background: rgba(74, 222, 128, .16);
+  color: var(--brand-primary);
+}
 .round-head__row .round-head__clock { margin-left: auto; }
 /* Which round you are on travels with the card: the name and its clock ride
    a rail of their own, moved by exactly as much as the cards are. */
-.round-head__top { overflow: hidden; }
-.round-head__slider { display: flex; }
-.round-head__slider .round-head__row { flex: 0 0 100%; min-width: 100%; }
+.round-head__top {
+  /* The cards travel from the physical screen edge, so the title rail does
+     too. It is clipped only by that full-width viewport, never by the
+     narrower round-head content column. */
+  width: calc(100% + 48px);
+  margin: 0 -24px;
+  overflow: hidden;
+}
+.round-head__slider {
+  display: flex;
+  gap: var(--round-card-gap, 8px);
+  padding-left: var(--round-card-inset, 16px);
+  will-change: transform;
+}
+.round-head__slider .round-head__row {
+  box-sizing: border-box;
+  flex: 0 0 var(--round-card-width, 358px);
+  min-width: var(--round-card-width, 358px);
+}
 .round-head__row strong { color: var(--text-primary); font-size: 16px; font-weight: 600; line-height: 23px; }
 .round-head__clock { display: flex; align-items: center; gap: 6px; color: var(--text-dim); font-size: 12px; line-height: 15px; }
 .round-head__clock b { font-weight: 400; font-variant-numeric: tabular-nums; }
@@ -556,8 +576,14 @@
 /* The rail is the app's own: it breaks out of the column's margins so a card
    is a full 358 and the next one waits at the edge of the screen rather than
    being cut off by the column — see .picks-track in league.css, which this
-   shares. Nothing to add here but the room under it for the dots. */
-.round-track { padding-bottom: 4px; scroll-behavior: smooth; }
+   shares. The core card keeps a 16px gutter at the sides and bottom. The
+   extra transparent guard around it is sized for the live-card shadow, so
+   the scroll viewport cannot crop its glow. */
+.round-track {
+  margin: -16px -16px 0;
+  padding: 16px 16px 32px;
+  scroll-behavior: smooth;
+}
 
 /* league points are not coins: the bar says so in words */
 .winbar--points .winbar__points b img { display: none; }
