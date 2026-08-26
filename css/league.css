@@ -183,6 +183,30 @@
   font-size: 12px;
   line-height: 15px;
 }
+/* the whole story, folded away under the one-liner until it is asked for */
+.league-more {
+  width: 302px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+.league-more p {
+  width: 100%;
+  color: rgba(247, 250, 248, .75);
+  font-size: 12px;
+  line-height: 18px;
+}
+.league-showmore {
+  padding: 0;
+  color: var(--brand-primary);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.league-showmore:hover { filter: brightness(1.1); }
 
 .league-stats {
   display: grid;
@@ -234,7 +258,31 @@
 }
 /* the only action in the block, and not the loudest thing on the screen:
    the league itself is */
-.league-actions__invite { width: 100%; background: rgba(255, 255, 255, .1); color: var(--text-primary); }
+.league-actions__invite { background: rgba(255, 255, 255, .1); color: var(--text-primary); }
+/* the way through to the room, and what is waiting in it */
+.league-actions__chat {
+  position: relative;
+  gap: 8px;
+  background: var(--brand-primary);
+  color: var(--text-on-brand);
+  font-weight: 600;
+}
+.league-actions__chat img { opacity: .8; }
+.league-actions__unread {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: var(--input-border-error);
+  color: var(--text-primary);
+  font-size: 10px;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 18px;
+}
 .league-actions button:active,
 .league-join:active { transform: scale(.97); }
 .league-actions button:hover,
@@ -340,6 +388,8 @@
 }
 .league-panels::-webkit-scrollbar { display: none; }
 .league-panels.is-dragging { cursor: grabbing; scroll-snap-type: none; user-select: none; }
+/* with the strip parked there is nothing to slide between */
+.league-panels.is-static { overflow: visible; scroll-snap-type: none; }
 .league-panel {
   min-width: 0;
   flex: 0 0 100%;
@@ -1157,11 +1207,16 @@
 
 /* Your seat, held at the foot of the league board. The plate is the global
    ranking's — only where it sits is the league's business. */
+/* The global board's own plate, borrowed whole. It is switched on there by
+   the footer it sits in; here it stands on the league screen, so it turns
+   itself on and answers only to [hidden]. */
 .league-pin {
   position: absolute;
   z-index: 7;
   right: 16px;
   bottom: 124px;
   left: 16px;
+  width: auto;
+  display: flex;
 }
 .league-pin[hidden] { display: none; }

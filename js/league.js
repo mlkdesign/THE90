@@ -367,7 +367,7 @@
        question everybody answers the same way. */
     topBlock.hidden = true;
     fullBlock.hidden = false;
-    if (sectionTitle) sectionTitle.textContent = 'Participants';
+    if (sectionTitle) sectionTitle.textContent = 'Leaderboard';
 
 
     /* ---------------------------------------------------------
@@ -439,5 +439,57 @@
     if (event.detail !== 'league-chat') return;
     updateComposer();
     scrollToBottom();
+    seen();
   });
+
+
+  /* =======================================================
+     What the league page says about the chat
+
+     The Chat button carries whatever has arrived since you
+     last looked in. Looking in is what clears it.
+     ======================================================= */
+
+  var UNREAD_KEY = 'the90.leagueUnread.v1';
+  var unreadDot = document.querySelector('[data-chat-unread]');
+
+  function unreadCount() {
+    try {
+      var saved = localStorage.getItem(UNREAD_KEY);
+      if (saved !== null) return Math.max(0, Number(saved) || 0);
+    } catch (error) { /* storage may be unavailable */ }
+    // the room has been busy while you were away
+    return 3;
+  }
+
+  function paintUnread() {
+    if (!unreadDot) return;
+    var count = unreadCount();
+    unreadDot.textContent = count > 9 ? '9+' : String(count);
+    unreadDot.hidden = count < 1;
+  }
+
+  function seen() {
+    try { localStorage.setItem(UNREAD_KEY, '0'); } catch (error) { /* storage may be unavailable */ }
+    paintUnread();
+  }
+
+  paintUnread();
+
+
+  /* =======================================================
+     The long version of what this league is
+     ======================================================= */
+
+  var moreButton = document.querySelector('[data-league-showmore]');
+  var moreCopy = document.querySelector('[data-league-more]');
+
+  if (moreButton && moreCopy) {
+    moreButton.addEventListener('click', function () {
+      var open = moreCopy.hidden;
+      moreCopy.hidden = !open;
+      moreButton.textContent = open ? 'Show less' : 'Show more';
+      moreButton.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  }
 })();

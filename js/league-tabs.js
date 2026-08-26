@@ -31,6 +31,14 @@
   var sticky = screen.querySelector('.league-tabs-sticky');
   if (!strip || !rail || !scroll || !buttons.length || !panels.length) return;
 
+  /* The strip is parked. With one section left on the page the rail is not a
+     rail any more — it is just where that section sits, and the sideways
+     gesture over it belongs to the pager. */
+  if (sticky && sticky.hidden) {
+    rail.classList.add('is-static');
+    return;
+  }
+
   var desired = 0;
   var animation = null;
   var scrollFrame = null;

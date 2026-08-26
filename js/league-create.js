@@ -151,7 +151,7 @@
     var card = el('article', 'theleagues-card');
     var open = el('button', 'theleagues-card__open');
     open.type = 'button';
-    open.dataset.go = 'league-chat';
+    open.dataset.go = 'league';
     open.dataset.leagueJoined = 'true';
     open.dataset.leagueOwn = 'true';
     open.dataset.leagueIndex = String(index);

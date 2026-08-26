@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="css/leagues.css?v=48">
 <link rel="stylesheet" href="css/arena.css?v=66">
 <link rel="stylesheet" href="css/live.css?v=5">
-<link rel="stylesheet" href="css/league.css?v=42">
+<link rel="stylesheet" href="css/league.css?v=45">
 <link rel="stylesheet" href="css/my-zone.css?v=8">
 <link rel="stylesheet" href="css/ranks.css?v=1">
 <link rel="stylesheet" href="css/notifications.css?v=2">
@@ -495,7 +495,7 @@
                      things it lets you do are invite and leave. -->
                 <div class="theleagues-list">
                   <article class="theleagues-card">
-                    <button class="theleagues-card__open" type="button" data-go="league-chat"
+                    <button class="theleagues-card__open" type="button" data-go="league"
                             data-league-joined="true" data-league-privacy="open"
                             aria-label="Open Office League">
                       <span class="theleagues-card__art">
@@ -878,7 +878,7 @@
             </div>
 
             <main class="league-content">
-              <button class="iconbtn league-back" type="button" data-league-page="league-chat" aria-label="Back to the league chat">
+              <button class="iconbtn league-back" type="button" data-go="leagues" aria-label="Back to leagues">
                 <img src="assets/icons/chevron-down.svg" alt="" width="20" height="20">
               </button>
               <button class="iconbtn league-menu" type="button" data-league-menu aria-haspopup="menu" aria-expanded="false" aria-label="League options">
@@ -887,6 +887,15 @@
               <header class="league-summary">
                 <h1>DIAMOND CUP</h1>
                 <p>Invite-only VIP tournament · 5 rounds of top matches · branded prizes from the sponsor</p>
+                <div class="league-more" data-league-more hidden>
+                  <p>Five rounds, hand-picked — the matches everybody would be watching anyway. Each round you
+                     call the outcome, or go for the exact score and take the bigger points.</p>
+                  <p>Fixed points, no odds, nothing staked. The board settles as soon as results are confirmed,
+                     so the standings you are looking at are the standings.</p>
+                  <p>Entry is by invitation. Points won here stay here — they decide the trophy and the prizes,
+                     and they never touch your Global Ranking.</p>
+                </div>
+                <button class="league-showmore" type="button" data-league-showmore aria-expanded="false">Show more</button>
               </header>
 
               <div class="league-stats" aria-label="League statistics">
@@ -897,9 +906,17 @@
 
               <div class="league-actions">
                 <button class="league-actions__invite" type="button" data-share-league aria-label="Share invite link for this league">Invite friend</button>
+                <button class="league-actions__chat" type="button" data-league-page="league-chat" aria-label="Open the league chat">
+                  <img src="assets/league/chat-users.svg" alt="" width="16" height="16">
+                  Chat
+                  <i class="league-actions__unread" data-chat-unread hidden>3</i>
+                </button>
               </div>
 
-                <div class="league-tabs-sticky">
+                <!-- League picks, Prizes and Rules are parked for now: a league
+                     opens on what it is and who is winning it, and the strip has
+                     nothing left to switch between. -->
+                <div class="league-tabs-sticky" hidden>
                   <div class="league-tabs" role="tablist" aria-label="League sections" data-league-tabs>
                     <button class="is-active" type="button" role="tab" aria-selected="true" data-league-tab="picks">League picks</button>
                     <button type="button" role="tab" aria-selected="false" data-league-tab="participants">Leaderboard</button>
@@ -910,7 +927,7 @@
                 </div>
 
                 <div class="league-panels" data-league-panels>
-                  <section class="league-panel" role="tabpanel" data-league-panel="picks">
+                  <section class="league-panel" role="tabpanel" data-league-panel="picks" hidden>
                 <!-- rounds: what the owner runs and the members play -->
                 <div class="league-rounds" data-league-rounds></div>
 
@@ -950,7 +967,7 @@
                 </section>
                   </section>
 
-                  <section class="league-panel" role="tabpanel" data-league-panel="prizes">
+                  <section class="league-panel" role="tabpanel" data-league-panel="prizes" hidden>
                     <article class="arena-prize arena-prize--grand">
                       <img class="arena-prize__stadium" src="assets/arena/thearena-prize-stadium.png" alt="">
                       <div class="arena-prize__copy">
@@ -990,7 +1007,7 @@
                     </article>
                   </section>
 
-                  <section class="league-panel" role="tabpanel" data-league-panel="rules">
+                  <section class="league-panel" role="tabpanel" data-league-panel="rules" hidden>
                 <div class="rules-card">
                   <div class="rule">
                     <span class="rule__icon" aria-hidden="true">
@@ -1278,32 +1295,17 @@
           </section>
 
 <section class="screen screen--league-chat" data-screen="league-chat">
-          <!-- the room dissolves into the top of the screen behind the header,
-               and the round plate blurs whatever is still passing under it -->
+          <!-- the room dissolves into the top of the screen behind the header -->
           <div class="league-chat-fade" aria-hidden="true"></div>
           <header class="league-chat-head">
-            <button class="iconbtn league-chat-back" type="button" data-go="leagues" aria-label="Back to leagues">
+            <button class="iconbtn league-chat-back" type="button" data-league-page="league" aria-label="Back to the league">
               <img src="assets/icons/chevron-down.svg" alt="" width="20" height="20">
             </button>
             <div>
               <strong data-league-chat-title>DIAMOND CUP</strong>
               <span><img src="assets/league/chat-users.svg" alt="" width="12" height="12">128 members</span>
             </div>
-            <button class="iconbtn league-chat-info" type="button" data-league-page="league" aria-label="League info"><b>i</b></button>
           </header>
-
-          <!-- the round, pinned under the header: where the league is up to,
-               and the way through to the picks it belongs to -->
-          <button class="league-round" type="button" data-league-round>
-            <span class="league-round__copy">Round <b data-league-round-current>3</b>/<span data-league-round-total>5</span></span>
-            <span class="league-round__dial">
-              <svg viewBox="0 0 44 44" width="44" height="44" aria-hidden="true">
-                <circle class="league-round__track" cx="22" cy="22" r="19"></circle>
-                <circle class="league-round__fill" cx="22" cy="22" r="19" data-league-round-ring></circle>
-              </svg>
-              <b data-league-round-time>04:16</b>
-            </span>
-          </button>
 
           <div class="league-chat-scroll" data-league-chat-scroll>
             <div class="league-chat-list" aria-live="polite" data-league-chat-list></div>
@@ -2137,16 +2139,16 @@
 <script src="js/thearena.js?v=8"></script>
 <script src="js/tournament.js?v=58"></script>
 <script src="js/arena-join.js?v=3"></script>
-<script src="js/league.js?v=18"></script>
+<script src="js/league.js?v=20"></script>
 <script src="js/leagues.js?v=5"></script>
-<script src="js/league-create.js?v=25"></script>
-<script src="js/league-pager.js?v=8"></script>
+<script src="js/league-create.js?v=26"></script>
+<script src="js/league-pager.js?v=9"></script>
 <script src="js/league-rules.js?v=2"></script>
-<script src="js/league-tabs.js?v=7"></script>
+<script src="js/league-tabs.js?v=8"></script>
 <script src="js/league-round.js?v=4"></script>
 <script src="js/league-menu.js?v=4"></script>
 <script src="js/league-participants.js?v=2"></script>
-<script src="js/league-rounds.js?v=51"></script>
+<script src="js/league-rounds.js?v=52"></script>
 <script src="js/my-zone.js?v=2"></script>
 <script src="js/ranks.js?v=3"></script>
 <script src="js/notifications.js?v=6"></script>

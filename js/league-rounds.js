@@ -570,6 +570,11 @@
 
     row.appendChild(el('strong', null, round.name));
     if (mode === 'locked') row.appendChild(pill('locked'));
+    if (mode === 'past') row.appendChild(pill('completed'));
+
+    // A completed round is a compact status, not a countdown: it uses the
+    // same place as Locked and deliberately has no timer icon beside it.
+    if (mode === 'past') return row;
 
     var clock = el('span', 'round-head__clock');
     var timer = document.createElement('img');
@@ -616,6 +621,7 @@
   var stageTrack = null;
   var headTop = null;
   var headSlider = null;
+  var headSliderMetrics = '';
   var stageRounds = [];
   var liveIndex = 0;
 
@@ -642,6 +648,7 @@
     stageHead = el('div', 'round-head');
     headTop = el('div', 'round-head__top');
     headSlider = el('div', 'round-head__slider');
+    headSliderMetrics = '';
     order.forEach(function (each) { headSlider.appendChild(headRow(each.round, each.index)); });
     headTop.appendChild(headSlider);
     stageHead.appendChild(headTop);
@@ -667,8 +674,24 @@
 
   function slideHead() {
     if (!headSlider || !headTop || !stageTrack) return;
-    var moved = stageTrack.scrollLeft / stepWidth();
-    headSlider.style.transform = 'translateX(' + (-moved * headTop.clientWidth) + 'px)';
+    var cards = $$('.mcard--round', stageTrack);
+    var first = cards[0];
+    var second = cards[1];
+    if (first) {
+      var inset = Math.max(0, first.offsetLeft - stageTrack.offsetLeft);
+      var gap = second ? Math.max(0, second.offsetLeft - first.offsetLeft - first.offsetWidth) : 8;
+      var metrics = first.offsetWidth + ':' + gap + ':' + inset;
+      if (metrics !== headSliderMetrics) {
+        headSliderMetrics = metrics;
+        headSlider.style.setProperty('--round-card-width', first.offsetWidth + 'px');
+        headSlider.style.setProperty('--round-card-gap', gap + 'px');
+        headSlider.style.setProperty('--round-card-inset', inset + 'px');
+      }
+    }
+
+    // Card and title rails share the same coordinate system: a one-pixel
+    // horizontal move of a card is a one-pixel move of its heading.
+    headSlider.style.transform = 'translate3d(' + (-stageTrack.scrollLeft) + 'px, 0, 0)';
   }
 
   function modeOf(index) {
@@ -887,7 +910,9 @@
   /* Where the eye is. The rail carries every round's cards in order, so the
      one in front of you says which round the head is about. */
   function currentCard() {
-    var cards = stageTrack ? $$('.mcard--round', stageTrack) : [];
+    // the picks are parked out of sight for now: nothing on a hidden rail is
+    // what you are looking at, and nothing on it asks to be confirmed
+    var cards = (stageTrack && stageTrack.offsetParent) ? $$('.mcard--round', stageTrack) : [];
     if (!cards.length) return { index: -1 };
     var index = Math.round(stageTrack.scrollLeft / stepWidth());
     index = Math.max(0, Math.min(cards.length - 1, index));
