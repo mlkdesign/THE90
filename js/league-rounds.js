@@ -234,7 +234,7 @@
     if (state === 'open') {
       var locks = deadlineOf(round);
       if (!locks) return 'Open';
-      return locks.getTime() > Date.now() ? 'Closes in ' + countdown(locks) : 'In play';
+      return locks.getTime() > Date.now() ? 'Locks in ' + countdown(locks) : 'In play';
     }
     if (state === 'completed') return 'Completed';
     /* Published with no clock to go by — its fixtures are off the end of the
@@ -457,40 +457,6 @@
     return total;
   }
 
-  function chip(label, on, run) {
-    var button = el('button', 'pick-chip' + (on ? ' is-on' : ''), label);
-    button.type = 'button';
-    if (run) button.addEventListener('click', run);
-    else button.disabled = true;
-    return button;
-  }
-
-  function scoreStepper(pick, run, live) {
-    var box = el('div', 'pick-score');
-    ['home', 'away'].forEach(function (side) {
-      var current = pick.answers.score || { home: 0, away: 0 };
-      var group = el('span', 'pick-score__side');
-      var minus = el('button', 'pick-score__btn', '–');
-      var value = el('b', null, String(current[side]));
-      var plus = el('button', 'pick-score__btn', '+');
-      minus.type = plus.type = 'button';
-      if (!live) { minus.disabled = plus.disabled = true; }
-      [[minus, -1], [plus, 1]].forEach(function (pair) {
-        pair[0].addEventListener('click', function () {
-          var next = pick.answers.score || { home: 0, away: 0 };
-          next[side] = Math.max(0, Math.min(9, next[side] + pair[1]));
-          pick.answers.score = next;
-          run();
-        });
-      });
-      group.appendChild(minus);
-      group.appendChild(value);
-      group.appendChild(plus);
-      box.appendChild(group);
-    });
-    return box;
-  }
-
   /* The wait a locked round is drawn against: from the moment the round
      before it is done to the moment this one opens. A first round has
      nothing behind it, so a day stands in. */
@@ -535,11 +501,8 @@
         '<circle cx="16" cy="20.5" r="1.6" fill="currentColor" stroke="none"></circle>' +
       '</svg>';
     over.appendChild(dial);
-
-    var clock = el('b', 'mcard__opens', 'Open in ' + waitFor(round));
-    clock.dataset.roundWait = round.id;
-    clock.dataset.waitLabel = 'Open in ';
-    over.appendChild(clock);
+    // the card's own header already counts the wait down; the lock only says
+    // that it is a wait
     return over;
   }
 
@@ -555,75 +518,19 @@
       two(Math.floor(left % 60000 / 1000));
   }
 
-  /* The round's own header — Figma › LEAGUES › League (748:2284).
+  /* =======================================================
+     The rounds, one card under another
 
-     The name and its clock ride a rail of their own: one row per card, moved
-     by exactly as much as the cards are, so Round 1 and its clock leave to
-     the left while Round 2 arrives from the right.
+     A round is a card: its name, the state it is in, how long is
+     left, and under that every match it is played on with every
+     question the round asks of it. The round being played is
+     outlined in green; the ones behind it read as a record; the
+     ones ahead of it are shut behind the lock.
+     ======================================================= */
 
-     The bar under them does not travel. It says which round the league is on
-     — two of three — and that is true whichever card you are looking at. */
-  function headRow(round, index) {
-    var row = el('div', 'round-head__row');
-    row.dataset.round = round.id;
-    var mode = modeOf(index);
-
-    row.appendChild(el('strong', null, round.name));
-    if (mode === 'locked') row.appendChild(pill('locked'));
-    if (mode === 'past') row.appendChild(pill('completed'));
-
-    // A completed round is a compact status, not a countdown: it uses the
-    // same place as Locked and deliberately has no timer icon beside it.
-    if (mode === 'past') return row;
-
-    var clock = el('span', 'round-head__clock');
-    var timer = document.createElement('img');
-    timer.src = 'assets/icons/timer.svg';
-    timer.alt = '';
-    timer.width = timer.height = 16;
-    clock.appendChild(timer);
-
-    var ticking = el('b', null,
-      mode === 'locked' ? 'Opens in ' + waitFor(round) : statusLine(round));
-    if (mode === 'locked') {
-      ticking.dataset.roundWait = round.id;
-      ticking.dataset.waitLabel = 'Opens in ';
-    } else {
-      ticking.dataset.roundClock = round.id;
-    }
-    clock.appendChild(ticking);
-    row.appendChild(clock);
-    return row;
-  }
-
-  function progressRow() {
-    var bar = el('div', 'round-head__row');
-    var rail = el('div', 'round-head__rail');
-    var fill = el('i');
-    var total = stageRounds.length || 1;
-    var place = Math.min(total, liveIndex + 1);
-    fill.style.width = Math.round(place / total * 100) + '%';
-    rail.appendChild(fill);
-    bar.appendChild(rail);
-
-    var count = el('span', 'round-head__count');
-    count.appendChild(el('b', null, String(place)));
-    count.appendChild(el('small', null, '/' + total));
-    bar.appendChild(count);
-    return bar;
-  }
-
-  /* The rounds of a league, side by side — Figma › League-cards (764:3499).
-     One head above them all and one rail under it. A card is a round, and a
-     round is in one of three places: played and closed to changes, the one
-     being played now, or still shut.  */
-  var stageHead = null;
-  var stageTrack = null;
-  var headTop = null;
-  var headSlider = null;
-  var headSliderMetrics = '';
   var stageRounds = [];
   var liveIndex = 0;
+  var reopened = {};
 
   function playStage(rounds) {
     var box = el('section', 'round-play');
@@ -635,63 +542,12 @@
       if (stateOf(rounds[i]) !== 'completed') { liveIndex = i; break; }
     }
 
-    // the cards first — the head carries one row for each of them
-    var order = [];
-    stageTrack = el('div', 'picks-track round-track');
     rounds.forEach(function (round, index) {
-      round.matches.forEach(function (match) {
-        order.push({ round: round, index: index });
-        stageTrack.appendChild(matchCard(round, match, modeOf(index)));
-      });
+      box.appendChild(roundCard(round, index));
     });
 
-    stageHead = el('div', 'round-head');
-    headTop = el('div', 'round-head__top');
-    headSlider = el('div', 'round-head__slider');
-    headSliderMetrics = '';
-    order.forEach(function (each) { headSlider.appendChild(headRow(each.round, each.index)); });
-    headTop.appendChild(headSlider);
-    stageHead.appendChild(headTop);
-    stageHead.appendChild(progressRow());
-    box.appendChild(stageHead);
-
-    stageTrack.addEventListener('scroll', onSlide, { passive: true });
-    box.appendChild(stageTrack);
-
-    /* The rail opens on the round being played, not on the first one. */
-    window.setTimeout(function () { resume(); paintBar(); }, 0);
+    window.setTimeout(paintBar, 0);
     return box;
-  }
-
-  /* One card's worth of rail — what a slide from one round to the next is
-     measured in. */
-  function stepWidth() {
-    if (!stageTrack) return 1;
-    var cards = $$('.mcard--round', stageTrack);
-    if (cards.length > 1) return Math.max(1, cards[1].offsetLeft - cards[0].offsetLeft);
-    return Math.max(1, stageTrack.clientWidth);
-  }
-
-  function slideHead() {
-    if (!headSlider || !headTop || !stageTrack) return;
-    var cards = $$('.mcard--round', stageTrack);
-    var first = cards[0];
-    var second = cards[1];
-    if (first) {
-      var inset = Math.max(0, first.offsetLeft - stageTrack.offsetLeft);
-      var gap = second ? Math.max(0, second.offsetLeft - first.offsetLeft - first.offsetWidth) : 8;
-      var metrics = first.offsetWidth + ':' + gap + ':' + inset;
-      if (metrics !== headSliderMetrics) {
-        headSliderMetrics = metrics;
-        headSlider.style.setProperty('--round-card-width', first.offsetWidth + 'px');
-        headSlider.style.setProperty('--round-card-gap', gap + 'px');
-        headSlider.style.setProperty('--round-card-inset', inset + 'px');
-      }
-    }
-
-    // Card and title rails share the same coordinate system: a one-pixel
-    // horizontal move of a card is a one-pixel move of its heading.
-    headSlider.style.transform = 'translate3d(' + (-stageTrack.scrollLeft) + 'px, 0, 0)';
   }
 
   function modeOf(index) {
@@ -700,100 +556,202 @@
     return 'live';
   }
 
-  /* One card per match, the app's own — the same dashed pitch, the same
-     crests, the same highlight when an answer lands — with every question the
-     round asks of that match stacked on it. */
-  function matchCard(round, match, mode) {
+  var STATE_TEXT = { live: 'Open', past: 'Completed', locked: 'Locked' };
+
+  function clockLine(round, mode) {
+    if (mode === 'locked') return 'Opens in ' + waitFor(round);
+    if (mode === 'past') return 'Completed';
+    return statusLine(round);
+  }
+
+  function roundCard(round, index) {
+    var mode = modeOf(index);
+    var box = el('article', 'rcard rcard--' + mode);
+    box.dataset.round = round.id;
+
+    var head = el('div', 'rcard__head');
+    head.appendChild(el('strong', null, round.name));
+    head.appendChild(el('span', 'rcard__state rcard__state--' + mode, STATE_TEXT[mode]));
+    box.appendChild(head);
+
+    var clock = el('p', 'rcard__clock', clockLine(round, mode));
+    if (mode === 'locked') {
+      clock.dataset.roundWait = round.id;
+      clock.dataset.waitLabel = 'Opens in ';
+    } else if (mode === 'live') {
+      clock.dataset.roundClock = round.id;
+    }
+    box.appendChild(clock);
+
+    round.matches.forEach(function (match) {
+      box.appendChild(matchBlock(round, match, mode));
+    });
+
+    if (mode === 'locked') box.appendChild(lockOverlay(round));
+    else if (mode !== 'past' && roundDone(round) && !reopened[round.id]) dressDone(box, round, false);
+    return box;
+  }
+
+  /* One match on the card: who is playing, when it kicks off and when the
+     picks on it close, then the questions the round asks about it. */
+  function matchBlock(round, match, mode) {
     var pick = pickOf(round, match);
     if (!pick.card) {
       pick.card = { outcome: null, score: { home: null, away: null }, derived: false, extras: {} };
     }
     restoreCard(round, match, pick);
 
-    var live = mode === 'live';
-    var card = T.pickCard.create(match, pick.card, {
-      when: kickoffLabel(match).split(' · ')[0],
-      round: true,
-      questions: match.questions,
-      extras: extrasOf(match),
-      // the round being played is the only one whose answers can move
-      editable: function () { return live; },
-      onChange: function () {
-        keepCard(round, match, pick);
-        paintBar();
-      }
+    var block = el('section', 'rmatch');
+
+    var top = el('div', 'rmatch__top');
+    var crests = el('span', 'rmatch__crests');
+    [match.home, match.away].forEach(function (slug) {
+      var badge = document.createElement('img');
+      badge.src = T.logo(slug);
+      badge.alt = '';
+      crests.appendChild(badge);
     });
-    card.dataset.round = round.id;
-    card.dataset.match = match.id;
+    top.appendChild(crests);
 
-    if (mode === 'locked') {
-      card.appendChild(lockOverlay(round));
-      card.classList.add('is-shut');
-      return card;
-    }
+    var copy = el('span', 'rmatch__copy');
+    copy.appendChild(el('strong', null, teamsOf(match)));
+    copy.appendChild(el('small', null, whenLine(round, match)));
+    top.appendChild(copy);
+    block.appendChild(top);
 
-    /* A round already played is a record of what was picked: it reads, and
-       nothing on it moves. */
-    if (mode === 'past') {
-      card.classList.add('is-past');
-      return card;
-    }
-
-    /* Every question on this card confirmed: the card goes dark and says so,
-       with the way back in under it. Coming into a round already played is
-       not an occasion, so the tick only runs when one is earned. */
-    if (cardComplete(round, match)) dressDone(card, round, match, false);
-    else card.classList.add('is-live');
-    return card;
+    blocksOf(match).forEach(function (id, at) {
+      block.appendChild(questionBlock(round, match, pick, id, at, mode));
+    });
+    return block;
   }
 
-  /* Sliding between rounds carries the head with it, settles whatever was
-     left half-done behind you, and asks the bar to think again. */
-  function onSlide() {
-    slideHead();
-    settle();
+  function whenLine(round, match) {
+    var line = kickoffLabel(match);
+    var minutes = Number(round.lock);
+    if (!minutes) return line + ' · Picks lock at kickoff';
+    return line + ' · Picks lock ' + minutes + ' min before kickoff (' +
+      (match.kickoff || '') + ')';
+  }
+
+  function questionBlock(round, match, pick, id, at, mode) {
+    var meta = template(id);
+    var wrap = el('div', 'rq');
+
+    var label = el('div', 'rq__label');
+    label.appendChild(el('span', null, meta ? meta.label : id));
+    label.appendChild(el('b', null, '+' + (meta ? meta.points : 0)));
+    wrap.appendChild(label);
+
+    var options = optionsFor(id, match);
+    wrap.appendChild(options
+      ? optionRow(round, match, pick, at, options, mode)
+      : scoreRow(round, match, pick, at, mode));
+    return wrap;
+  }
+
+  function optionRow(round, match, pick, at, options, mode) {
+    var row = el('div', 'rq__opts');
+    var current = valueOf(pick, match, at);
+    options.forEach(function (option) {
+      var button = el('button', 'rq__opt' + (current === option.value ? ' is-on' : ''), option.label);
+      button.type = 'button';
+      if (mode !== 'live') { button.disabled = true; return void row.appendChild(button); }
+      button.addEventListener('click', function () {
+        setValue(pick, match, at, option.value);
+        keepCard(round, match, pick);
+        repaint(round);
+      });
+      row.appendChild(button);
+    });
+    return row;
+  }
+
+  /* The exact score is the one question that is not a choice between things,
+     so it gets the app's own stepper instead of a row of options. */
+  function scoreRow(round, match, pick, at, mode) {
+    var row = el('div', 'rq__score');
+    ['home', 'away'].forEach(function (side) {
+      var group = el('span', 'rq__step');
+      var minus = el('button', null, '–');
+      var value = el('b', null, pick.card.score && pick.card.score[side] !== null
+        ? String(pick.card.score[side]) : '–');
+      var plus = el('button', null, '+');
+      minus.type = plus.type = 'button';
+
+      [[minus, -1], [plus, 1]].forEach(function (pair) {
+        if (mode !== 'live') { pair[0].disabled = true; return; }
+        pair[0].addEventListener('click', function () {
+          var score = pick.card.score || { home: null, away: null };
+          var other = side === 'home' ? 'away' : 'home';
+          var now = score[side];
+          // the first press starts at nothing and lands on zero
+          score[side] = now === null ? Math.max(0, pair[1]) : Math.max(0, Math.min(9, now + pair[1]));
+          if (score[other] === null) score[other] = 0;
+          pick.card.score = score;
+          keepCard(round, match, pick);
+          repaint(round);
+        });
+      });
+
+      group.appendChild(minus);
+      group.appendChild(value);
+      group.appendChild(plus);
+      row.appendChild(group);
+    });
+    return row;
+  }
+
+  /* One card redrawn where it stands — the rest of the column does not move. */
+  function repaint(round) {
+    if (!panel) return;
+    var old = panel.querySelector('.rcard[data-round="' + round.id + '"]');
+    if (!old) return;
+    var fresh = roundCard(round, stageRounds.indexOf(round));
+    old.replaceWith(fresh);
     paintBar();
+    return fresh;
   }
 
+  function cardFor(round) {
+    return panel && panel.querySelector('.rcard[data-round="' + round.id + '"]');
+  }
 
 
   /* =======================================================
-     A card that is in
+     A round that is in
 
-     Confirming the last question on a card closes it: the
-     pitch dims, the tick runs and the card says what it is
-     worth — the daily slip's own ending, on the card itself
-     (Figma › League-cards › match-card-round2-accepted).
-
-     Edit opens it again. While it is open the bar is up from
-     the first moment, so the same answers can go back in
-     unchanged. Anything the card is left in the middle of —
-     swiping away, or closing the bar — settles back to what
-     was last confirmed.
+     Confirming closes the round's card: it goes under a scrim,
+     the tick runs and it says what it is worth, with the way
+     back in under it. Edit opens it again with the bar already
+     up, so the same answers can go back in unchanged.
      ======================================================= */
 
-  var reopened = {};
-
-  function cardComplete(round, match) {
-    var pick = pickOf(round, match);
-    return blocksOf(match).every(function (id) { return isAccepted(pick, id); });
+  function roundDone(round) {
+    return round.matches.every(function (match) {
+      var pick = pickOf(round, match);
+      return blocksOf(match).every(function (id) { return isAccepted(pick, id); });
+    });
   }
 
-  function cardWorth(round, match) {
-    var pick = pickOf(round, match);
-    return blocksOf(match).reduce(function (total, id) {
-      if (pick.answers[id] === undefined) return total;
-      var meta = template(id);
-      return meta ? total + meta.points : total;
+  function roundWorth(round) {
+    return round.matches.reduce(function (total, match) {
+      var pick = pickOf(round, match);
+      return total + blocksOf(match).reduce(function (sum, id, at) {
+        if (!blockAnswered(pick, match, at)) return sum;
+        var meta = template(id);
+        return meta ? sum + meta.points : sum;
+      }, 0);
     }, 0);
   }
 
-  function dressDone(card, round, match, animate) {
+  function dressDone(card, round, animate) {
     if (!card || card.querySelector('.mcard__over--done')) return;
-    card.classList.remove('is-live');
     card.classList.add('is-done');
 
-    var many = blocksOf(match).length > 1;
+    var many = round.matches.reduce(function (count, match) {
+      return count + blocksOf(match).length;
+    }, 0) > 1;
+
     var over = el('div', 'mcard__over mcard__over--done');
     var done = el('div', 'donecard donecard--oncard');
 
@@ -805,55 +763,20 @@
 
     var win = el('p', 'donecard__win');
     win.appendChild(document.createTextNode('Estimated points win: '));
-    win.appendChild(el('b', null, '+' + cardWorth(round, match)));
+    win.appendChild(el('b', null, '+' + roundWorth(round)));
     done.appendChild(win);
 
     var edit = el('button', 'donecard__edit', many ? 'Edit picks' : 'Edit pick');
     edit.type = 'button';
     edit.addEventListener('click', function () {
-      reopened[match.id] = true;
-      strainDone(card);
-      paintBar();
+      reopened[round.id] = true;
+      repaint(round);
     });
     done.appendChild(edit);
 
     over.appendChild(done);
     card.appendChild(over);
     if (animate && T.playDoneTick) window.setTimeout(function () { T.playDoneTick(art); }, 60);
-  }
-
-  function strainDone(card) {
-    if (!card) return;
-    var over = card.querySelector('.mcard__over--done');
-    if (over) over.remove();
-    card.classList.remove('is-done');
-    card.classList.add('is-live');
-  }
-
-  /* Sliding off a card settles it: anything picked but not confirmed goes
-     back the way it was, and a card you had reopened closes again. Only the
-     card in front of you is left alone. */
-  function settle() {
-    if (!stageTrack) return;
-    var here = currentCard();
-    stageRounds.forEach(function (round) {
-      round.matches.forEach(function (match) {
-        var card = cardFor(match);
-        if (!card || card === here.card) return;
-        if (card.classList.contains('is-shut') || card.classList.contains('is-past')) return;
-        var pick = pickOf(round, match);
-        var moved = false;
-        blocksOf(match).forEach(function (id, at) {
-          if (revert(round, match, at)) moved = true;
-        });
-        if (moved && card.render) {
-          restoreCard(round, match, pick);
-          card.render(false);
-        }
-        delete reopened[match.id];
-        if (cardComplete(round, match)) dressDone(card, round, match, false);
-      });
-    });
   }
 
   /* The card keeps its own shape; the store keeps answers by question. These
@@ -888,55 +811,16 @@
     savePicks();
   }
 
-  /* The rail and the counter under the round's name, redrawn without
-     rebuilding the cards — they are mid-slide when this runs. */
-  function paintProgress(round) {
-    if (!panel) return;
-    var rail = panel.querySelector('.round-head__rail i');
-    var count = panel.querySelector('.round-head__count');
-    var total = round.matches.reduce(function (sum, match) {
-      return sum + blocksOf(match).length;
-    }, 0);
-    var done = acceptedCount(round);
-    if (rail) rail.style.width = (total ? Math.round(done / total * 100) : 0) + '%';
-
-    if (count) {
-      count.replaceChildren();
-      count.appendChild(el('b', null, String(done)));
-      count.appendChild(el('small', null, '/' + total));
-    }
-  }
-
-  /* Where the eye is. The rail carries every round's cards in order, so the
-     one in front of you says which round the head is about. */
-  function currentCard() {
-    // the picks are parked out of sight for now: nothing on a hidden rail is
-    // what you are looking at, and nothing on it asks to be confirmed
-    var cards = (stageTrack && stageTrack.offsetParent) ? $$('.mcard--round', stageTrack) : [];
-    if (!cards.length) return { index: -1 };
-    var index = Math.round(stageTrack.scrollLeft / stepWidth());
-    index = Math.max(0, Math.min(cards.length - 1, index));
-    var card = cards[index];
-    var round = roundById(card.dataset.round);
-    var match = round && round.matches.filter(function (each) {
-      return each.id === card.dataset.match;
-    })[0];
-    return {
-      index: index,
-      card: card,
-      round: round,
-      match: match,
-      mode: card.classList.contains('is-shut') ? 'locked'
-        : (card.classList.contains('is-past') ? 'past' : 'live')
-    };
-  }
-
-  function roundById(id) {
-    return stageRounds.filter(function (round) { return round.id === id; })[0] || null;
-  }
-
-  function cardFor(match) {
-    return stageTrack && stageTrack.querySelector('.mcard--round[data-match="' + match.id + '"]');
+  /* Which round the bar is about: the one being played. In a column there is
+     nothing to be in front of you — there is only the round whose questions
+     are still open. */
+  function liveRound() {
+    if (!panel) return null;
+    var round = stageRounds[liveIndex];
+    if (!round || modeOf(liveIndex) !== 'live') return null;
+    var card = cardFor(round);
+    // parked out of sight, or the whole panel is: nothing to confirm
+    return card && card.offsetParent ? round : null;
   }
 
   /* The card always draws the result and the score; anything else the round
@@ -964,69 +848,61 @@
     return !!(id && pick.card.extras && pick.card.extras[id]);
   }
 
-  /* The way back out: the card in front of you loses whatever has not been
-     confirmed, and a card you had reopened closes again on what it already
-     had in it. */
-  function clearCard() {
-    var spot = currentCard();
-    if (!spot.match || spot.mode !== 'live') return;
-    var pick = pickOf(spot.round, spot.match);
-    blocksOf(spot.match).forEach(function (id, at) {
-      if (isAccepted(pick, id)) setValue(pick, spot.match, at, pick.accepted[id]);
-      else setValue(pick, spot.match, at, null);
+  /* The way back out: the round loses whatever has not been confirmed, and a
+     round you had reopened closes again on what it already had in it. */
+  function clearRound() {
+    var round = liveRound();
+    if (!round) return;
+    round.matches.forEach(function (match) {
+      var pick = pickOf(round, match);
+      blocksOf(match).forEach(function (id, at) {
+        if (isAccepted(pick, id)) setValue(pick, match, at, pick.accepted[id]);
+        else setValue(pick, match, at, null);
+      });
+      keepCard(round, match, pick);
     });
-    keepCard(spot.round, spot.match, pick);
-    delete reopened[spot.match.id];
-
-    if (spot.card.render) spot.card.render(false);
-    if (cardComplete(spot.round, spot.match)) dressDone(spot.card, spot.round, spot.match, false);
-    paintProgress(spot.round);
-    paintBar();
+    delete reopened[round.id];
+    repaint(round);
   }
 
-  /* Accepting takes the whole card: every question on it that has an answer
-     goes in at once. When that leaves nothing open, the card closes on the
+  /* Accepting takes the whole round: every question on it that has an answer
+     goes in at once. When that leaves nothing open the card closes on the
      tick; when it does not, the bar simply goes until the next answer. */
-  function acceptCard() {
-    var spot = currentCard();
-    if (!spot.match || spot.mode !== 'live') return;
-    var round = spot.round;
-    var pick = pickOf(round, spot.match);
-    if (!pick.accepted) pick.accepted = {};
+  function acceptRound() {
+    var round = liveRound();
+    if (!round) return;
 
-    blocksOf(spot.match).forEach(function (id, at) {
-      if (!blockAnswered(pick, spot.match, at)) return;
-      var value = valueOf(pick, spot.match, at);
-      pick.accepted[id] = value;
-      /* Accepting IS the confirmation, so the stored answer follows it even
-         when the question was answered before — keepCard only guards drafts. */
-      if (id === 'score') {
-        var parts = String(value).split(':');
-        pick.answers.score = { home: Number(parts[0]), away: Number(parts[1]) };
-      } else {
-        pick.answers[id] = value;
-      }
+    round.matches.forEach(function (match) {
+      var pick = pickOf(round, match);
+      if (!pick.accepted) pick.accepted = {};
+      blocksOf(match).forEach(function (id, at) {
+        if (!blockAnswered(pick, match, at)) return;
+        var value = valueOf(pick, match, at);
+        pick.accepted[id] = value;
+        /* Accepting IS the confirmation, so the stored answer follows it even
+           when the question was answered before — keepCard only guards drafts. */
+        if (id === 'score') {
+          var parts = String(value).split(':');
+          pick.answers.score = { home: Number(parts[0]), away: Number(parts[1]) };
+        } else {
+          pick.answers[id] = value;
+        }
+      });
     });
 
     savePicks();
-    paintProgress(round);
-    delete reopened[spot.match.id];
-
-    if (cardComplete(round, spot.match)) dressDone(spot.card, round, spot.match, true);
-    paintBar();
+    var closing = roundDone(round);
+    delete reopened[round.id];
+    var card = repaint(round);
+    if (closing && card) {
+      // the card was drawn without the tick; it is earned, so play it
+      var art = card.querySelector('.donecard__art');
+      if (art && T.playDoneTick) window.setTimeout(function () { T.playDoneTick(art); }, 60);
+    }
   }
 
   function isAccepted(pick, id) {
     return !!(pick.accepted && Object.prototype.hasOwnProperty.call(pick.accepted, id));
-  }
-
-  function acceptedCount(round) {
-    return round.matches.reduce(function (total, match) {
-      var pick = pickOf(round, match);
-      return total + blocksOf(match).filter(function (id) {
-        return isAccepted(pick, id);
-      }).length;
-    }, 0);
   }
 
   /* What is on the card for a question, and what was accepted for it. The two
@@ -1069,32 +945,32 @@
 
 
   /* The shared confirmation surface, in the league's own currency. It is up
-     while the card in front of you is holding an answer nobody has confirmed,
-     and its button takes the card in one go. */
+     while the round being played is holding an answer nobody has confirmed,
+     and its button takes the round in one go. */
   var barReady = false;
 
   function paintBar() {
     var bar = T.pickConfirmationBar;
     if (!bar || !bar.element) return;
 
-    var spot = currentCard();
-    if (!spot.match || spot.mode !== 'live') {
+    var round = liveRound();
+    if (!round) {
       bar.show(false);
       barReady = false;
       return;
     }
 
-    var round = spot.round;
-    var pick = pickOf(round, spot.match);
-
     /* Normally the bar is about a change: it is up while something on the
-       card differs from what was confirmed. A card you reopened is the
+       card differs from what was confirmed. A round you reopened is the
        exception — the button is there from the first moment, so the same
        answers can be confirmed again untouched. */
-    var ready = blocksOf(spot.match).some(function (id, at) {
-      if (!blockAnswered(pick, spot.match, at)) return false;
-      return reopened[spot.match.id] || !isAccepted(pick, id) ||
-        pick.accepted[id] !== valueOf(pick, spot.match, at);
+    var ready = round.matches.some(function (match) {
+      var pick = pickOf(round, match);
+      return blocksOf(match).some(function (id, at) {
+        if (!blockAnswered(pick, match, at)) return false;
+        return reopened[round.id] || !isAccepted(pick, id) ||
+          pick.accepted[id] !== valueOf(pick, match, at);
+      });
     });
 
     if (!ready) {
@@ -1103,21 +979,14 @@
       return;
     }
 
-    // what this card is worth as it stands
-    var worth = blocksOf(spot.match).reduce(function (total, id, at) {
-      if (!blockAnswered(pick, spot.match, at)) return total;
-      var meta = template(id);
-      return meta ? total + meta.points : total;
-    }, 0);
-
     bar.element.classList.add('winbar--round-picks', 'winbar--points');
     if (bar.label) bar.label.textContent = 'Potential win:';
-    if (bar.points) bar.points.textContent = '+' + worth;
+    if (bar.points) bar.points.textContent = '+' + roundWorth(round);
 
     if (bar.next) {
       bar.next.textContent = 'Accept pick';
       bar.next.disabled = false;
-      bar.next.onclick = acceptCard;
+      bar.next.onclick = acceptRound;
       // one nudge as it comes alive, the way the daily slip does it
       if (!barReady) {
         bar.next.classList.remove('is-nudging');
@@ -1125,7 +994,7 @@
         bar.next.classList.add('is-nudging');
       }
     }
-    if (bar.close) bar.close.onclick = clearCard;
+    if (bar.close) bar.close.onclick = clearRound;
     barReady = true;
     bar.show(true);
   }
@@ -1512,27 +1381,11 @@
     if (changed) savePicks();
   }
 
-  /* Where the rounds are picked up: the round being played, at its first card
-     with a question nobody has confirmed. */
-  function resume() {
-    if (!stageTrack) return;
-    var open = stageRounds[liveIndex];
-    if (!open) return;
-    var target = null;
-    open.matches.forEach(function (match) {
-      if (target || cardComplete(open, match)) return;
-      target = cardFor(match);
-    });
-    if (!target) target = cardFor(open.matches[0]);
-    if (target) stageTrack.scrollLeft = Math.max(0, target.offsetLeft - stageTrack.offsetLeft);
-    slideHead();
-  }
-
   window.addEventListener('the90:screen', function (event) {
     if (event.detail === 'league-rounds') renderList();
     if (event.detail === 'league') {
       renderPanel();
-      window.setTimeout(function () { resume(); paintBar(); }, 0);
+      window.setTimeout(paintBar, 0);
       window.setTimeout(function () {
         $$('[data-round-ring]', panel || document).forEach(function (ring) {
           var item = roundsOf(league()).filter(function (r) { return r.id === ring.dataset.roundRing; })[0];

@@ -276,12 +276,15 @@
 
 /* Under the list rather than in the header: the settings header positions its
    one button on the left, and a second one lands on top of the way back. */
+/* making a round is the thing this screen is for, so it is the green one */
 .rounds-new {
   width: calc(100% - 32px);
   margin: 12px 16px 0;
-  background: rgba(255, 255, 255, .1);
-  color: var(--text-primary);
+  background: var(--brand-primary);
+  color: var(--text-on-brand);
+  font-weight: 600;
 }
+.rounds-new:hover { filter: brightness(1.08); }
 .settings-scroll .rounds-list,
 .settings-scroll .rounds-empty { padding: 20px 16px 0; }
 .rounds-list { display: flex; flex-direction: column; gap: 8px; }
@@ -583,6 +586,157 @@
   margin: -16px -16px 0;
   padding: 16px 16px 32px;
   scroll-behavior: smooth;
+}
+
+/* =========================================================
+   A round, as a card
+
+   One under another, the way the brief draws them: the round's
+   name and state, how long is left, then each match with every
+   question the round asks of it. The round being played is
+   outlined in green; a round already played reads as a record,
+   and one still to open sits behind the lock.
+   ========================================================= */
+
+.round-play { display: flex; flex-direction: column; gap: 16px; }
+
+.rcard {
+  position: relative;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 24px;
+  background: var(--bg-surface);
+  overflow: hidden;
+}
+.rcard--live {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 1px rgba(36, 255, 0, .18), 0 12px 34px -20px rgba(36, 255, 0, .5);
+}
+.rcard--past .rmatch,
+.rcard--locked .rmatch { opacity: .75; }
+
+.rcard__head { display: flex; align-items: center; gap: 8px; }
+.rcard__head strong {
+  color: var(--text-primary);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 26px;
+}
+.rcard__state {
+  margin-left: auto;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .08);
+  color: var(--text-dim);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 14px;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+}
+.rcard__state--live { background: rgba(36, 255, 0, .14); color: var(--brand-primary); }
+.rcard__clock {
+  margin: 0 0 8px;
+  color: var(--text-dim);
+  font-size: 13px;
+  line-height: 18px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* one match on the card */
+.rmatch {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .04);
+}
+.rmatch + .rmatch { margin-top: 8px; }
+.rmatch__top { display: flex; align-items: flex-start; gap: 10px; }
+.rmatch__crests { flex: none; display: flex; align-items: center; gap: 4px; }
+.rmatch__crests img { width: 22px; height: 22px; object-fit: contain; }
+.rmatch__copy { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.rmatch__copy strong {
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+}
+.rmatch__copy small {
+  color: var(--text-dim);
+  font-size: 11px;
+  line-height: 16px;
+}
+
+/* a question: what it asks, what it pays, and the row you answer it on */
+.rq { display: flex; flex-direction: column; gap: 8px; }
+.rq__label { display: flex; align-items: center; gap: 8px; }
+.rq__label span { color: var(--text-primary); font-size: 13px; line-height: 18px; }
+.rq__label b {
+  margin-left: auto;
+  color: var(--brand-primary);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+}
+.rq__opts { display: flex; gap: 8px; }
+.rq__opt {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  padding: 0 8px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .03);
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 18px;
+  transition: border-color .16s ease, color .16s ease, background .16s ease;
+}
+.rq__opt:hover:not(:disabled) { border-color: rgba(255, 255, 255, .28); }
+.rq__opt.is-on {
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+  font-weight: 600;
+}
+.rq__opt:disabled { cursor: default; }
+.rq__opt:disabled:not(.is-on) { opacity: .5; }
+
+.rq__score { display: flex; gap: 8px; }
+.rq__step {
+  flex: 1;
+  height: 44px;
+  padding: 0 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .03);
+}
+.rq__step button {
+  width: 32px;
+  height: 32px;
+  flex: none;
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-size: 16px;
+  line-height: 20px;
+}
+.rq__step button:hover:not(:disabled) { background: rgba(255, 255, 255, .08); }
+.rq__step button:disabled { opacity: .35; cursor: default; }
+.rq__step b {
+  min-width: 24px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
 }
 
 /* league points are not coins: the bar says so in words */
