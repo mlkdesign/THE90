@@ -436,6 +436,9 @@
 
     window.addEventListener('the90:screen', function (event) {
       if (event.detail !== 'league') { if (pin) pin.hidden = true; return; }
+      /* A league is opened, not resumed: however far down it was left, coming
+         back to it starts at the banner. */
+      if (leagueScroll) leagueScroll.scrollTop = 0;
       fillPin();
       window.setTimeout(schedulePin, 80);
     });

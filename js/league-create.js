@@ -345,7 +345,12 @@
 
   var NAME_MIN = 3, NAME_MAX = 40;
   var DESC_MIN = 10, DESC_MAX = 160;
-  var MAX_LOW = 2, MAX_HIGH = 100;
+  /* What a league can hold: ten on the house, fifty once it is Premium. */
+  var MAX_LOW = 2, MAX_FREE = 10, MAX_PREMIUM = 50;
+  function ceiling() {
+    var league = editing > -1 ? leagues[editing] : null;
+    return (league && league.premium) || premium ? MAX_PREMIUM : MAX_FREE;
+  }
 
   function countDescription() {
     if (!descCount || !descInput) return;
@@ -358,7 +363,7 @@
     if (maxHost) {
       $$('.stepper__btn', maxHost).forEach(function (button) {
         var step = Number(button.dataset.step);
-        button.disabled = step < 0 ? maximum <= floor : maximum >= MAX_HIGH;
+        button.disabled = step < 0 ? maximum <= floor : maximum >= ceiling();
       });
     }
   }
@@ -366,7 +371,7 @@
   if (maxHost) {
     $$('.stepper__btn', maxHost).forEach(function (button) {
       button.addEventListener('click', function () {
-        maximum = Math.max(floor, Math.min(MAX_HIGH, maximum + Number(button.dataset.step)));
+        maximum = Math.max(floor, Math.min(ceiling(), maximum + Number(button.dataset.step)));
         paintMax();
       });
     });
@@ -724,7 +729,7 @@
     showStep(1);
     selectPrivacy('private');
     floor = MAX_LOW;
-    maximum = 12;
+    maximum = Math.min(10, ceiling());
     paintMax();
     if (maxNote) maxNote.textContent = 'You can’t set a limit below the current member count when editing.';
     dressForm();
@@ -744,7 +749,7 @@
     selectPrivacy(league.privacy === 'open' ? 'open' : 'private');
     // the ceiling can be raised, never dropped under the people already in
     floor = Math.max(MAX_LOW, league.members || MAX_LOW);
-    maximum = Math.max(floor, Number(league.max) || 12);
+    maximum = Math.max(floor, Math.min(ceiling(), Number(league.max) || 10));
     paintMax();
     if (maxNote) {
       maxNote.textContent = league.members

@@ -626,6 +626,14 @@
   scroll-behavior: smooth;
 }
 
+/* what Premium would raise the ceiling to, in Premium's own colour */
+.create-row__premium {
+  margin: 0;
+  color: #E0B84A;
+  font-size: 12px;
+  line-height: 18px;
+}
+
 /* Nothing written here yet, and the way to write it */
 .league-rules-empty {
   padding: 24px 16px;
