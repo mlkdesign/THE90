@@ -50,13 +50,13 @@
   var SEEDED = [
     { name: 'Weekend challenge', cover: COVER_CUP, premium: true,
       description: 'Guess the outcomes of top matches and win cool prizes',
-      privacy: 'private', privacyLabel: 'Private', max: 20, members: 12 },
+      privacy: 'private', privacyLabel: 'Private', members: 12 },
     { name: 'Friends League', cover: COVER_CUP,
       description: 'Just friends, just football, just the best league.',
-      privacy: 'private', privacyLabel: 'Private', max: 12, members: 8 },
+      privacy: 'private', privacyLabel: 'Private', members: 8 },
     { name: 'Office Warriors', cover: COVER_BALL,
       description: 'Colleagues on the field, friends in life. Only forward!',
-      privacy: 'open', privacyLabel: 'Open', max: 30, members: 16 }
+      privacy: 'open', privacyLabel: 'Open', members: 16 }
   ];
 
   var leagues = load(OWN_KEY, null) || SEEDED.slice();
@@ -336,46 +336,16 @@
   var nameInput = $('[data-league-name]', form);
   var descInput = $('[data-league-desc]', form);
   var descCount = $('[data-league-desc-count]', form);
-  var maxHost = $('[data-league-max]', form);
-  var maxValue = $('[data-league-max-value]', form);
-  var maxNote = $('[data-league-max-note]', form);
   var privacyHost = $('[data-league-privacy]', form);
-  var maximum = 12;
-  var floor = 2;
 
   var NAME_MIN = 3, NAME_MAX = 40;
   var DESC_MIN = 10, DESC_MAX = 160;
-  /* What a league can hold: ten on the house, fifty once it is Premium. */
-  var MAX_LOW = 2, MAX_FREE = 10, MAX_PREMIUM = 50;
-  function ceiling() {
-    var league = editing > -1 ? leagues[editing] : null;
-    return (league && league.premium) || premium ? MAX_PREMIUM : MAX_FREE;
-  }
 
   function countDescription() {
     if (!descCount || !descInput) return;
     descCount.textContent = descInput.value.length + '/' + DESC_MAX;
   }
   if (descInput) descInput.addEventListener('input', countDescription);
-
-  function paintMax() {
-    if (maxValue) maxValue.textContent = maximum;
-    if (maxHost) {
-      $$('.stepper__btn', maxHost).forEach(function (button) {
-        var step = Number(button.dataset.step);
-        button.disabled = step < 0 ? maximum <= floor : maximum >= ceiling();
-      });
-    }
-  }
-
-  if (maxHost) {
-    $$('.stepper__btn', maxHost).forEach(function (button) {
-      button.addEventListener('click', function () {
-        maximum = Math.max(floor, Math.min(ceiling(), maximum + Number(button.dataset.step)));
-        paintMax();
-      });
-    });
-  }
 
   /* two cards rather than a segmented control: each one has to say what it
      means for the people you invite */
@@ -728,10 +698,6 @@
     resetForm();
     showStep(1);
     selectPrivacy('private');
-    floor = MAX_LOW;
-    maximum = Math.min(10, ceiling());
-    paintMax();
-    if (maxNote) maxNote.textContent = 'You can’t set a limit below the current member count when editing.';
     dressForm();
   }
 
@@ -747,15 +713,6 @@
     if (descInput) descInput.value = league.description || league.subtitle || '';
     countDescription();
     selectPrivacy(league.privacy === 'open' ? 'open' : 'private');
-    // the ceiling can be raised, never dropped under the people already in
-    floor = Math.max(MAX_LOW, league.members || MAX_LOW);
-    maximum = Math.max(floor, Math.min(ceiling(), Number(league.max) || 10));
-    paintMax();
-    if (maxNote) {
-      maxNote.textContent = league.members
-        ? league.members + ' members are in this league — the limit cannot go below that.'
-        : 'You can’t set a limit below the current member count when editing.';
-    }
     dressForm();
   }
 
@@ -792,7 +749,6 @@
     var settings = {
       name: name,
       description: description,
-      max: maximum,
       privacy: privacy,
       privacyLabel: privacy === 'open' ? 'Open' : 'Private',
       rules: rulesBody ? rulesBody.innerHTML.trim() : '',
