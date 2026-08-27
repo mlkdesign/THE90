@@ -102,11 +102,9 @@
   background: #1a1a1a;
 }
 .theleagues-card__open { width: 100%; height: 100%; padding: 0; display: flex; color: inherit; text-align: left; }
+/* The picture is the picture: it fills its side of the card top to bottom,
+   with nothing washed over it. */
 .theleagues-card__art { position: relative; width: 120px; flex: none; overflow: hidden; }
-.theleagues-card__art::before,
-.theleagues-card__art::after { content: ''; position: absolute; z-index: 1; pointer-events: none; }
-.theleagues-card__art::before { inset: 0; background: linear-gradient(180deg, #1a1a1a 0%, rgba(26, 26, 26, 0) 29%, rgba(26, 26, 26, 0) 53%, #1a1a1a 100%); }
-.theleagues-card__art::after { top: 0; right: 0; bottom: 0; width: 36px; background: linear-gradient(90deg, rgba(26, 26, 26, 0), #1a1a1a); }
 .theleagues-card__art img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
 .theleagues-card__body {
   min-width: 0;
