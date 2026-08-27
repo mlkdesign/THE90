@@ -628,6 +628,8 @@
   font-weight: 600;
 }
 .league-rules-write:hover { background: rgba(255, 255, 255, .16); }
+/* the same key the picks are reopened with, under what was written */
+.league-rules-edit { margin: 16px auto 0; }
 
 /* the screen the rules are written on */
 .screen--rules-edit .settings-scroll { padding-bottom: 120px; }

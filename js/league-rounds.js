@@ -1490,6 +1490,13 @@
     var rules = viewing.league && viewing.league.rules;
     if (rules) {
       rulesPanel.innerHTML = '<div class="league-rules-copy">' + rules + '</div>';
+      // what you wrote is yours to rewrite, the way a pick that is in is
+      if (isOwner()) {
+        var again = el('button', 'donecard__edit league-rules-edit', 'Edit rules');
+        again.type = 'button';
+        again.addEventListener('click', openRules);
+        rulesPanel.appendChild(again);
+      }
       return;
     }
     /* A league you made has nothing here until you write it; one you were
