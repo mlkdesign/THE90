@@ -48,7 +48,7 @@
   var BLURB = 'Set your rules, invite friends and compete for the top spot.';
 
   var SEEDED = [
-    { name: 'Weekend challenge', cover: COVER_CUP, premium: true,
+    { name: 'Weekend challenge', cover: COVER_CUP,
       description: 'Guess the outcomes of top matches and win cool prizes',
       privacy: 'private', privacyLabel: 'Private', members: 12 },
     { name: 'Friends League', cover: COVER_CUP,
@@ -166,7 +166,7 @@
 
     var body = el('span', 'theleagues-card__body');
     var copy = el('span', 'theleagues-card__copy');
-    if (league.premium || premium) copy.appendChild(el('em', 'theleagues-card__tag', 'Premium'));
+    if (league.premium) copy.appendChild(el('em', 'theleagues-card__tag', 'Premium'));
     copy.appendChild(el('h3', 'theleagues-card__title', league.name));
     copy.appendChild(el('p', null, league.description || league.subtitle || BLURB));
 
@@ -237,6 +237,8 @@
 
   $$('[data-premium-confirm]').forEach(function (button) {
     button.addEventListener('click', function () {
+      /* Premium is bought for the league you are standing in. The account
+         flag is kept for what Premium unlocks outside a league. */
       premium = true;
       save(PREMIUM_KEY, premium);
       if (viewing.own && leagues[viewing.index]) {
@@ -891,9 +893,9 @@
   }
 
   function applyMembership() {
-    /* Rounds and Rules are what Premium buys, so what everyone downstream
-       needs to know is whether this league has it. */
-    viewing.premium = !!(viewing.league && viewing.league.premium) || (viewing.own && premium);
+    /* Rounds and Rules are what Premium buys, and it is bought for one league
+       at a time — having paid for one says nothing about the next. */
+    viewing.premium = !!(viewing.league && viewing.league.premium);
 
     if (joinButton) joinButton.hidden = viewing.joined;
     if (youRow) youRow.hidden = !viewing.joined;
