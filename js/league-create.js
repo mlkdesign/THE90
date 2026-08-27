@@ -247,8 +247,12 @@
       }
       renderPremium();
       renderOwn();
-      reward('Premium is active',
-        'Your league now has a custom background, theme and stickers — plus two paid avatars on the house.');
+      /* The sheet closes itself on the way out — data-sheet-close on the
+         button — so what is left on screen is the news. */
+      var name = viewing.league && viewing.league.name;
+      reward('Your league is Premium!',
+        (name || 'This league') + ' can run its own rounds now, and it comes with a custom ' +
+        'background, theme and league stickers.');
     });
   });
 
