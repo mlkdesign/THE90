@@ -1,5 +1,5 @@
 /* =========================================================
-   THE90 — the video on the league rules page
+   THE90 — the video on the rules page
 
    The player is not in the markup: pressing play is what
    fetches it, so the page costs nothing until someone asks

@@ -1307,7 +1307,7 @@
       keep();
       renderList();
       renderPanel();
-      if (T.go) T.go('league-rounds');
+      toRounds();
     });
   });
 
@@ -1333,14 +1333,35 @@
           keep();
           renderList();
           renderPanel();
-          if (T.go) T.go('league-rounds');
-        });
+          toRounds();
+        }, { danger: false });
     });
   });
 
   $$('[data-round-new]').forEach(function (button) {
     button.addEventListener('click', function () { openEditor(null); });
   });
+
+  /* The way to a first round from the league page itself — Premium buys the
+     rounds, so only the owner of such a league is offered one. */
+  var newRound = $('[data-league-new-round]');
+  if (newRound) {
+    newRound.addEventListener('click', function () { openEditor(null); });
+    document.addEventListener('the90:league-membership', function (event) {
+      var detail = event.detail || {};
+      newRound.hidden = !(detail.own && detail.premium);
+    });
+  }
+
+  /* Out of the editor and back to the league, on the tab the round is played
+     on — the round you just made is the thing you want to see. */
+  function toRounds() {
+    if (!T.go) return;
+    T.go('league');
+    window.setTimeout(function () {
+      if (T.leagueTabs) T.leagueTabs.open('picks');
+    }, 60);
+  }
 
 
   /* =======================================================
@@ -1437,8 +1458,11 @@
      the league's own record rather than from the demo.
      ======================================================= */
 
-  var prizesPanel = document.querySelector('[data-league-panel="prizes"]');
-  var rulesPanel = document.querySelector('[data-league-panel="rules"]');
+  /* Rules and prizes share one tab now, so each has its own box inside it —
+     replacing what a league says about itself must not take its prizes with
+     it, and the other way round. */
+  var prizesPanel = document.querySelector('[data-league-prizes]');
+  var rulesPanel = document.querySelector('[data-league-rules]');
   var demoPrizes = prizesPanel ? prizesPanel.innerHTML : '';
   var demoRules = rulesPanel ? rulesPanel.innerHTML : '';
 

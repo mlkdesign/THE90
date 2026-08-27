@@ -72,7 +72,9 @@
     }
 
     // Carry it through the rest of the app, the way a real profile would.
-    $$('.balance__avatar img').forEach(function (img) { img.src = avatar.src; });
+    /* The plate in the corner holds two pictures — you, and the rank you are
+       at. Only the first of them is you. */
+    $$('.balance__avatar > img:first-child').forEach(function (img) { img.src = avatar.src; });
     var zone = $('.mz-avatar__photo');
     if (zone) zone.src = avatar.src;
 

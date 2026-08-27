@@ -159,9 +159,8 @@
 
     var art = el('span', 'theleagues-card__art');
     var banner = el('img');
-    banner.src = league.cover && COVERS.indexOf(league.cover) > -1
-      ? league.cover
-      : COVERS[index === 2 ? 1 : 0];
+    // a cover of your own if you gave one, otherwise one of the house pair
+    banner.src = league.cover || COVERS[index === 2 ? 1 : 0];
     banner.alt = '';
     art.appendChild(banner);
 
@@ -298,9 +297,15 @@
     modal.classList.remove('is-out');
   }
 
-  // the same modal doubles as the confirm for anything destructive
-  window.THE90.confirm = function (title, text, label, onConfirm) {
-    reward(title, text, { label: label, danger: true, onConfirm: onConfirm });
+  /* The same modal doubles as the confirm. Destructive by default, since most
+     things worth asking about are — publishing a round is not, and says so. */
+  window.THE90.confirm = function (title, text, label, onConfirm, options) {
+    var settings = options || {};
+    reward(title, text, {
+      label: label,
+      danger: settings.danger !== false,
+      onConfirm: onConfirm
+    });
   };
 
 
@@ -757,8 +762,9 @@
       fail(nameInput, 'Give your league a name of ' + NAME_MIN + '–' + NAME_MAX + ' characters.');
       return;
     }
-    if (description.length < DESC_MIN || description.length > DESC_MAX) {
-      fail(descInput, 'Say what this league is about — ' + DESC_MIN + '–' + DESC_MAX + ' characters.');
+    // a description is welcome, not required — a league can be named and no more
+    if (description.length > DESC_MAX) {
+      fail(descInput, 'Keep it under ' + DESC_MAX + ' characters.');
       return;
     }
 
@@ -796,40 +802,28 @@
     resetForm();
     renderOwn();
 
-    // Land back on the shelf the league lives on, so dismissing the modal
-    // leaves you looking at it.
-    var backToLeagues = document.querySelector('[data-nav="leagues"]');
-    if (backToLeagues) backToLeagues.click();
-    if (window.THE90 && window.THE90.leaguesTab) window.THE90.leaguesTab('own');
-
     if (wasEditing) {
+      // Land back on the shelf the league lives on, so dismissing the modal
+      // leaves you looking at it.
+      var backToLeagues = document.querySelector('[data-nav="leagues"]');
+      if (backToLeagues) backToLeagues.click();
+      if (window.THE90 && window.THE90.leaguesTab) window.THE90.leaguesTab('own');
       reward('Changes saved', name + ' has been updated.');
       return;
     }
 
-    /* A league with no round is a room with nobody playing: the way on from
-       here is the first round, with leaving it for later spelled out rather
-       than left to the X. */
-    reward('Your league is live!',
-      'Now set up the first round and invite your players.',
-      {
-        label: 'Set up first round',
-        second: 'Do this later',
-        onConfirm: function () {
-          /* Straight into the league you just made, as its owner — the same
-             state a tap on its card would have set, so anything that asks
-             later gets the same answer. */
-          viewing = {
-            joined: true,
-            own: true,
-            index: leagues.length - 1,
-            league: leagues[leagues.length - 1]
-          };
-          rememberViewing();
-          applyMembership();
-          if (window.THE90.go) window.THE90.go('league-rounds');
-        }
-      });
+    /* Straight into the league you just made, as its owner — the same state a
+       tap on its card would have set, so anything that asks later gets the
+       same answer. Setting up a round is offered from the league itself. */
+    viewing = {
+      joined: true,
+      own: true,
+      index: leagues.length - 1,
+      league: leagues[leagues.length - 1]
+    };
+    rememberViewing();
+    if (window.THE90.go) window.THE90.go('league');
+    applyMembership();
   });
 
 
@@ -896,6 +890,18 @@
   var invite = $('.league-actions__invite');
   var participantsInvite = $('.participants-invite');
 
+  /* The picture a league was made with is the picture it wears — on its card
+     out here and across the top of the league itself. */
+  var heroArt = document.querySelector('.league-hero__bg');
+  var heroDefault = heroArt ? heroArt.getAttribute('src') : '';
+
+  function dressHero() {
+    if (!heroArt) return;
+    var cover = viewing.league && viewing.league.cover;
+    heroArt.src = cover || heroDefault;
+    heroArt.classList.toggle('is-own', !!cover);
+  }
+
   function applyMembership() {
     /* Rounds and Rules are what Premium buys, so what everyone downstream
        needs to know is whether this league has it. */
@@ -915,6 +921,7 @@
     if (invite) invite.hidden = !canInvite;
     if (participantsInvite) participantsInvite.hidden = !canInvite;
 
+    dressHero();
     document.dispatchEvent(new CustomEvent('the90:league-membership', { detail: viewing }));
   }
 

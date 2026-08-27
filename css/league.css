@@ -287,6 +287,27 @@
 .league-actions button:hover,
 .league-join:hover { filter: brightness(1.06); }
 
+/* Premium's own colour: the round it lets you make is offered in gold rather
+   than in the green everything else is, and it carries no outline. */
+.league-newround {
+  height: 44px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 16px;
+  background: rgba(224, 184, 74, .16);
+  color: #E0B84A;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+  transition: background .18s ease, transform .12s ease;
+}
+.league-newround:hover { background: rgba(224, 184, 74, .24); }
+.league-newround:active { transform: scale(.98); }
+.league-newround[hidden] { display: none; }
+
 /* ---------------------------------------------------------
    Tabs, the same control the tournament uses
    --------------------------------------------------------- */

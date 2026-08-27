@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="css/leagues.css?v=53">
 <link rel="stylesheet" href="css/arena.css?v=66">
 <link rel="stylesheet" href="css/live.css?v=5">
-<link rel="stylesheet" href="css/league.css?v=46">
+<link rel="stylesheet" href="css/league.css?v=47">
 <link rel="stylesheet" href="css/my-zone.css?v=8">
 <link rel="stylesheet" href="css/ranks.css?v=1">
 <link rel="stylesheet" href="css/notifications.css?v=2">
@@ -805,14 +805,53 @@
                 </section>
 
                 <section class="arena-tournament-panel" id="tournament-rules" role="tabpanel" data-tournament-panel="rules">
-                  <div class="tournament-panel-head"><h2>Tournament rules</h2><p>Simple rules for a fair competition.</p></div>
-                  <ol class="tournament-rules">
-                    <li><b>Make your picks before each deadline.</b><span>Predictions lock when a round begins.</span></li>
-                    <li><b>Earn points for correct outcomes.</b><span>Extra points are awarded for a winning streak.</span></li>
-                    <li><b>Follow every round.</b><span>Your final place is based on the total score after five rounds.</span></li>
-                    <li><b>Keep it fair.</b><span>Only one account may enter a tournament.</span></li>
-                  </ol>
-                </section>
+                <div class="rules-card">
+                  <div class="rule">
+                    <span class="rule__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm1-13h-2v6l5 3 1-1.7-4-2.3z" fill="currentColor"/></svg>
+                    </span>
+                    <span class="rule__copy">
+                      <strong>Format · 5 rounds of top matches</strong>
+                      <small>Each round — call the outcome, or go for the exact score. Fixed points, no odds.</small>
+                    </span>
+                  </div>
+
+                  <div class="rule">
+                    <span class="rule__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zm2 2v12h12V6zm3 3h6v6H9z" fill="currentColor"/></svg>
+                    </span>
+                    <span class="rule__copy">
+                      <strong>Scoring</strong>
+                      <small>Outcome only · Exact score. A card pays once — nothing stacks.</small>
+                    </span>
+                    <span class="rule__points" data-league-points>
+                      <b>+10</b><b>+30</b>
+                    </span>
+                  </div>
+
+                  <div class="rule">
+                    <span class="rule__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><path d="M17 9h-1V7a4 4 0 10-8 0v2H7a1.6 1.6 0 00-1.6 1.6v8.8A1.6 1.6 0 007 21h10a1.6 1.6 0 001.6-1.6v-8.8A1.6 1.6 0 0017 9zm-7-2a2 2 0 114 0v2h-4z" fill="currentColor"/></svg>
+                    </span>
+                    <span class="rule__copy">
+                      <strong>Entry</strong>
+                      <small>Invite only (VIP) · 100 Coins entry. Points from this tournament don’t count towards Global.</small>
+                    </span>
+                  </div>
+                  </div>
+
+                  <!-- FIFA · "THE BEST EVER FIFA WORLD CUP GOALS | Part 1"; the player is
+                       only fetched once you press play, and goes straight to fullscreen -->
+                  <div class="rules-video" data-video="tTK90W_2Yh8">
+                    <button class="rules-video__poster" type="button" data-video-play>
+                      <span class="rules-video__tag">Video breakdown · Aura</span>
+                      <span class="rules-video__play" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M8 5l12 7-12 7z" fill="currentColor"/></svg>
+                      </span>
+                      <span class="rules-video__label">How points are counted</span>
+                    </button>
+                  </div>
+                  </section>
 
                 <section class="arena-tournament-panel" id="tournament-prizes" role="tabpanel" data-tournament-panel="prizes">
                   <header class="arena-prizes__head"><h2>Prizes</h2></header>
@@ -912,13 +951,17 @@
                 </button>
               </div>
 
+              <!-- what Premium unlocked, offered where it is used: only the
+                   owner of such a league sees it -->
+              <button class="league-newround" type="button" data-league-new-round hidden>Create round</button>
+
                 <!-- Only a Premium league has anything to switch between:
                      js/league-tabs.js unhides this for those. -->
                 <div class="league-tabs-sticky" hidden>
                   <div class="league-tabs" role="tablist" aria-label="League sections" data-league-tabs>
                     <button class="is-active" type="button" role="tab" aria-selected="true" data-league-tab="participants">Leaderboard</button>
                     <button type="button" role="tab" aria-selected="false" data-league-tab="picks">Rounds</button>
-                    <button type="button" role="tab" aria-selected="false" data-league-tab="rules">Rules</button>
+                    <button type="button" role="tab" aria-selected="false" data-league-tab="rules">Rules &amp; Prizes</button>
                     <i class="league-tabs__indicator" data-league-tab-indicator aria-hidden="true"></i>
                   </div>
                 </div>
@@ -963,57 +1006,19 @@
                     </div>
                   </section>
                   <section class="league-panel" role="tabpanel" data-league-panel="rules">
-                <div class="rules-card">
-                  <div class="rule">
-                    <span class="rule__icon" aria-hidden="true">
-                      <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm1-13h-2v6l5 3 1-1.7-4-2.3z" fill="currentColor"/></svg>
-                    </span>
-                    <span class="rule__copy">
-                      <strong>Format · 5 rounds of top matches</strong>
-                      <small>Each round — call the outcome, or go for the exact score. Fixed points, no odds.</small>
-                    </span>
-                  </div>
-
-                  <div class="rule">
-                    <span class="rule__icon" aria-hidden="true">
-                      <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zm2 2v12h12V6zm3 3h6v6H9z" fill="currentColor"/></svg>
-                    </span>
-                    <span class="rule__copy">
-                      <strong>Scoring</strong>
-                      <small>Outcome only · Exact score. A card pays once — nothing stacks.</small>
-                    </span>
-                    <span class="rule__points" data-league-points>
-                      <b>+10</b><b>+30</b>
-                    </span>
-                  </div>
-
-                  <div class="rule">
-                    <span class="rule__icon" aria-hidden="true">
-                      <svg viewBox="0 0 24 24"><path d="M17 9h-1V7a4 4 0 10-8 0v2H7a1.6 1.6 0 00-1.6 1.6v8.8A1.6 1.6 0 007 21h10a1.6 1.6 0 001.6-1.6v-8.8A1.6 1.6 0 0017 9zm-7-2a2 2 0 114 0v2h-4z" fill="currentColor"/></svg>
-                    </span>
-                    <span class="rule__copy">
-                      <strong>Entry</strong>
-                      <small>Invite only (VIP) · 100 Coins entry. Points from this tournament don’t count towards Global.</small>
-                    </span>
-                  </div>
-                  </div>
-
-                  <!-- FIFA · "THE BEST EVER FIFA WORLD CUP GOALS | Part 1"; the player is
-                       only fetched once you press play, and goes straight to fullscreen -->
-                  <div class="rules-video" data-video="tTK90W_2Yh8">
-                    <button class="rules-video__poster" type="button" data-video-play>
-                      <span class="rules-video__tag">Video breakdown · Aura</span>
-                      <span class="rules-video__play" aria-hidden="true">
-                        <svg viewBox="0 0 24 24"><path d="M8 5l12 7-12 7z" fill="currentColor"/></svg>
-                      </span>
-                      <span class="rules-video__label">How points are counted</span>
-                    </button>
-                  </div>
-                  </section>
+                  <div data-league-rules>
+                  <div class="tournament-panel-head"><h2>League rules</h2><p>Simple rules for a fair competition.</p></div>
+                  <ol class="tournament-rules">
+                    <li><b>Make your picks before each deadline.</b><span>Predictions lock when a round begins.</span></li>
+                    <li><b>Earn points for correct outcomes.</b><span>Extra points are awarded for a winning streak.</span></li>
+                    <li><b>Follow every round.</b><span>Your final place is based on the total score after five rounds.</span></li>
+                    <li><b>Keep it fair.</b><span>Only one account may enter a tournament.</span></li>
+                  </ol>
+                
                 </div>
 
-                <!-- parked: nothing switches to it, and the strip does not count it -->
-                  <section class="league-panel" role="tabpanel" data-league-panel="prizes" hidden>
+                  <header class="arena-prizes__head"><h2>Prizes</h2></header>
+                <div data-league-prizes>
                     <article class="arena-prize arena-prize--grand">
                       <img class="arena-prize__stadium" src="assets/arena/thearena-prize-stadium.png" alt="">
                       <div class="arena-prize__copy">
@@ -1051,7 +1056,10 @@
                         <span class="arena-prize__value">Value: $200</span>
                       </div>
                     </article>
-                  </section>
+                  </div>
+</section>
+                </div>
+
               <!-- only shown inside a league you own -->
               <article class="premium-card" data-premium-card hidden>
                 <p class="premium-card__eyebrow">
@@ -2134,19 +2142,19 @@
 <script src="js/arena-join.js?v=3"></script>
 <script src="js/league.js?v=22"></script>
 <script src="js/leagues.js?v=5"></script>
-<script src="js/league-create.js?v=30"></script>
+<script src="js/league-create.js?v=32"></script>
 <script src="js/league-pager.js?v=9"></script>
 <script src="js/league-rules.js?v=2"></script>
 <script src="js/league-tabs.js?v=9"></script>
 <script src="js/league-round.js?v=4"></script>
 <script src="js/league-menu.js?v=6"></script>
 <script src="js/league-participants.js?v=2"></script>
-<script src="js/league-rounds.js?v=55"></script>
+<script src="js/league-rounds.js?v=57"></script>
 <script src="js/my-zone.js?v=2"></script>
 <script src="js/ranks.js?v=3"></script>
 <script src="js/notifications.js?v=6"></script>
 <script src="js/community.js?v=7"></script>
 <script src="js/settings.js?v=2"></script>
-<script src="js/avatars.js?v=2"></script>
+<script src="js/avatars.js?v=3"></script>
 </body>
 </html>
