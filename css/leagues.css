@@ -743,11 +743,14 @@
   transition: border-color .16s ease, color .16s ease, background .16s ease;
 }
 .rq__opt:hover:not(:disabled) { border-color: rgba(255, 255, 255, .28); }
+/* an answer that is in is filled, the way it is everywhere else in the app */
 .rq__opt.is-on {
   border-color: var(--brand-primary);
-  color: var(--brand-primary);
+  background: var(--brand-primary);
+  color: var(--text-on-brand);
   font-weight: 600;
 }
+.rq__opt.is-on:hover:not(:disabled) { border-color: var(--brand-primary); filter: brightness(1.06); }
 .rq__opt:disabled { cursor: default; }
 .rq__opt:disabled:not(.is-on) { opacity: .5; }
 
