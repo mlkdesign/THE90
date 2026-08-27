@@ -193,14 +193,20 @@
     open.appendChild(art);
     open.appendChild(body);
 
-    var invite = el('button', 'theleagues-card__invite', 'Invite friends');
-    invite.type = 'button';
-    invite.dataset.shareLeague = 'true';
-    invite.dataset.leagueName = league.name;
-    invite.setAttribute('aria-label', 'Share invite link for ' + league.name);
+    /* The corner of a card is the way into its room, and it says what is
+       waiting there. It carries the same marks the card itself does, so
+       opening the chat knows whose league it is. */
+    var chat = el('button', 'theleagues-card__chat', 'Chat');
+    chat.type = 'button';
+    chat.dataset.go = 'league-chat';
+    chat.dataset.leagueJoined = 'true';
+    chat.dataset.leagueOwn = 'true';
+    chat.dataset.leagueIndex = String(index);
+    chat.setAttribute('aria-label', 'Open the chat of ' + league.name);
+    chat.appendChild(el('i', 'theleagues-card__unread'));
 
     card.appendChild(open);
-    card.appendChild(invite);
+    card.appendChild(chat);
     return card;
   }
 

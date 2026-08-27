@@ -462,7 +462,6 @@
      ======================================================= */
 
   var UNREAD_KEY = 'the90.leagueUnread.v1';
-  var unreadDot = document.querySelector('[data-chat-unread]');
 
   function unreadCount() {
     try {
@@ -473,11 +472,17 @@
     return 3;
   }
 
+  /* The league page has one of these and every card on the leagues screen
+     has another; they are all the same number. */
   function paintUnread() {
-    if (!unreadDot) return;
     var count = unreadCount();
-    unreadDot.textContent = count > 9 ? '9+' : String(count);
-    unreadDot.hidden = count < 1;
+    var label = count > 9 ? '9+' : String(count);
+    Array.prototype.forEach.call(
+      document.querySelectorAll('[data-chat-unread], .theleagues-card__unread'),
+      function (dot) {
+        dot.textContent = label;
+        dot.hidden = count < 1;
+      });
   }
 
   function seen() {
@@ -486,6 +491,10 @@
   }
 
   paintUnread();
+  document.addEventListener('the90:league-membership', paintUnread);
+  window.addEventListener('the90:screen', function (event) {
+    if (event.detail === 'leagues') paintUnread();
+  });
 
 
   /* =======================================================
