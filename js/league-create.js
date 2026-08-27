@@ -513,33 +513,42 @@
      ======================================================= */
 
   var rulesBody = $('[data-rules-body]', form);
-  var rulesMedia = $('[data-rules-media]', form);
 
-  $$('[data-cmd]', form).forEach(function (button) {
+  /* There is more than one of these now — the one in the create form and the
+     one a league writes its own rules in — so a toolbar acts on the editor it
+     is part of rather than on a particular one. */
+  function bodyOf(node) {
+    var editor = node.closest('.editor');
+    return editor ? $('[data-rules-body]', editor) : null;
+  }
+
+  $$('[data-cmd]').forEach(function (button) {
     button.addEventListener('mousedown', function (event) { event.preventDefault(); });
     button.addEventListener('click', function () {
-      if (!rulesBody) return;
-      rulesBody.focus();
+      var body = bodyOf(button);
+      if (!body) return;
+      body.focus();
       if (button.dataset.cmd === 'size') document.execCommand('fontSize', false, button.dataset.size);
       else document.execCommand(button.dataset.cmd, false, null);
     });
   });
 
-  if (rulesMedia) {
-    rulesMedia.addEventListener('change', function () {
-      var file = rulesMedia.files && rulesMedia.files[0];
-      if (!file || !rulesBody) return;
+  $$('[data-rules-media]').forEach(function (input) {
+    input.addEventListener('change', function () {
+      var file = input.files && input.files[0];
+      var body = bodyOf(input);
+      if (!file || !body) return;
       var reader = new FileReader();
       reader.onload = function () {
         var node = document.createElement(file.type.indexOf('video') === 0 ? 'video' : 'img');
         node.src = String(reader.result);
         if (node.tagName === 'VIDEO') node.controls = true;
-        rulesBody.appendChild(node);
+        body.appendChild(node);
       };
       reader.readAsDataURL(file);
-      rulesMedia.value = '';
+      input.value = '';
     });
-  }
+  });
 
 
   /* =======================================================
@@ -824,6 +833,9 @@
     rememberViewing();
     if (window.THE90.go) window.THE90.go('league');
     applyMembership();
+    // at the top of it, however far down the form was scrolled
+    var leagueScroll = document.querySelector('[data-league-scroll]');
+    if (leagueScroll) leagueScroll.scrollTop = 0;
   });
 
 
@@ -836,6 +848,16 @@
       return leagues[index] ? leagues[index].name : '';
     },
     edit: startEdit,
+    rulesAt: function (index) {
+      return leagues[index] ? (leagues[index].rules || '') : '';
+    },
+    setRules: function (index, html) {
+      if (!leagues[index]) return;
+      leagues[index].rules = html;
+      save(OWN_KEY, leagues);
+      renderOwn();
+      applyMembership();
+    },
     remove: function (index) {
       if (!leagues[index]) return;
       leagues.splice(index, 1);
@@ -895,11 +917,16 @@
   var heroArt = document.querySelector('.league-hero__bg');
   var heroDefault = heroArt ? heroArt.getAttribute('src') : '';
 
+  var heroExtras = Array.prototype.slice.call(
+    document.querySelectorAll('.league-hero__host, .league-hero__trophy'));
+
   function dressHero() {
     if (!heroArt) return;
     var cover = viewing.league && viewing.league.cover;
     heroArt.src = cover || heroDefault;
-    heroArt.classList.toggle('is-own', !!cover);
+    /* A picture of your own is the whole banner: the host and the trophy
+       belong to the house one and would be standing in front of yours. */
+    heroExtras.forEach(function (art) { art.hidden = !!cover; });
   }
 
   function applyMembership() {

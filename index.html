@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="css/style.css?v=8">
 <link rel="stylesheet" href="css/main.css?v=63">
 <link rel="stylesheet" href="css/rankings.css?v=15">
-<link rel="stylesheet" href="css/leagues.css?v=53">
+<link rel="stylesheet" href="css/leagues.css?v=54">
 <link rel="stylesheet" href="css/arena.css?v=66">
 <link rel="stylesheet" href="css/live.css?v=5">
 <link rel="stylesheet" href="css/league.css?v=47">
@@ -1214,6 +1214,43 @@
             </div>
           </section>
 
+          <!-- ============ SCREEN: LEAGUE RULES (owner only) ============ -->
+          <!-- Written in free form: the same editor the create wizard carries,
+               so formatting and pictures work the same way here. -->
+          <section class="screen screen--rules-edit" data-screen="league-rules-edit">
+            <header class="settings-head">
+              <button type="button" data-go="league" aria-label="Back to the league">
+                <img src="assets/icons/chevron-down.svg" alt="" width="20" height="20">
+              </button>
+              <h1>League rules</h1>
+            </header>
+            <div class="settings-scroll round-edit">
+              <div class="field">
+                <label class="field__label" for="league-own-rules">Rules</label>
+                <div class="editor">
+                  <div class="editor__bar">
+                    <button type="button" data-cmd="bold" aria-label="Bold"><b>B</b></button>
+                    <button type="button" data-cmd="italic" aria-label="Italic"><i>I</i></button>
+                    <button type="button" data-cmd="size" data-size="5" aria-label="Large text">A+</button>
+                    <button type="button" data-cmd="size" data-size="3" aria-label="Normal text">A</button>
+                    <button type="button" data-cmd="size" data-size="1" aria-label="Small text">a-</button>
+                    <label class="editor__media">
+                      <input type="file" accept="image/*,video/*" data-rules-media hidden>
+                      <span>Photo or video</span>
+                    </label>
+                  </div>
+                  <div class="editor__area" id="league-own-rules" contenteditable="true"
+                       data-league-own-rules data-rules-body
+                       data-placeholder="How this league is played, how points are counted, anything your players should know."></div>
+                </div>
+                <p class="field__note"><span>Everyone in the league can read this.</span></p>
+              </div>
+            </div>
+            <div class="round-actions">
+              <button class="btn btn--primary" type="button" data-league-rules-save>Save rules</button>
+            </div>
+          </section>
+
           <!-- ============ SCREEN: MANAGE ROUNDS (owner only) ============ -->
           <section class="screen screen--rounds" data-screen="league-rounds">
             <header class="settings-head">
@@ -2142,14 +2179,14 @@
 <script src="js/arena-join.js?v=3"></script>
 <script src="js/league.js?v=22"></script>
 <script src="js/leagues.js?v=5"></script>
-<script src="js/league-create.js?v=32"></script>
+<script src="js/league-create.js?v=33"></script>
 <script src="js/league-pager.js?v=9"></script>
 <script src="js/league-rules.js?v=2"></script>
 <script src="js/league-tabs.js?v=9"></script>
 <script src="js/league-round.js?v=4"></script>
 <script src="js/league-menu.js?v=6"></script>
 <script src="js/league-participants.js?v=2"></script>
-<script src="js/league-rounds.js?v=57"></script>
+<script src="js/league-rounds.js?v=58"></script>
 <script src="js/my-zone.js?v=2"></script>
 <script src="js/ranks.js?v=3"></script>
 <script src="js/notifications.js?v=6"></script>

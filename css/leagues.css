@@ -626,6 +626,39 @@
   scroll-behavior: smooth;
 }
 
+/* Nothing written here yet, and the way to write it */
+.league-rules-empty {
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 24px;
+  background: var(--bg-surface);
+  text-align: center;
+}
+.league-rules-empty p {
+  max-width: 260px;
+  margin: 0;
+  color: var(--text-dim);
+  font-size: 13px;
+  line-height: 20px;
+}
+.league-rules-write {
+  height: 44px;
+  padding: 0 20px;
+  background: rgba(255, 255, 255, .1);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+}
+.league-rules-write:hover { background: rgba(255, 255, 255, .16); }
+
+/* the screen the rules are written on */
+.screen--rules-edit .settings-scroll { padding-bottom: 120px; }
+.screen--rules-edit .editor__area { min-height: 260px; }
+
 /* =========================================================
    A round, as a card
 

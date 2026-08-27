@@ -1346,10 +1346,17 @@
      rounds, so only the owner of such a league is offered one. */
   var newRound = $('[data-league-new-round]');
   if (newRound) {
-    newRound.addEventListener('click', function () { openEditor(null); });
+    newRound.addEventListener('click', function () {
+      // without Premium the gold button is the way to it, not to a round
+      if (newRound.dataset.mode !== 'premium') openEditor(null);
+    });
     document.addEventListener('the90:league-membership', function (event) {
       var detail = event.detail || {};
-      newRound.hidden = !(detail.own && detail.premium);
+      newRound.hidden = !detail.own;
+      newRound.dataset.mode = detail.premium ? 'round' : 'premium';
+      newRound.textContent = detail.premium ? 'Create round' : 'Activate premium';
+      if (detail.premium) delete newRound.dataset.settingsSheet;
+      else newRound.dataset.settingsSheet = 'premium';
     });
   }
 
@@ -1496,8 +1503,49 @@
   function renderRules() {
     if (!rulesPanel) return;
     var rules = viewing.league && viewing.league.rules;
-    if (!rules) { rulesPanel.innerHTML = demoRules; return; }
-    rulesPanel.innerHTML = '<div class="league-rules-copy">' + rules + '</div>';
+    if (rules) {
+      rulesPanel.innerHTML = '<div class="league-rules-copy">' + rules + '</div>';
+      return;
+    }
+    /* A league you made has nothing here until you write it; one you were
+       invited into shows what its owner would have written. */
+    if (!isOwner()) { rulesPanel.innerHTML = demoRules; return; }
+
+    var empty = el('div', 'league-rules-empty');
+    empty.appendChild(el('p', null, 'You haven’t written any rules for this league yet.'));
+    var write = el('button', 'btn league-rules-write', 'Add description');
+    write.type = 'button';
+    write.addEventListener('click', openRules);
+    empty.appendChild(write);
+    rulesPanel.replaceChildren(empty);
+  }
+
+  /* =======================================================
+     Writing the rules
+
+     Free form, in the editor the create wizard carries — the
+     same formatting and the same pictures.
+     ======================================================= */
+
+  var rulesArea = $('[data-league-own-rules]');
+  var rulesSave = $('[data-league-rules-save]');
+
+  function openRules() {
+    if (rulesArea) rulesArea.innerHTML = (viewing.league && viewing.league.rules) || '';
+    if (T.go) T.go('league-rules-edit');
+  }
+
+  if (rulesSave) {
+    rulesSave.addEventListener('click', function () {
+      var html = rulesArea ? rulesArea.innerHTML.trim() : '';
+      if (T.ownLeagues && viewing.index > -1) T.ownLeagues.setRules(viewing.index, html);
+      if (viewing.league) viewing.league.rules = html;
+      renderRules();
+      if (T.go) T.go('league');
+      window.setTimeout(function () {
+        if (T.leagueTabs) T.leagueTabs.open('rules');
+      }, 60);
+    });
   }
 
   T.leagueRounds = {
