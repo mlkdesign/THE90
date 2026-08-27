@@ -244,6 +244,9 @@
       if (viewing.own && leagues[viewing.index]) {
         leagues[viewing.index].premium = true;
         save(OWN_KEY, leagues);
+        // the league being looked at is the one that was paid for
+        viewing.league = leagues[viewing.index];
+        rememberViewing();
       }
       renderPremium();
       renderOwn();
@@ -849,6 +852,12 @@
      it would arrive with no idea whose league it is showing. */
   var VIEWING_KEY = 'the90.viewingLeague.v1';
   var viewing = load(VIEWING_KEY, null) || { joined: true, own: false };
+
+  /* What comes back out of storage is a copy of the league, not the league.
+     Point it back at the record, or anything written to one of them — its
+     rules, its cover, whether it is Premium — would be invisible to the
+     other. */
+  if (viewing.own && leagues[viewing.index]) viewing.league = leagues[viewing.index];
 
   function rememberViewing() {
     save(VIEWING_KEY, viewing);
