@@ -912,30 +912,18 @@
                 </button>
               </div>
 
-                <!-- League picks, Prizes and Rules are parked for now: a league
-                     opens on what it is and who is winning it, and the strip has
-                     nothing left to switch between. -->
+                <!-- Only a Premium league has anything to switch between:
+                     js/league-tabs.js unhides this for those. -->
                 <div class="league-tabs-sticky" hidden>
                   <div class="league-tabs" role="tablist" aria-label="League sections" data-league-tabs>
-                    <button class="is-active" type="button" role="tab" aria-selected="true" data-league-tab="picks">League picks</button>
-                    <button type="button" role="tab" aria-selected="false" data-league-tab="participants">Leaderboard</button>
-                    <button type="button" role="tab" aria-selected="false" data-league-tab="prizes">Prizes</button>
+                    <button class="is-active" type="button" role="tab" aria-selected="true" data-league-tab="participants">Leaderboard</button>
+                    <button type="button" role="tab" aria-selected="false" data-league-tab="picks">Rounds</button>
                     <button type="button" role="tab" aria-selected="false" data-league-tab="rules">Rules</button>
                     <i class="league-tabs__indicator" data-league-tab-indicator aria-hidden="true"></i>
                   </div>
                 </div>
 
                 <div class="league-panels" data-league-panels>
-                  <section class="league-panel" role="tabpanel" data-league-panel="picks" hidden>
-                <!-- rounds: what the owner runs and the members play -->
-                <div class="league-rounds" data-league-rounds></div>
-
-                    <div class="league-about">
-                      <h2>About this league</h2>
-                      <p>DIAMOND CUP is an invite-only VIP tournament over five rounds of top matches. Call the outcome or go for the exact score — fixed points, no odds — and the board settles as soon as results are confirmed.</p>
-                    </div>
-                  </section>
-
                   <section class="league-panel" role="tabpanel" data-league-panel="participants">
                 <section class="league-participants" aria-labelledby="league-participants-title">
                   <h2 id="league-participants-title" data-league-participants-title>Leaderboard</h2>
@@ -965,48 +953,16 @@
 
                 </section>
                   </section>
+                  <section class="league-panel" role="tabpanel" data-league-panel="picks">
+                <!-- rounds: what the owner runs and the members play -->
+                <div class="league-rounds" data-league-rounds></div>
 
-                  <section class="league-panel" role="tabpanel" data-league-panel="prizes" hidden>
-                    <article class="arena-prize arena-prize--grand">
-                      <img class="arena-prize__stadium" src="assets/arena/thearena-prize-stadium.png" alt="">
-                      <div class="arena-prize__copy">
-                        <span class="arena-prize__place">1st place</span>
-                        <h3>VIP Trip to UCL Final</h3>
-                        <p>Tickets + Hotel + Flight</p>
-                        <span class="arena-prize__value">Value: $5 000</span>
-                      </div>
-                      <img class="arena-prize__grand-art" src="assets/arena/thearena-prize-trophy.png" alt="">
-                    </article>
-
-                    <article class="arena-prize">
-                      <div class="arena-prize__art"><img class="arena-prize__art--macbook" src="assets/arena/thearena-prize-macbook.png" alt="MacBook Pro 14 inch M4"></div>
-                      <div class="arena-prize__copy">
-                        <span class="arena-prize__place">2nd place</span>
-                        <h3>MacBook Pro 14&quot; M4</h3>
-                        <span class="arena-prize__value">Value: $2 000</span>
-                      </div>
-                    </article>
-
-                    <article class="arena-prize">
-                      <div class="arena-prize__art"><img class="arena-prize__art--iphone" src="assets/arena/thearena-prize-iphone.png" alt="iPhone 17 Pro Max"></div>
-                      <div class="arena-prize__copy">
-                        <span class="arena-prize__place">3rd place</span>
-                        <h3>iPhone 17 Pro Max</h3>
-                        <span class="arena-prize__value">Value: $1 200</span>
-                      </div>
-                    </article>
-
-                    <article class="arena-prize">
-                      <div class="arena-prize__art"><img class="arena-prize__art--merch" src="assets/arena/thearena-prize-merch.png" alt="Exclusive merch pack"></div>
-                      <div class="arena-prize__copy">
-                        <span class="arena-prize__place">4–10 places</span>
-                        <h3>Exclusive Merch Pack</h3>
-                        <span class="arena-prize__value">Value: $200</span>
-                      </div>
-                    </article>
+                    <div class="league-about">
+                      <h2>About this league</h2>
+                      <p>DIAMOND CUP is an invite-only VIP tournament over five rounds of top matches. Call the outcome or go for the exact score — fixed points, no odds — and the board settles as soon as results are confirmed.</p>
+                    </div>
                   </section>
-
-                  <section class="league-panel" role="tabpanel" data-league-panel="rules" hidden>
+                  <section class="league-panel" role="tabpanel" data-league-panel="rules">
                 <div class="rules-card">
                   <div class="rule">
                     <span class="rule__icon" aria-hidden="true">
@@ -1056,6 +1012,46 @@
                   </section>
                 </div>
 
+                <!-- parked: nothing switches to it, and the strip does not count it -->
+                  <section class="league-panel" role="tabpanel" data-league-panel="prizes" hidden>
+                    <article class="arena-prize arena-prize--grand">
+                      <img class="arena-prize__stadium" src="assets/arena/thearena-prize-stadium.png" alt="">
+                      <div class="arena-prize__copy">
+                        <span class="arena-prize__place">1st place</span>
+                        <h3>VIP Trip to UCL Final</h3>
+                        <p>Tickets + Hotel + Flight</p>
+                        <span class="arena-prize__value">Value: $5 000</span>
+                      </div>
+                      <img class="arena-prize__grand-art" src="assets/arena/thearena-prize-trophy.png" alt="">
+                    </article>
+
+                    <article class="arena-prize">
+                      <div class="arena-prize__art"><img class="arena-prize__art--macbook" src="assets/arena/thearena-prize-macbook.png" alt="MacBook Pro 14 inch M4"></div>
+                      <div class="arena-prize__copy">
+                        <span class="arena-prize__place">2nd place</span>
+                        <h3>MacBook Pro 14&quot; M4</h3>
+                        <span class="arena-prize__value">Value: $2 000</span>
+                      </div>
+                    </article>
+
+                    <article class="arena-prize">
+                      <div class="arena-prize__art"><img class="arena-prize__art--iphone" src="assets/arena/thearena-prize-iphone.png" alt="iPhone 17 Pro Max"></div>
+                      <div class="arena-prize__copy">
+                        <span class="arena-prize__place">3rd place</span>
+                        <h3>iPhone 17 Pro Max</h3>
+                        <span class="arena-prize__value">Value: $1 200</span>
+                      </div>
+                    </article>
+
+                    <article class="arena-prize">
+                      <div class="arena-prize__art"><img class="arena-prize__art--merch" src="assets/arena/thearena-prize-merch.png" alt="Exclusive merch pack"></div>
+                      <div class="arena-prize__copy">
+                        <span class="arena-prize__place">4–10 places</span>
+                        <h3>Exclusive Merch Pack</h3>
+                        <span class="arena-prize__value">Value: $200</span>
+                      </div>
+                    </article>
+                  </section>
               <!-- only shown inside a league you own -->
               <article class="premium-card" data-premium-card hidden>
                 <p class="premium-card__eyebrow">
@@ -2142,12 +2138,12 @@
 <script src="js/arena-join.js?v=3"></script>
 <script src="js/league.js?v=21"></script>
 <script src="js/leagues.js?v=5"></script>
-<script src="js/league-create.js?v=27"></script>
+<script src="js/league-create.js?v=29"></script>
 <script src="js/league-pager.js?v=9"></script>
 <script src="js/league-rules.js?v=2"></script>
-<script src="js/league-tabs.js?v=8"></script>
+<script src="js/league-tabs.js?v=9"></script>
 <script src="js/league-round.js?v=4"></script>
-<script src="js/league-menu.js?v=5"></script>
+<script src="js/league-menu.js?v=6"></script>
 <script src="js/league-participants.js?v=2"></script>
 <script src="js/league-rounds.js?v=53"></script>
 <script src="js/my-zone.js?v=2"></script>

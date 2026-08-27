@@ -234,6 +234,10 @@
     button.addEventListener('click', function () {
       premium = true;
       save(PREMIUM_KEY, premium);
+      if (viewing.own && leagues[viewing.index]) {
+        leagues[viewing.index].premium = true;
+        save(OWN_KEY, leagues);
+      }
       renderPremium();
       renderOwn();
       reward('Premium is active',
@@ -871,7 +875,8 @@
     var index = card.dataset.leagueIndex === undefined ? -1 : Number(card.dataset.leagueIndex);
     var record = own && leagues[index] ? leagues[index] : {
       name: (card.getAttribute('aria-label') || '').replace(/^Open\s+/, '') || 'League',
-      privacy: card.dataset.leaguePrivacy === 'open' ? 'open' : 'private'
+      privacy: card.dataset.leaguePrivacy === 'open' ? 'open' : 'private',
+      premium: card.dataset.leaguePremium === 'true'
     };
     viewing = {
       joined: card.dataset.leagueJoined !== 'false',
@@ -886,10 +891,15 @@
   var participantsInvite = $('.participants-invite');
 
   function applyMembership() {
+    /* Rounds and Rules are what Premium buys, so what everyone downstream
+       needs to know is whether this league has it. */
+    viewing.premium = !!(viewing.league && viewing.league.premium) || (viewing.own && premium);
+
     if (joinButton) joinButton.hidden = viewing.joined;
     if (youRow) youRow.hidden = !viewing.joined;
-    if (premiumCard) premiumCard.hidden = !viewing.own || premium;
-    if (premiumActive) premiumActive.hidden = !viewing.own || !premium;
+    // no point offering it to a league that already has it
+    if (premiumCard) premiumCard.hidden = !viewing.own || viewing.premium;
+    if (premiumActive) premiumActive.hidden = !viewing.own || !viewing.premium;
 
     /* In a private league only the owner brings people in, so a member is not
        shown a door they cannot open. An open league hands the invite to

@@ -66,9 +66,9 @@
       return isOpen() ? [share, leave] : [leave];
     }
 
-    /* Rounds are parked along with the picks tab they are played on, so the
-       way in to managing them is parked too. */
-    return [
+    /* Running rounds is what Premium buys, so the way in to it is only on the
+       menu of a league that has it. */
+    var items = [
       { label: 'Edit league', run: function () {
         if (T && T.ownLeagues && viewing.index > -1) T.ownLeagues.edit(viewing.index);
         if (T && T.go) T.go('league-create');
@@ -84,6 +84,12 @@
           });
       } }
     ];
+
+    if (viewing.premium) {
+      items.splice(1, 0,
+        { label: 'Manage rounds', run: function () { if (T && T.go) T.go('league-rounds'); } });
+    }
+    return items;
   }
 
   function build() {

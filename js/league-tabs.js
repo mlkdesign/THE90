@@ -1,7 +1,9 @@
 /* =========================================================
    THE90 — the tabs inside a league
 
-   Daily picks, Participants, Prizes, Rules. The same control
+   Leaderboard, Rounds, Rules — and only in a league that pays
+   for them. A plain league has one thing to show, so the strip
+   is put away and the board is simply the page. The same control
    the tournament carries, and for the same reasons: the tabs
    are laid side by side in one strip you can drag between,
    the underline travels with the drag rather than jumping
@@ -25,19 +27,12 @@
   var strip = screen.querySelector('[data-league-tabs]');
   var indicator = screen.querySelector('[data-league-tab-indicator]');
   var buttons = Array.prototype.slice.call(screen.querySelectorAll('[data-league-tab]'));
-  var panels = Array.prototype.slice.call(screen.querySelectorAll('[data-league-panel]'));
   var rail = screen.querySelector('[data-league-panels]');
+  // only what is on the rail is a tab; a parked panel is off it
+  var panels = rail ? Array.prototype.slice.call(rail.querySelectorAll('[data-league-panel]')) : [];
   var scroll = screen.querySelector('[data-league-scroll]');
   var sticky = screen.querySelector('.league-tabs-sticky');
   if (!strip || !rail || !scroll || !buttons.length || !panels.length) return;
-
-  /* The strip is parked. With one section left on the page the rail is not a
-     rail any more — it is just where that section sits, and the sideways
-     gesture over it belongs to the pager. */
-  if (sticky && sticky.hidden) {
-    rail.classList.add('is-static');
-    return;
-  }
 
   var desired = 0;
   var animation = null;
@@ -418,15 +413,56 @@
     panels.forEach(function (panel) { watcher.observe(panel); });
   }
 
-  window.addEventListener('the90:screen', function (event) {
-    if (event.detail !== 'league') return;
-    // a league always opens on its picks
+  /* =======================================================
+     Whether there is anything to switch between
+
+     Rounds and Rules are what a Premium league pays for. Without
+     them there is one section on the page, so the strip is put
+     away and the rail stops being a rail: the board is simply
+     what is under the banner.
+     ======================================================= */
+
+  var paying = false;
+
+  function shape(premium) {
+    paying = !!premium;
+    if (sticky) sticky.hidden = !paying;
+    rail.classList.toggle('is-static', !paying);
+
+    panels.forEach(function (panel, index) {
+      // without the strip only the first section is on the page
+      panel.hidden = !paying && index !== 0;
+      if (!paying) panel.removeAttribute('aria-hidden');
+    });
+
+    if (!paying) {
+      clearPanelOffsets();
+      filler = 0;
+      rail.style.height = '';
+      rail.scrollLeft = 0;
+      return;
+    }
+    open();
+  }
+
+  function open() {
+    if (!paying) return;
+    // a league opens on its board, and the strip follows from there
     goTo(0, { instant: true });
     window.requestAnimationFrame(function () { render(0); fitHeight(); updateStuck(); });
+  }
+
+  document.addEventListener('the90:league-membership', function (event) {
+    var detail = event.detail || {};
+    shape(detail.premium);
   });
 
-  goTo(0, { instant: true });
-  window.requestAnimationFrame(function () { render(0); fitHeight(); updateStuck(); });
+  window.addEventListener('the90:screen', function (event) {
+    if (event.detail !== 'league') return;
+    open();
+  });
+
+  shape(false);
 
 
   /* =======================================================
