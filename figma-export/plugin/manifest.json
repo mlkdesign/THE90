@@ -1,0 +1,16 @@
+{
+  "name": "THE90 → Figma",
+  "id": "the90-prototype-import",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": [
+    "figma"
+  ],
+  "networkAccess": {
+    "allowedDomains": [
+      "http://localhost:4173"
+    ],
+    "reasoning": "Reads the exported scene graph and the prototype's own images from the local dev server that ships with the THE90 prototype."
+  }
+}

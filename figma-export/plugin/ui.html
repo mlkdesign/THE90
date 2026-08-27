@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  :root { color-scheme: dark light; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 18px;
+    font: 12px/1.5 Inter, -apple-system, system-ui, sans-serif;
+    background: #0E0E0E; color: #F7FAF8;
+  }
+  h1 { margin: 0 0 2px; font-size: 15px; font-weight: 700; letter-spacing: -.01em; }
+  h1 em { font-style: normal; color: #24FF00; }
+  p.lede { margin: 0 0 16px; color: #A5B7AE; }
+  .field { margin-bottom: 12px; }
+  label { display: block; margin-bottom: 5px; color: #A5B7AE; font-size: 11px; }
+  input[type=text] {
+    width: 100%; padding: 9px 11px; border-radius: 9px;
+    border: 1px solid rgba(255,255,255,.12); background: #1A1A1A; color: #F7FAF8; font: inherit;
+  }
+  input[type=text]:focus { outline: none; border-color: #1FCB72; background: #13231A; }
+  button {
+    width: 100%; padding: 11px 14px; border: 0; border-radius: 10px;
+    font: 600 12px/1 Inter, sans-serif; cursor: pointer;
+  }
+  .primary { background: #24FF00; color: #06120D; }
+  .primary:disabled { background: #2b3b30; color: #7d8c84; cursor: default; }
+  .ghost { background: rgba(255,255,255,.08); color: #F7FAF8; margin-top: 8px; }
+  .bar { height: 6px; border-radius: 4px; background: rgba(255,255,255,.1); overflow: hidden; margin: 14px 0 8px; }
+  .bar i { display: block; height: 100%; width: 0; background: #24FF00; transition: width .2s ease; }
+  .status { color: #A5B7AE; min-height: 18px; }
+  .log {
+    margin-top: 12px; max-height: 190px; overflow: auto;
+    border: 1px solid rgba(255,255,255,.08); border-radius: 9px; padding: 9px 11px;
+    background: #141414; color: #8fa298; font: 11px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+    white-space: pre-wrap; display: none;
+  }
+  .log.on { display: block; }
+  .err { color: #FF9D9D; }
+  .ok { color: #24FF00; }
+</style>
+</head>
+<body>
+  <h1>THE<em>90</em> → Figma</h1>
+  <p class="lede">Rebuilds the exported prototype on the current page.</p>
+
+  <div class="field">
+    <label for="origin">Prototype dev server</label>
+    <input id="origin" type="text" value="http://localhost:4173" spellcheck="false">
+  </div>
+
+  <button id="run" class="primary">Build the design</button>
+  <button id="close" class="ghost">Close</button>
+
+  <div class="bar"><i id="fill"></i></div>
+  <div class="status" id="status">Start the prototype server, then press Build.</div>
+  <div class="log" id="log"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const log = (msg, cls) => {
+  const el = $('log'); el.classList.add('on');
+  const line = document.createElement('div');
+  if (cls) line.className = cls;
+  line.textContent = msg;
+  el.appendChild(line); el.scrollTop = el.scrollHeight;
+};
+const setStatus = t => { $('status').textContent = t; };
+const setProgress = f => { $('fill').style.width = Math.round(f * 100) + '%'; };
+
+let ORIGIN = 'http://localhost:4173';
+let scenes = [];      // { entry, data }
+let cursor = 0;
+
+async function getJSON(path) {
+  const r = await fetch(ORIGIN + '/figma-export/' + path + '?t=' + Date.now());
+  if (!r.ok) throw new Error(path + ' → HTTP ' + r.status);
+  return r.json();
+}
+
+/* --- walk the scenes once to learn the palette and the type scale --------- */
+const colorKey = c => [Math.round(c.r*255), Math.round(c.g*255), Math.round(c.b*255)].join(',');
+
+function survey(scenes) {
+  const colors = new Map(), styles = new Map();
+  const visit = n => {
+    for (const p of (n.fills || []).concat(n.strokes || [])) {
+      if (p.type === 'SOLID') colors.set(colorKey(p.color), p.color);
+    }
+    if (n.text) for (const s of n.text.segments) {
+      const st = s.style;
+      colors.set(colorKey(st.color), { r: st.color.r, g: st.color.g, b: st.color.b });
+      const k = [st.family, st.style, st.size, st.lineHeight === null ? 'auto' : st.lineHeight, st.letterSpacing].join('|');
+      const rec = styles.get(k) || { key: k, style: st, count: 0 };
+      rec.count++; styles.set(k, rec);
+    }
+    for (const c of n.children || []) visit(c);
+    for (const c of n.shell || []) visit(c);
+  };
+  scenes.forEach(s => visit(s.data.scene));
+
+  const styleList = [...styles.values()]
+    .filter(s => s.count >= 5)
+    .sort((a, b) => b.count - a.count)
+    .map(s => {
+      const lh = s.style.lineHeight === null ? 'auto' : s.style.lineHeight;
+      const ls = s.style.letterSpacing ? ' +' + s.style.letterSpacing : '';
+      return Object.assign({}, s, { name: s.style.family + '/' + s.style.style + '/' + s.style.size + ' · ' + lh + ls });
+    });
+
+  return { usedColors: [...colors.values()], styleList };
+}
+
+/* --- drive the build ------------------------------------------------------ */
+
+$('run').onclick = async () => {
+  $('run').disabled = true;
+  $('log').textContent = '';
+  ORIGIN = $('origin').value.trim().replace(/\/$/, '');
+  try {
+    setStatus('Reading the export…');
+    const [index, tokens, assets] = await Promise.all([getJSON('index.json'), getJSON('tokens.json'), getJSON('assets.json')]);
+    log('index: ' + index.entries.length + ' scenes · ' + assets.assets.length + ' assets · ' + tokens.tokens.length + ' tokens');
+
+    scenes = [];
+    for (let i = 0; i < index.entries.length; i++) {
+      const e = index.entries[i];
+      setStatus('Reading ' + e.label + '…');
+      setProgress((i + 1) / index.entries.length * 0.35);
+      scenes.push({ entry: e, data: await getJSON(e.file) });
+    }
+
+    setStatus('Surveying tokens…');
+    const { usedColors, styleList } = survey(scenes);
+    log('palette: ' + usedColors.length + ' colours · ' + styleList.length + ' text styles');
+
+    cursor = 0;
+    parent.postMessage({ pluginMessage: {
+      type: 'init', index, tokens: tokens.tokens, assets: assets.assets,
+      usedColors, textStyles: styleList
+    } }, '*');
+  } catch (e) {
+    $('run').disabled = false;
+    setStatus('Could not read the export.');
+    log(e.message, 'err');
+    log('Is the prototype server running?  node .claude/serve.mjs', 'err');
+  }
+};
+
+$('close').onclick = () => parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*');
+
+function next() {
+  if (cursor >= scenes.length) {
+    setStatus('Arranging the page…');
+    parent.postMessage({ pluginMessage: { type: 'finish' } }, '*');
+    return;
+  }
+  const s = scenes[cursor];
+  setStatus('Building ' + s.entry.label + '  (' + (cursor + 1) + '/' + scenes.length + ')');
+  setProgress(0.35 + (cursor / scenes.length) * 0.65);
+  parent.postMessage({ pluginMessage: { type: 'scene', entry: s.entry, data: s.data } }, '*');
+}
+
+onmessage = (event) => {
+  const msg = event.data.pluginMessage;
+  if (!msg) return;
+  if (msg.type === 'status') setStatus(msg.text);
+  if (msg.type === 'ready') { log('foundations built', 'ok'); next(); }
+  if (msg.type === 'built') { cursor++; next(); }
+  if (msg.type === 'error') { setStatus('Stopped.'); log(msg.message, 'err'); $('run').disabled = false; }
+  if (msg.type === 'done') {
+    setProgress(1);
+    setStatus(msg.count + ' screens built on “' + msg.page + '”.');
+    log('done — ' + msg.count + ' frames', 'ok');
+    if (msg.warnings && msg.warnings.length) {
+      log('\nnotes (' + msg.warnings.length + '):');
+      msg.warnings.forEach(w => log('  · ' + w));
+    }
+    $('run').disabled = false;
+  }
+};
+</script>
+</body>
+</html>

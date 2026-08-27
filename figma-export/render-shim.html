@@ -1,0 +1,11 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>THE90 render shim</title>
+<script>
+(function () {
+  var qs = new URLSearchParams(location.search);
+  var screen = qs.get('screen') || 'main';
+  try { localStorage.setItem('the90.currentScreen', screen); } catch (e) {}
+  location.replace('/');
+})();
+</script>

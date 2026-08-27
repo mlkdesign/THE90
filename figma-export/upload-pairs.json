@@ -1,0 +1,3236 @@
+[
+  {
+    "nodeId": "788:7352",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "788:7357",
+    "asset": "assets/arena/thearena-tournament-hero.png",
+    "scaleMode": "FILL",
+    "name": "data-tournament-hero"
+  },
+  {
+    "nodeId": "I788:7468;788:7438",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "round-question-card__pitch"
+  },
+  {
+    "nodeId": "I788:7468;788:7450",
+    "asset": "assets/clubs/arsenal.png",
+    "scaleMode": "FIT",
+    "name": "round-question-card__crest"
+  },
+  {
+    "nodeId": "I788:7468;788:7454",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "round-question-card__crest"
+  },
+  {
+    "nodeId": "I788:7498;788:7438",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "round-question-card__pitch"
+  },
+  {
+    "nodeId": "I788:7498;788:7450",
+    "asset": "assets/clubs/arsenal.png",
+    "scaleMode": "FIT",
+    "name": "round-question-card__crest"
+  },
+  {
+    "nodeId": "I788:7498;788:7454",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "round-question-card__crest"
+  },
+  {
+    "nodeId": "I788:7528;788:7438",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "round-question-card__pitch"
+  },
+  {
+    "nodeId": "I788:7528;788:7450",
+    "asset": "assets/clubs/arsenal.png",
+    "scaleMode": "FIT",
+    "name": "round-question-card__crest"
+  },
+  {
+    "nodeId": "I788:7528;788:7454",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "round-question-card__crest"
+  },
+  {
+    "nodeId": "I788:7558;788:7438",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "round-question-card__pitch"
+  },
+  {
+    "nodeId": "I788:7558;788:7450",
+    "asset": "assets/clubs/arsenal.png",
+    "scaleMode": "FIT",
+    "name": "round-question-card__crest"
+  },
+  {
+    "nodeId": "I788:7558;788:7454",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "round-question-card__crest"
+  },
+  {
+    "nodeId": "I788:7588;788:7438",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "round-question-card__pitch"
+  },
+  {
+    "nodeId": "I788:7588;788:7450",
+    "asset": "assets/clubs/arsenal.png",
+    "scaleMode": "FIT",
+    "name": "round-question-card__crest"
+  },
+  {
+    "nodeId": "I788:7588;788:7454",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "round-question-card__crest"
+  },
+  {
+    "nodeId": "788:7645",
+    "asset": "assets/arena/thearena-tournament-prize.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7653",
+    "asset": "assets/rankings/podium-bg.jpg",
+    "scaleMode": "FILL",
+    "name": "rankings-hero__bg"
+  },
+  {
+    "nodeId": "788:7656",
+    "asset": "assets/invite/avatar-kai.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7665",
+    "asset": "assets/invite/avatar-zara.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7674",
+    "asset": "assets/support/banner-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7682",
+    "asset": "assets/rankings/podium-2.png",
+    "scaleMode": "FILL",
+    "name": "rankings-podium__stand"
+  },
+  {
+    "nodeId": "788:7683",
+    "asset": "assets/rankings/podium-1.png",
+    "scaleMode": "FILL",
+    "name": "rankings-podium__stand"
+  },
+  {
+    "nodeId": "788:7684",
+    "asset": "assets/rankings/podium-3.png",
+    "scaleMode": "FILL",
+    "name": "rankings-podium__stand"
+  },
+  {
+    "nodeId": "788:7690",
+    "asset": "assets/invite/profile-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7703",
+    "asset": "assets/invite/screen-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7716",
+    "asset": "assets/invite/avatar-zara.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7729",
+    "asset": "assets/invite/avatar-kai.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7742",
+    "asset": "assets/support/banner-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7755",
+    "asset": "assets/invite/profile-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7768",
+    "asset": "assets/invite/screen-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7781",
+    "asset": "assets/invite/avatar-zara.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7794",
+    "asset": "assets/invite/avatar-kai.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7807",
+    "asset": "assets/support/banner-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7820",
+    "asset": "assets/invite/profile-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7833",
+    "asset": "assets/invite/screen-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7846",
+    "asset": "assets/invite/avatar-zara.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7859",
+    "asset": "assets/invite/avatar-kai.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7872",
+    "asset": "assets/support/banner-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7885",
+    "asset": "assets/invite/profile-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7898",
+    "asset": "assets/invite/screen-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7911",
+    "asset": "assets/invite/avatar-zara.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7924",
+    "asset": "assets/invite/avatar-kai.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7937",
+    "asset": "assets/support/banner-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7950",
+    "asset": "assets/invite/profile-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7963",
+    "asset": "assets/invite/screen-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7976",
+    "asset": "assets/invite/avatar-zara.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7989",
+    "asset": "assets/invite/avatar-kai.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8002",
+    "asset": "assets/support/banner-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8015",
+    "asset": "assets/invite/profile-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8028",
+    "asset": "assets/invite/screen-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8041",
+    "asset": "assets/invite/avatar-zara.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8054",
+    "asset": "assets/invite/avatar-kai.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8067",
+    "asset": "assets/support/banner-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8080",
+    "asset": "assets/invite/profile-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8093",
+    "asset": "assets/invite/screen-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8106",
+    "asset": "assets/invite/avatar-zara.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8119",
+    "asset": "assets/invite/avatar-kai.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8132",
+    "asset": "assets/support/banner-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8145",
+    "asset": "assets/invite/profile-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8158",
+    "asset": "assets/invite/screen-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8171",
+    "asset": "assets/invite/avatar-zara.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8184",
+    "asset": "assets/invite/avatar-kai.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8197",
+    "asset": "assets/support/banner-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8210",
+    "asset": "assets/invite/profile-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8223",
+    "asset": "assets/invite/screen-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8236",
+    "asset": "assets/invite/avatar-zara.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8249",
+    "asset": "assets/invite/avatar-kai.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8262",
+    "asset": "assets/support/banner-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8275",
+    "asset": "assets/invite/profile-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8288",
+    "asset": "assets/invite/screen-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8303",
+    "asset": "assets/invite/screen-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8316",
+    "asset": "assets/my-zone/avatar.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8329",
+    "asset": "assets/invite/avatar-kai.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8369",
+    "asset": "assets/arena/thearena-prize-stadium.png",
+    "scaleMode": "FILL",
+    "name": "arena-prize__stadium"
+  },
+  {
+    "nodeId": "788:8377",
+    "asset": "assets/arena/thearena-prize-trophy.png",
+    "scaleMode": "FILL",
+    "name": "arena-prize__grand-art"
+  },
+  {
+    "nodeId": "788:8380",
+    "asset": "assets/arena/thearena-prize-macbook.png",
+    "scaleMode": "FILL",
+    "name": "arena-prize__art--macbook"
+  },
+  {
+    "nodeId": "788:8389",
+    "asset": "assets/arena/thearena-prize-iphone.png",
+    "scaleMode": "FILL",
+    "name": "arena-prize__art--iphone"
+  },
+  {
+    "nodeId": "788:8398",
+    "asset": "assets/arena/thearena-prize-merch.png",
+    "scaleMode": "FILL",
+    "name": "arena-prize__art--merch"
+  },
+  {
+    "nodeId": "788:7037",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "788:7063",
+    "asset": "assets/arena/thearena-diamond-cup.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7099",
+    "asset": "assets/arena/thearena-gold-cup.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7123",
+    "asset": "assets/arena/thearena-football.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7156",
+    "asset": "assets/arena/thearena-gold-cup.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7187",
+    "asset": "assets/arena/thearena-bronze-cup.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7213",
+    "asset": "assets/arena/thearena-football.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7245",
+    "asset": "assets/arena/thearena-how-it-works.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7250",
+    "asset": "assets/arena/thearena-how-it-works.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:7255",
+    "asset": "assets/arena/thearena-how-it-works.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:7264;788:6932",
+    "asset": "assets/arena/thearena-avatar.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:4550",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "788:10189",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "788:10204",
+    "asset": "assets/invite/screen-bg.png",
+    "scaleMode": "FILL",
+    "name": "invite-banner__bg"
+  },
+  {
+    "nodeId": "788:10217",
+    "asset": "assets/invite/screen-person.png",
+    "scaleMode": "FIT",
+    "name": "invite-banner__person"
+  },
+  {
+    "nodeId": "788:10247",
+    "asset": "assets/invite/avatar-zara.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:10259",
+    "asset": "assets/invite/avatar-kai.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:9355",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "788:9370",
+    "asset": "assets/league/chat-alex.png",
+    "scaleMode": "FILL",
+    "name": "league-chat-message__avatar"
+  },
+  {
+    "nodeId": "788:9386",
+    "asset": "assets/league/chat-alex.png",
+    "scaleMode": "FILL",
+    "name": "league-chat-message__avatar"
+  },
+  {
+    "nodeId": "788:9392",
+    "asset": "assets/league/chat-alex.png",
+    "scaleMode": "FILL",
+    "name": "league-chat-message__avatar"
+  },
+  {
+    "nodeId": "788:9402",
+    "asset": "assets/league/chat-leo.png",
+    "scaleMode": "FILL",
+    "name": "league-chat-message__avatar"
+  },
+  {
+    "nodeId": "788:9092",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "788:9163",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "788:9175",
+    "asset": "assets/invite/avatar-zara.png",
+    "scaleMode": "FILL",
+    "name": "participant__avatar"
+  },
+  {
+    "nodeId": "788:9180",
+    "asset": "assets/invite/avatar-kai.png",
+    "scaleMode": "FILL",
+    "name": "participant__avatar"
+  },
+  {
+    "nodeId": "788:9185",
+    "asset": "assets/support/banner-person.png",
+    "scaleMode": "FILL",
+    "name": "participant__avatar"
+  },
+  {
+    "nodeId": "788:9190",
+    "asset": "assets/invite/profile-person.png",
+    "scaleMode": "FILL",
+    "name": "participant__avatar"
+  },
+  {
+    "nodeId": "788:9195",
+    "asset": "assets/invite/screen-person.png",
+    "scaleMode": "FILL",
+    "name": "participant__avatar"
+  },
+  {
+    "nodeId": "788:9200",
+    "asset": "assets/invite/avatar-zara.png",
+    "scaleMode": "FILL",
+    "name": "participant__avatar"
+  },
+  {
+    "nodeId": "788:9205",
+    "asset": "assets/invite/avatar-kai.png",
+    "scaleMode": "FILL",
+    "name": "participant__avatar"
+  },
+  {
+    "nodeId": "788:9210",
+    "asset": "assets/support/banner-person.png",
+    "scaleMode": "FILL",
+    "name": "participant__avatar"
+  },
+  {
+    "nodeId": "788:9215",
+    "asset": "assets/invite/profile-person.png",
+    "scaleMode": "FILL",
+    "name": "participant__avatar"
+  },
+  {
+    "nodeId": "788:9220",
+    "asset": "assets/invite/screen-person.png",
+    "scaleMode": "FILL",
+    "name": "participant__avatar"
+  },
+  {
+    "nodeId": "788:9301",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "788:9265",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "788:8449",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "788:8454",
+    "asset": "assets/league/league-bg.png",
+    "scaleMode": "FILL",
+    "name": "league-hero__bg"
+  },
+  {
+    "nodeId": "788:8455",
+    "asset": "assets/league/league-crown.png",
+    "scaleMode": "FIT",
+    "name": "league-hero__host"
+  },
+  {
+    "nodeId": "788:8456",
+    "asset": "assets/league/league-host.png",
+    "scaleMode": "FIT",
+    "name": "league-hero__trophy"
+  },
+  {
+    "nodeId": "788:8491",
+    "asset": "assets/league/zara.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8505",
+    "asset": "assets/league/kai.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8519",
+    "asset": "assets/league/nina.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8533",
+    "asset": "assets/league/chat-alex.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8547",
+    "asset": "assets/league/chat-leo.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8561",
+    "asset": "assets/league/nina.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8575",
+    "asset": "assets/league/kai.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8589",
+    "asset": "assets/league/zara.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8603",
+    "asset": "assets/league/chat-alex.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8617",
+    "asset": "assets/league/chat-leo.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8631",
+    "asset": "assets/league/nina.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8645",
+    "asset": "assets/league/kai.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8659",
+    "asset": "assets/league/zara.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8673",
+    "asset": "assets/league/chat-alex.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8687",
+    "asset": "assets/league/your-avatar.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8701",
+    "asset": "assets/league/nina.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8715",
+    "asset": "assets/league/kai.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8729",
+    "asset": "assets/league/zara.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8743",
+    "asset": "assets/league/chat-alex.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8757",
+    "asset": "assets/league/chat-leo.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8771",
+    "asset": "assets/league/nina.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8785",
+    "asset": "assets/league/kai.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8799",
+    "asset": "assets/league/zara.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8813",
+    "asset": "assets/league/chat-alex.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8827",
+    "asset": "assets/league/chat-leo.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8841",
+    "asset": "assets/league/nina.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8855",
+    "asset": "assets/league/kai.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8869",
+    "asset": "assets/league/zara.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8883",
+    "asset": "assets/league/chat-alex.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8897",
+    "asset": "assets/league/chat-leo.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8911",
+    "asset": "assets/league/nina.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8925",
+    "asset": "assets/league/kai.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8939",
+    "asset": "assets/league/zara.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8953",
+    "asset": "assets/league/chat-alex.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8967",
+    "asset": "assets/league/chat-leo.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8981",
+    "asset": "assets/league/nina.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:8995",
+    "asset": "assets/league/kai.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:9009",
+    "asset": "assets/league/zara.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:9023",
+    "asset": "assets/league/chat-alex.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:9037",
+    "asset": "assets/league/chat-leo.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:11156",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "788:11178",
+    "asset": "assets/leagues/theleagues-bronze-trophy.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:11187",
+    "asset": "assets/leagues/theleagues-member-1.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:11188",
+    "asset": "assets/leagues/theleagues-member-2.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:11189",
+    "asset": "assets/leagues/theleagues-member-3.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:11190",
+    "asset": "assets/leagues/theleagues-member-4.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:11196",
+    "asset": "assets/leagues/theleagues-create-trophy.png",
+    "scaleMode": "FIT",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:11208;788:6932",
+    "asset": "assets/arena/thearena-avatar.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:11271",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "I788:11297;788:6838",
+    "asset": "assets/leagues/theleagues-gold-trophy.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:11308;788:6854",
+    "asset": "assets/leagues/theleagues-member-1.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:11308;788:6855",
+    "asset": "assets/leagues/theleagues-member-2.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:11308;788:6856",
+    "asset": "assets/leagues/theleagues-member-3.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:11308;788:6857",
+    "asset": "assets/leagues/theleagues-member-4.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:11320;788:6838",
+    "asset": "assets/leagues/theleagues-gold-trophy.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:11329;788:6854",
+    "asset": "assets/leagues/theleagues-member-1.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:11329;788:6855",
+    "asset": "assets/leagues/theleagues-member-2.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:11329;788:6856",
+    "asset": "assets/leagues/theleagues-member-3.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:11329;788:6857",
+    "asset": "assets/leagues/theleagues-member-4.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:11343",
+    "asset": "assets/leagues/theleagues-bronze-trophy.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:11350;788:6854",
+    "asset": "assets/leagues/theleagues-member-1.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:11350;788:6855",
+    "asset": "assets/leagues/theleagues-member-2.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:11350;788:6856",
+    "asset": "assets/leagues/theleagues-member-3.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:11350;788:6857",
+    "asset": "assets/leagues/theleagues-member-4.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:11361",
+    "asset": "assets/leagues/theleagues-create-trophy.png",
+    "scaleMode": "FIT",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:11373;788:6932",
+    "asset": "assets/arena/thearena-avatar.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:6810",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "I788:6841;788:6838",
+    "asset": "assets/leagues/theleagues-gold-trophy.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:6861;788:6854",
+    "asset": "assets/leagues/theleagues-member-1.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:6861;788:6855",
+    "asset": "assets/leagues/theleagues-member-2.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:6861;788:6856",
+    "asset": "assets/leagues/theleagues-member-3.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:6861;788:6857",
+    "asset": "assets/leagues/theleagues-member-4.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:6873;788:6838",
+    "asset": "assets/leagues/theleagues-gold-trophy.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:6882;788:6854",
+    "asset": "assets/leagues/theleagues-member-1.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:6882;788:6855",
+    "asset": "assets/leagues/theleagues-member-2.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:6882;788:6856",
+    "asset": "assets/leagues/theleagues-member-3.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:6882;788:6857",
+    "asset": "assets/leagues/theleagues-member-4.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:6896",
+    "asset": "assets/leagues/theleagues-bronze-trophy.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:6903;788:6854",
+    "asset": "assets/leagues/theleagues-member-1.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:6903;788:6855",
+    "asset": "assets/leagues/theleagues-member-2.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:6903;788:6856",
+    "asset": "assets/leagues/theleagues-member-3.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:6903;788:6857",
+    "asset": "assets/leagues/theleagues-member-4.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:6914",
+    "asset": "assets/leagues/theleagues-create-trophy.png",
+    "scaleMode": "FIT",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:6949;788:6932",
+    "asset": "assets/arena/thearena-avatar.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:9761",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "788:9781",
+    "asset": "assets/clubs/real-madrid.png",
+    "scaleMode": "FIT",
+    "name": "data-live-home-logo"
+  },
+  {
+    "nodeId": "788:9788",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "data-live-away-logo"
+  },
+  {
+    "nodeId": "788:4781",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "I788:4841;788:4796",
+    "asset": "assets/clubs/real-madrid.png",
+    "scaleMode": "FIT",
+    "name": "live__logo"
+  },
+  {
+    "nodeId": "I788:4841;788:4803",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "live__logo"
+  },
+  {
+    "nodeId": "I788:4841;788:4813",
+    "asset": "assets/clubs/arsenal.png",
+    "scaleMode": "FIT",
+    "name": "live__logo"
+  },
+  {
+    "nodeId": "I788:4841;788:4820",
+    "asset": "assets/clubs/chelsea.png",
+    "scaleMode": "FIT",
+    "name": "live__logo"
+  },
+  {
+    "nodeId": "I788:4841;788:4830",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "live__logo"
+  },
+  {
+    "nodeId": "I788:4841;788:4837",
+    "asset": "assets/clubs/dortmund.png",
+    "scaleMode": "FIT",
+    "name": "live__logo"
+  },
+  {
+    "nodeId": "788:4909",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "I788:4934;788:4931",
+    "asset": "assets/clubs/arsenal.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:4942;788:4939",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:5111",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "I788:5128;788:5125",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:5136;788:5133",
+    "asset": "assets/clubs/dortmund.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:5228",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "I788:5241;788:4939",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:5245;788:5133",
+    "asset": "assets/clubs/dortmund.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:5337",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "I788:5354;788:5351",
+    "asset": "assets/clubs/chelsea.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:5362;788:5359",
+    "asset": "assets/clubs/liverpool.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:5454",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "I788:5467;788:5351",
+    "asset": "assets/clubs/chelsea.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:5471;788:5125",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:5563",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "I788:5576;788:4939",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:5580;788:5125",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:5672",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "788:5686",
+    "asset": "assets/clubs/real-madrid.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:5693;788:5690",
+    "asset": "assets/clubs/man-united.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:5785",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "I788:5798;788:5359",
+    "asset": "assets/clubs/liverpool.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:5802;788:4939",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:5894",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "I788:5907;788:5690",
+    "asset": "assets/clubs/man-united.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:5911;788:4931",
+    "asset": "assets/clubs/arsenal.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:6003",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "I788:6016;788:5690",
+    "asset": "assets/clubs/man-united.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:6020;788:5133",
+    "asset": "assets/clubs/dortmund.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:6120",
+    "asset": "assets/img/ad-model.png",
+    "scaleMode": "FILL",
+    "name": "ad__model"
+  },
+  {
+    "nodeId": "788:6127",
+    "asset": "assets/img/ad-model.png",
+    "scaleMode": "FILL",
+    "name": "ad__model"
+  },
+  {
+    "nodeId": "788:6134",
+    "asset": "assets/img/ad-model.png",
+    "scaleMode": "FILL",
+    "name": "ad__model"
+  },
+  {
+    "nodeId": "I788:6179;788:6176",
+    "asset": "assets/clubs/arsenal.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:6187;788:6184",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:6198;788:6195",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:6206;788:6203",
+    "asset": "assets/clubs/dortmund.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:6213;788:6184",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:6217;788:6203",
+    "asset": "assets/clubs/dortmund.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:6228;788:6225",
+    "asset": "assets/clubs/chelsea.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:6236;788:6233",
+    "asset": "assets/clubs/liverpool.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:6243;788:6225",
+    "asset": "assets/clubs/chelsea.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:6247;788:6195",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:6254;788:6184",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:6258;788:6195",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "788:6266",
+    "asset": "assets/clubs/real-madrid.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:6273;788:6270",
+    "asset": "assets/clubs/man-united.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:6280;788:6233",
+    "asset": "assets/clubs/liverpool.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:6284;788:6184",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:6291;788:6270",
+    "asset": "assets/clubs/man-united.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:6295;788:6176",
+    "asset": "assets/clubs/arsenal.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:6302;788:6270",
+    "asset": "assets/clubs/man-united.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:6306;788:6203",
+    "asset": "assets/clubs/dortmund.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "788:6313",
+    "asset": "assets/img/welcome-goal.jpg",
+    "scaleMode": "FILL",
+    "name": "newscard__art"
+  },
+  {
+    "nodeId": "788:6319",
+    "asset": "assets/img/welcome-fans.jpg",
+    "scaleMode": "FILL",
+    "name": "newscard__art"
+  },
+  {
+    "nodeId": "788:6325",
+    "asset": "assets/img/welcome-match.jpg",
+    "scaleMode": "FILL",
+    "name": "newscard__art"
+  },
+  {
+    "nodeId": "788:6344",
+    "asset": "assets/my-zone/avatar.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:14358;788:11437",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "788:14398",
+    "asset": "assets/arena/thearena-diamond-cup.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:14422",
+    "asset": "assets/arena/thearena-gold-cup.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:14446",
+    "asset": "assets/arena/thearena-football.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:14479",
+    "asset": "assets/arena/thearena-gold-cup.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:14505",
+    "asset": "assets/arena/thearena-bronze-cup.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:14531",
+    "asset": "assets/arena/thearena-football.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:14563",
+    "asset": "assets/arena/thearena-how-it-works.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:14568",
+    "asset": "assets/arena/thearena-how-it-works.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:14573",
+    "asset": "assets/arena/thearena-how-it-works.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:14582;788:6932",
+    "asset": "assets/arena/thearena-avatar.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:14632",
+    "asset": "assets/arena/thearena-tournament-hero.png",
+    "scaleMode": "FILL",
+    "name": "data-arena-join-cover"
+  },
+  {
+    "nodeId": "I788:14676;788:11437",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "788:14716",
+    "asset": "assets/arena/thearena-diamond-cup.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:14740",
+    "asset": "assets/arena/thearena-gold-cup.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:14764",
+    "asset": "assets/arena/thearena-football.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:14797",
+    "asset": "assets/arena/thearena-gold-cup.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:14823",
+    "asset": "assets/arena/thearena-bronze-cup.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:14849",
+    "asset": "assets/arena/thearena-football.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:14881",
+    "asset": "assets/arena/thearena-how-it-works.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:14886",
+    "asset": "assets/arena/thearena-how-it-works.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:14891",
+    "asset": "assets/arena/thearena-how-it-works.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:14900;788:6932",
+    "asset": "assets/arena/thearena-avatar.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:14950",
+    "asset": "assets/arena/thearena-tournament-hero.png",
+    "scaleMode": "FILL",
+    "name": "data-arena-join-cover"
+  },
+  {
+    "nodeId": "I788:11440;788:11437",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "I788:11475;788:4796",
+    "asset": "assets/clubs/real-madrid.png",
+    "scaleMode": "FIT",
+    "name": "live__logo"
+  },
+  {
+    "nodeId": "I788:11475;788:4803",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "live__logo"
+  },
+  {
+    "nodeId": "I788:11475;788:4813",
+    "asset": "assets/clubs/arsenal.png",
+    "scaleMode": "FIT",
+    "name": "live__logo"
+  },
+  {
+    "nodeId": "I788:11475;788:4820",
+    "asset": "assets/clubs/chelsea.png",
+    "scaleMode": "FIT",
+    "name": "live__logo"
+  },
+  {
+    "nodeId": "I788:11475;788:4830",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "live__logo"
+  },
+  {
+    "nodeId": "I788:11475;788:4837",
+    "asset": "assets/clubs/dortmund.png",
+    "scaleMode": "FIT",
+    "name": "live__logo"
+  },
+  {
+    "nodeId": "788:11543",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "I788:11556;788:4931",
+    "asset": "assets/clubs/arsenal.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:11560;788:4939",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:11652",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "I788:11665;788:5125",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:11669;788:5133",
+    "asset": "assets/clubs/dortmund.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:11761",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "I788:11774;788:4939",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:11778;788:5133",
+    "asset": "assets/clubs/dortmund.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:11870",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "I788:11883;788:5351",
+    "asset": "assets/clubs/chelsea.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:11887;788:5359",
+    "asset": "assets/clubs/liverpool.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:11979",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "I788:11992;788:5351",
+    "asset": "assets/clubs/chelsea.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:11996;788:5125",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:12088",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "I788:12101;788:4939",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:12105;788:5125",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:12197",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "788:12211",
+    "asset": "assets/clubs/real-madrid.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:12214;788:5690",
+    "asset": "assets/clubs/man-united.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:12306",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "I788:12319;788:5359",
+    "asset": "assets/clubs/liverpool.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:12323;788:4939",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:12415",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "I788:12428;788:5690",
+    "asset": "assets/clubs/man-united.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:12432;788:4931",
+    "asset": "assets/clubs/arsenal.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:12524",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "I788:12537;788:5690",
+    "asset": "assets/clubs/man-united.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:12541;788:5133",
+    "asset": "assets/clubs/dortmund.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:12641",
+    "asset": "assets/img/ad-model.png",
+    "scaleMode": "FILL",
+    "name": "ad__model"
+  },
+  {
+    "nodeId": "788:12648",
+    "asset": "assets/img/ad-model.png",
+    "scaleMode": "FILL",
+    "name": "ad__model"
+  },
+  {
+    "nodeId": "788:12655",
+    "asset": "assets/img/ad-model.png",
+    "scaleMode": "FILL",
+    "name": "ad__model"
+  },
+  {
+    "nodeId": "I788:12696;788:6176",
+    "asset": "assets/clubs/arsenal.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:12700;788:6184",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:12707;788:6195",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:12711;788:6203",
+    "asset": "assets/clubs/dortmund.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:12718;788:6184",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:12722;788:6203",
+    "asset": "assets/clubs/dortmund.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:12729;788:6225",
+    "asset": "assets/clubs/chelsea.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:12733;788:6233",
+    "asset": "assets/clubs/liverpool.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:12740;788:6225",
+    "asset": "assets/clubs/chelsea.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:12744;788:6195",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:12751;788:6184",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:12755;788:6195",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "788:12763",
+    "asset": "assets/clubs/real-madrid.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:12766;788:6270",
+    "asset": "assets/clubs/man-united.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:12773;788:6233",
+    "asset": "assets/clubs/liverpool.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:12777;788:6184",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:12784;788:6270",
+    "asset": "assets/clubs/man-united.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:12788;788:6176",
+    "asset": "assets/clubs/arsenal.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:12795;788:6270",
+    "asset": "assets/clubs/man-united.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:12799;788:6203",
+    "asset": "assets/clubs/dortmund.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "788:12806",
+    "asset": "assets/img/welcome-goal.jpg",
+    "scaleMode": "FILL",
+    "name": "newscard__art"
+  },
+  {
+    "nodeId": "788:12812",
+    "asset": "assets/img/welcome-fans.jpg",
+    "scaleMode": "FILL",
+    "name": "newscard__art"
+  },
+  {
+    "nodeId": "788:12818",
+    "asset": "assets/img/welcome-match.jpg",
+    "scaleMode": "FILL",
+    "name": "newscard__art"
+  },
+  {
+    "nodeId": "788:12837",
+    "asset": "assets/my-zone/avatar.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:12920;788:11437",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "I788:12941;788:4796",
+    "asset": "assets/clubs/real-madrid.png",
+    "scaleMode": "FIT",
+    "name": "live__logo"
+  },
+  {
+    "nodeId": "I788:12941;788:4803",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "live__logo"
+  },
+  {
+    "nodeId": "I788:12941;788:4813",
+    "asset": "assets/clubs/arsenal.png",
+    "scaleMode": "FIT",
+    "name": "live__logo"
+  },
+  {
+    "nodeId": "I788:12941;788:4820",
+    "asset": "assets/clubs/chelsea.png",
+    "scaleMode": "FIT",
+    "name": "live__logo"
+  },
+  {
+    "nodeId": "I788:12941;788:4830",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "live__logo"
+  },
+  {
+    "nodeId": "I788:12941;788:4837",
+    "asset": "assets/clubs/dortmund.png",
+    "scaleMode": "FIT",
+    "name": "live__logo"
+  },
+  {
+    "nodeId": "788:13009",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "I788:13022;788:4931",
+    "asset": "assets/clubs/arsenal.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:13026;788:4939",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:13118",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "I788:13131;788:5125",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:13135;788:5133",
+    "asset": "assets/clubs/dortmund.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:13227",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "I788:13240;788:4939",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:13244;788:5133",
+    "asset": "assets/clubs/dortmund.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:13336",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "I788:13349;788:5351",
+    "asset": "assets/clubs/chelsea.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:13353;788:5359",
+    "asset": "assets/clubs/liverpool.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:13445",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "I788:13458;788:5351",
+    "asset": "assets/clubs/chelsea.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:13462;788:5125",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:13554",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "I788:13567;788:4939",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:13571;788:5125",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:13663",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "788:13677",
+    "asset": "assets/clubs/real-madrid.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:13680;788:5690",
+    "asset": "assets/clubs/man-united.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:13772",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "I788:13785;788:5359",
+    "asset": "assets/clubs/liverpool.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:13789;788:4939",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:13881",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "I788:13894;788:5690",
+    "asset": "assets/clubs/man-united.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:13898;788:4931",
+    "asset": "assets/clubs/arsenal.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:13990",
+    "asset": "assets/img/match-card-background.png",
+    "scaleMode": "FILL",
+    "name": "mcard__pitch"
+  },
+  {
+    "nodeId": "I788:14003;788:5690",
+    "asset": "assets/clubs/man-united.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "I788:14007;788:5133",
+    "asset": "assets/clubs/dortmund.png",
+    "scaleMode": "FIT",
+    "name": "mcard__crest"
+  },
+  {
+    "nodeId": "788:14107",
+    "asset": "assets/img/ad-model.png",
+    "scaleMode": "FILL",
+    "name": "ad__model"
+  },
+  {
+    "nodeId": "788:14114",
+    "asset": "assets/img/ad-model.png",
+    "scaleMode": "FILL",
+    "name": "ad__model"
+  },
+  {
+    "nodeId": "788:14121",
+    "asset": "assets/img/ad-model.png",
+    "scaleMode": "FILL",
+    "name": "ad__model"
+  },
+  {
+    "nodeId": "I788:14162;788:6176",
+    "asset": "assets/clubs/arsenal.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:14166;788:6184",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:14173;788:6195",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:14177;788:6203",
+    "asset": "assets/clubs/dortmund.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:14184;788:6184",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:14188;788:6203",
+    "asset": "assets/clubs/dortmund.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:14195;788:6225",
+    "asset": "assets/clubs/chelsea.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:14199;788:6233",
+    "asset": "assets/clubs/liverpool.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:14206;788:6225",
+    "asset": "assets/clubs/chelsea.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:14210;788:6195",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:14217;788:6184",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:14221;788:6195",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "788:14229",
+    "asset": "assets/clubs/real-madrid.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:14232;788:6270",
+    "asset": "assets/clubs/man-united.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:14239;788:6233",
+    "asset": "assets/clubs/liverpool.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:14243;788:6184",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:14250;788:6270",
+    "asset": "assets/clubs/man-united.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:14254;788:6176",
+    "asset": "assets/clubs/arsenal.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:14261;788:6270",
+    "asset": "assets/clubs/man-united.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "I788:14265;788:6203",
+    "asset": "assets/clubs/dortmund.png",
+    "scaleMode": "FIT",
+    "name": "ccard__crest"
+  },
+  {
+    "nodeId": "788:14272",
+    "asset": "assets/img/welcome-goal.jpg",
+    "scaleMode": "FILL",
+    "name": "newscard__art"
+  },
+  {
+    "nodeId": "788:14278",
+    "asset": "assets/img/welcome-fans.jpg",
+    "scaleMode": "FILL",
+    "name": "newscard__art"
+  },
+  {
+    "nodeId": "788:14284",
+    "asset": "assets/img/welcome-match.jpg",
+    "scaleMode": "FILL",
+    "name": "newscard__art"
+  },
+  {
+    "nodeId": "788:14303",
+    "asset": "assets/my-zone/avatar.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:14347",
+    "asset": "assets/img/badge-top1.png",
+    "scaleMode": "FIT",
+    "name": "modal__badge"
+  },
+  {
+    "nodeId": "788:9457",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "788:9478",
+    "asset": "assets/my-zone/avatar.png",
+    "scaleMode": "FILL",
+    "name": "mz-avatar__photo"
+  },
+  {
+    "nodeId": "788:9503",
+    "asset": "assets/my-zone/level-badge.png",
+    "scaleMode": "FIT",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:9531",
+    "asset": "assets/my-zone/badge-top1.png",
+    "scaleMode": "FIT",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:9534",
+    "asset": "assets/my-zone/badge-legend.png",
+    "scaleMode": "FIT",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:9537",
+    "asset": "assets/my-zone/badge-top1.png",
+    "scaleMode": "FIT",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:9540",
+    "asset": "assets/my-zone/badge-legend.png",
+    "scaleMode": "FIT",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:9552",
+    "asset": "assets/my-zone/real-madrid.png",
+    "scaleMode": "FIT",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:9555",
+    "asset": "assets/my-zone/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:9558",
+    "asset": "assets/my-zone/arsenal.png",
+    "scaleMode": "FIT",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:9565;788:4796",
+    "asset": "assets/clubs/real-madrid.png",
+    "scaleMode": "FIT",
+    "name": "live__logo"
+  },
+  {
+    "nodeId": "I788:9565;788:4803",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "live__logo"
+  },
+  {
+    "nodeId": "I788:9565;788:4813",
+    "asset": "assets/clubs/arsenal.png",
+    "scaleMode": "FIT",
+    "name": "live__logo"
+  },
+  {
+    "nodeId": "I788:9565;788:4820",
+    "asset": "assets/clubs/chelsea.png",
+    "scaleMode": "FIT",
+    "name": "live__logo"
+  },
+  {
+    "nodeId": "I788:9565;788:4830",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "live__logo"
+  },
+  {
+    "nodeId": "I788:9565;788:4837",
+    "asset": "assets/clubs/dortmund.png",
+    "scaleMode": "FIT",
+    "name": "live__logo"
+  },
+  {
+    "nodeId": "788:9621",
+    "asset": "assets/my-zone/chelsea.png",
+    "scaleMode": "FIT",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:9623",
+    "asset": "assets/my-zone/arsenal.png",
+    "scaleMode": "FIT",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:9639",
+    "asset": "assets/my-zone/bayern.png",
+    "scaleMode": "FIT",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:9641",
+    "asset": "assets/my-zone/dortmund.png",
+    "scaleMode": "FIT",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:9659",
+    "asset": "assets/invite/profile-bg.png",
+    "scaleMode": "FILL",
+    "name": "invite-banner__bg"
+  },
+  {
+    "nodeId": "788:9672",
+    "asset": "assets/invite/profile-person.png",
+    "scaleMode": "FIT",
+    "name": "invite-banner__person"
+  },
+  {
+    "nodeId": "788:9679",
+    "asset": "assets/my-zone/theme-dark.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:9685",
+    "asset": "assets/my-zone/theme-light.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:9689",
+    "asset": "assets/my-zone/theme-premium.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:10032",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "I788:10052;788:10046",
+    "asset": "assets/notifications/achievement.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:10064;788:10046",
+    "asset": "assets/notifications/achievement.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:10099;788:10046",
+    "asset": "assets/notifications/achievement.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:10124;788:10046",
+    "asset": "assets/notifications/achievement.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:4647",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "788:4663",
+    "asset": "assets/avatars/avatar-01.jpg",
+    "scaleMode": "FILL",
+    "name": "avatar-card__photo"
+  },
+  {
+    "nodeId": "788:4665",
+    "asset": "assets/avatars/avatar-02.jpg",
+    "scaleMode": "FILL",
+    "name": "avatar-card__photo"
+  },
+  {
+    "nodeId": "788:4667",
+    "asset": "assets/avatars/avatar-03.jpg",
+    "scaleMode": "FILL",
+    "name": "avatar-card__photo"
+  },
+  {
+    "nodeId": "788:4669",
+    "asset": "assets/avatars/avatar-04.jpg",
+    "scaleMode": "FILL",
+    "name": "avatar-card__photo"
+  },
+  {
+    "nodeId": "788:4671",
+    "asset": "assets/avatars/avatar-05.jpg",
+    "scaleMode": "FILL",
+    "name": "avatar-card__photo"
+  },
+  {
+    "nodeId": "788:4673",
+    "asset": "assets/avatars/avatar-06.jpg",
+    "scaleMode": "FILL",
+    "name": "avatar-card__photo"
+  },
+  {
+    "nodeId": "788:6433",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "788:6438",
+    "asset": "assets/rankings/podium-bg.jpg",
+    "scaleMode": "FILL",
+    "name": "rankings-hero__bg"
+  },
+  {
+    "nodeId": "788:6444",
+    "asset": "assets/invite/avatar-zara.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:6453",
+    "asset": "assets/invite/avatar-kai.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:6462",
+    "asset": "assets/support/banner-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:6470",
+    "asset": "assets/rankings/podium-2.png",
+    "scaleMode": "FILL",
+    "name": "rankings-podium__stand"
+  },
+  {
+    "nodeId": "788:6471",
+    "asset": "assets/rankings/podium-1.png",
+    "scaleMode": "FILL",
+    "name": "rankings-podium__stand"
+  },
+  {
+    "nodeId": "788:6472",
+    "asset": "assets/rankings/podium-3.png",
+    "scaleMode": "FILL",
+    "name": "rankings-podium__stand"
+  },
+  {
+    "nodeId": "788:6478",
+    "asset": "assets/invite/avatar-zara.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:6491",
+    "asset": "assets/invite/avatar-kai.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:6504",
+    "asset": "assets/support/banner-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:6517",
+    "asset": "assets/invite/profile-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:6530",
+    "asset": "assets/invite/screen-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:6543",
+    "asset": "assets/invite/avatar-zara.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:6556",
+    "asset": "assets/invite/avatar-kai.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:6569",
+    "asset": "assets/support/banner-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:6582",
+    "asset": "assets/invite/profile-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:6595",
+    "asset": "assets/invite/screen-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:6608",
+    "asset": "assets/invite/avatar-zara.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:6621",
+    "asset": "assets/invite/avatar-kai.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:6634",
+    "asset": "assets/support/banner-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:6647",
+    "asset": "assets/invite/profile-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:6660",
+    "asset": "assets/invite/screen-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:6673",
+    "asset": "assets/invite/avatar-zara.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:6686",
+    "asset": "assets/invite/avatar-kai.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:6702",
+    "asset": "assets/support/banner-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:6715",
+    "asset": "assets/my-zone/avatar.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:6728",
+    "asset": "assets/invite/screen-person.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:6758",
+    "asset": "assets/my-zone/avatar.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:9913",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "788:11083",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "788:10903",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "788:11014",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "788:11028",
+    "asset": "assets/my-zone/theme-dark.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:11033",
+    "asset": "assets/my-zone/theme-light.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:11039",
+    "asset": "assets/my-zone/theme-premium.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:10650",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "I788:10763;788:10669",
+    "asset": "assets/settings/avatar.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:14994;788:11437",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "I788:15061;788:11437",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "I788:15084;788:10669",
+    "asset": "assets/settings/avatar.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:15246;788:11437",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "I788:15269;788:10669",
+    "asset": "assets/settings/avatar.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:15413;788:11437",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "I788:15436;788:10669",
+    "asset": "assets/settings/avatar.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:16166;788:11437",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "I788:16189;788:10669",
+    "asset": "assets/settings/avatar.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:15981;788:11437",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "I788:16004;788:10669",
+    "asset": "assets/settings/avatar.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "I788:15593;788:11437",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "I788:15616;788:10669",
+    "asset": "assets/settings/avatar.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:15724",
+    "asset": "assets/clubs/arsenal.png",
+    "scaleMode": "FIT",
+    "name": "club-option__logo"
+  },
+  {
+    "nodeId": "788:15727",
+    "asset": "assets/clubs/real-madrid.png",
+    "scaleMode": "FIT",
+    "name": "club-option__logo"
+  },
+  {
+    "nodeId": "788:15730",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "club-option__logo"
+  },
+  {
+    "nodeId": "788:15733",
+    "asset": "assets/clubs/man-united.png",
+    "scaleMode": "FIT",
+    "name": "club-option__logo"
+  },
+  {
+    "nodeId": "788:15736",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "club-option__logo"
+  },
+  {
+    "nodeId": "788:15739",
+    "asset": "assets/clubs/liverpool.png",
+    "scaleMode": "FIT",
+    "name": "club-option__logo"
+  },
+  {
+    "nodeId": "788:15742",
+    "asset": "assets/clubs/chelsea.png",
+    "scaleMode": "FIT",
+    "name": "club-option__logo"
+  },
+  {
+    "nodeId": "788:15745",
+    "asset": "assets/clubs/dortmund.png",
+    "scaleMode": "FIT",
+    "name": "club-option__logo"
+  },
+  {
+    "nodeId": "I788:15823;788:11437",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "I788:15846;788:10669",
+    "asset": "assets/settings/avatar.png",
+    "scaleMode": "FILL",
+    "name": "img"
+  },
+  {
+    "nodeId": "788:4468",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "788:10582",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "788:10414",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "788:10493",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "788:10311",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "788:10326",
+    "asset": "assets/support/banner-bg.png",
+    "scaleMode": "FILL",
+    "name": "support-banner__bg"
+  },
+  {
+    "nodeId": "788:10330",
+    "asset": "assets/support/banner-person.png",
+    "scaleMode": "FIT",
+    "name": "support-banner__person"
+  },
+  {
+    "nodeId": "788:4708",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  },
+  {
+    "nodeId": "788:4724",
+    "asset": "assets/clubs/arsenal.png",
+    "scaleMode": "FIT",
+    "name": "club-option__logo"
+  },
+  {
+    "nodeId": "788:4727",
+    "asset": "assets/clubs/real-madrid.png",
+    "scaleMode": "FIT",
+    "name": "club-option__logo"
+  },
+  {
+    "nodeId": "788:4730",
+    "asset": "assets/clubs/barcelona.png",
+    "scaleMode": "FIT",
+    "name": "club-option__logo"
+  },
+  {
+    "nodeId": "788:4733",
+    "asset": "assets/clubs/man-united.png",
+    "scaleMode": "FIT",
+    "name": "club-option__logo"
+  },
+  {
+    "nodeId": "788:4736",
+    "asset": "assets/clubs/bayern.png",
+    "scaleMode": "FIT",
+    "name": "club-option__logo"
+  },
+  {
+    "nodeId": "788:4739",
+    "asset": "assets/clubs/liverpool.png",
+    "scaleMode": "FIT",
+    "name": "club-option__logo"
+  },
+  {
+    "nodeId": "788:4742",
+    "asset": "assets/clubs/chelsea.png",
+    "scaleMode": "FIT",
+    "name": "club-option__logo"
+  },
+  {
+    "nodeId": "788:4745",
+    "asset": "assets/clubs/dortmund.png",
+    "scaleMode": "FIT",
+    "name": "club-option__logo"
+  },
+  {
+    "nodeId": "788:4400",
+    "asset": "assets/img/hero.jpg",
+    "scaleMode": "FILL",
+    "name": "app__bg-img · active"
+  }
+]
