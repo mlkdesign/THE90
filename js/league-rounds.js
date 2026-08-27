@@ -1215,6 +1215,17 @@
     }
   }
 
+  /* Is this fixture still in front of us? The day carries the date and the
+     match carries the clock. */
+  function ahead(day, match) {
+    var parts = (day && day.key ? day.key : '').split('-');
+    var clock = (match.kickoff || '00:00').split(':');
+    if (parts.length !== 3) return true;
+    var at = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]),
+      Number(clock[0]), Number(clock[1]));
+    return at.getTime() > Date.now();
+  }
+
   function renderFixtures() {
     if (!fixtureList || !editing) return;
     var day = days[pickedDay];
@@ -1224,6 +1235,10 @@
     (day ? day.matches : []).forEach(function (match) {
       var label = teamsOf(match).toLowerCase();
       if (term && label.indexOf(term) === -1) return;
+      /* A round is played on matches still to come. One that has already
+         kicked off would arrive with its picks closed and its own card
+         reading as completed, which is not a round anybody can play. */
+      if (!ahead(day, match)) return;
 
       var already = editing.matches.some(function (other) { return other.id === match.id; });
       var row = el('button', 'round-fixture');
@@ -1264,7 +1279,8 @@
     });
 
     if (!fragment.childNodes.length) {
-      fragment.appendChild(el('p', 'round-hint', 'No matches here — try another day or another team.'));
+      fragment.appendChild(el('p', 'round-hint',
+        'Nothing still to come here — try another day or another team.'));
     }
     fixtureList.replaceChildren(fragment);
   }

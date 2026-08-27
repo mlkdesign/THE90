@@ -40,7 +40,7 @@
     ring.style.strokeDashoffset = (circumference * (1 - done)).toFixed(2);
     block.setAttribute('aria-label',
       'Round ' + ROUND + ' of ' + ROUNDS + ', starts in ' + clock.textContent +
-      '. Opens the daily picks.');
+      '. Opens the daily challenges.');
   }
 
   paint();

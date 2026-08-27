@@ -616,7 +616,7 @@
     }, { passive: true });
   }
 
-  /* The round closes the way Daily picks does: one more card at the end of
+  /* The round closes the way Daily challenges does: one more card at the end of
      the rail carrying the tick, with nothing else on it. */
   function makeRoundDoneCard(tournament) {
     var card = document.createElement('article');

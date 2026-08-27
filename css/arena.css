@@ -825,7 +825,7 @@
   transition: border-color .3s ease, box-shadow .3s ease;
 }
 /* the last card in the rail once every question is answered: no surface,
-   no border, just the tick and the total — the Daily picks ending */
+   no border, just the tick and the total — the Daily challenges ending */
 .round-question-card--done {
   border-color: transparent;
   background: none;

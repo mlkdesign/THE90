@@ -360,7 +360,7 @@
   line-height: 18px;
 }
 /* =========================================================
-   Daily picks — Figma › Main – Full Scroll › Picks-bar + match-card
+   Daily challenges — Figma › Main – Full Scroll › Picks-bar + match-card
    ========================================================= */
 
 .picksbar {
@@ -369,7 +369,7 @@
   gap: 4px;
   padding: 0 8px;
 }
-/* The main stack uses a 16px rhythm; the handoff from Live into Daily picks
+/* The main stack uses a 16px rhythm; the handoff from Live into Daily challenges
    is intentionally tighter in the reference. */
 .livewrap + .picksbar { margin-top: -8px; }
 .picksbar__row {
@@ -1327,7 +1327,7 @@
 }
 
 /* =========================================================
-   Daily picks — points guide
+   Daily challenges — points guide
    ========================================================= */
 
 .points-modal {

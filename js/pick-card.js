@@ -369,7 +369,7 @@
 
 
   /* =======================================================
-     Deadline label, shared by every "Daily picks" header
+     Deadline label, shared by every "Daily challenges" header
      ======================================================= */
 
   function pad(n) { return (n < 10 ? '0' : '') + n; }

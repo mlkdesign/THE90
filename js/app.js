@@ -527,7 +527,7 @@
       },
       {
         title: 'Pick. Play.<br>Win.',
-        subtitle: 'Build your daily picks and turn your football knowledge into points.'
+        subtitle: 'Build your daily challenges and turn your football knowledge into points.'
       },
       {
         title: 'Your Game.<br>Your Zone.',

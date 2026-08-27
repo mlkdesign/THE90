@@ -30,7 +30,7 @@
     { type: 'ranking', title: 'Ranking change', message: 'You moved up to #38 in Global Rankings' },
     { type: 'info', title: 'New challenge', message: 'The Weekend Prediction Challenge is now live.' },
     { type: 'achievement', title: 'Match result', message: 'Your team won the Arena battle! +150 coins' },
-    { type: 'info', title: 'Daily picks ready', message: 'Fresh matches are waiting for your predictions.' }
+    { type: 'info', title: 'Daily challenges ready', message: 'Fresh matches are waiting for your predictions.' }
   ];
 
   function cloneInitial() {
