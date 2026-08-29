@@ -183,19 +183,13 @@
   font-size: 12px;
   line-height: 15px;
 }
-/* the whole story, folded away under the one-liner until it is asked for */
-.league-more {
-  width: 302px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  text-align: left;
-}
-.league-more p {
-  width: 100%;
-  color: rgba(247, 250, 248, .75);
-  font-size: 12px;
-  line-height: 18px;
+/* Two lines of it, until it is asked for — the rest is the same text, in the
+   same place, in the same colour. */
+.league-summary p.is-clamped {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 .league-showmore {
   padding: 0;

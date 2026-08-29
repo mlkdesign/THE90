@@ -501,18 +501,49 @@
 
 
   /* =======================================================
-     The long version of what this league is
+     What this league is
+
+     One description — the one it was made with — shown two
+     lines at a time. Show more lets the rest of the same
+     sentence out; it is not a second block in a second style.
      ======================================================= */
 
+  var summaryTitle = document.querySelector('[data-league-title]');
+  var summaryBlurb = document.querySelector('[data-league-blurb]');
   var moreButton = document.querySelector('[data-league-showmore]');
-  var moreCopy = document.querySelector('[data-league-more]');
+  var demoTitle = summaryTitle ? summaryTitle.textContent : '';
+  var demoBlurb = summaryBlurb ? summaryBlurb.textContent : '';
 
-  if (moreButton && moreCopy) {
+  function collapse() {
+    if (!summaryBlurb || !moreButton) return;
+    summaryBlurb.classList.add('is-clamped');
+    moreButton.textContent = 'Show more';
+    moreButton.setAttribute('aria-expanded', 'false');
+    // nothing to open if the whole thing already fits in its two lines
+    moreButton.hidden = summaryBlurb.scrollHeight <= summaryBlurb.clientHeight + 1;
+  }
+
+  function dressSummary(league) {
+    if (summaryTitle) summaryTitle.textContent = (league && league.name) || demoTitle;
+    if (summaryBlurb) summaryBlurb.textContent = (league && league.description) || demoBlurb;
+    collapse();
+  }
+
+  if (moreButton && summaryBlurb) {
     moreButton.addEventListener('click', function () {
-      var open = moreCopy.hidden;
-      moreCopy.hidden = !open;
-      moreButton.textContent = open ? 'Show less' : 'Show more';
-      moreButton.setAttribute('aria-expanded', open ? 'true' : 'false');
+      var opening = summaryBlurb.classList.contains('is-clamped');
+      summaryBlurb.classList.toggle('is-clamped', !opening);
+      moreButton.textContent = opening ? 'Show less' : 'Show more';
+      moreButton.setAttribute('aria-expanded', opening ? 'true' : 'false');
     });
   }
+
+  document.addEventListener('the90:league-membership', function (event) {
+    dressSummary((event.detail || {}).league);
+  });
+  window.addEventListener('the90:screen', function (event) {
+    // the measuring only means anything once the screen is on
+    if (event.detail === 'league') collapse();
+  });
+  collapse();
 })();
