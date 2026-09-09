@@ -837,91 +837,6 @@
 .scorepad.is-set .drum { border-color: rgba(255, 255, 255, .1); }
 
 /* =========================================================
-   Calendar day list — Figma › Card (678:5663)
-
-   The fixture on a pitch-green wash that runs off into the dark
-   towards the top right, kickoff hanging from the top edge on a
-   red tab, crests either side of VS.
-   ========================================================= */
-
-.ccard {
-  position: relative;
-  width: 100%;
-  height: 100px;
-  display: flex;
-  align-items: center;
-  border-radius: 24px;
-  background: linear-gradient(180deg, rgba(36, 255, 0, 0.00) 0%, rgba(36, 255, 0, 0.10) 100%), #1A1A1A;
-  overflow: hidden;
-  /* An outline rather than a border: the frame draws its stroke inside, so a
-     border would push everything inside it down by its own width. */
-  outline: 1px solid rgba(255, 255, 255, .1);
-  outline-offset: -1px;
-}
-
-/* hangs from the top edge, so only the bottom corners are rounded */
-.ccard__when {
-  position: absolute;
-  z-index: 2;
-  top: 0;
-  left: 50%;
-  padding: 6px 12px;
-  transform: translateX(-50%);
-  border-radius: 0 0 12px 12px;
-  background: #ef2c2c;
-  color: var(--text-primary);
-  font-size: 10px;
-  font-weight: 400;
-  line-height: 18px;
-  white-space: nowrap;
-}
-
-.ccard__row {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* the row rides 4px below centre, leaving the tab its room */
-  transform: translateY(4px);
-}
-.ccard__side {
-  flex: 1 0 0;
-  min-width: 1px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-/* drop-shadow rather than box-shadow: the glow has to follow the crest, not
-   the rectangle it is delivered in */
-.ccard__crest {
-  height: 40px;
-  max-width: 127px;
-  object-fit: contain;
-  filter: drop-shadow(0 0 15px rgba(36, 255, 0, .7));
-}
-.ccard__side b {
-  color: #fff;
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 16px;
-  white-space: nowrap;
-}
-.ccard__vs {
-  width: 23px;
-  flex: none;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 20px;
-  text-align: center;
-}
-
-
-/* =========================================================
    Sponsored AD
    ========================================================= */
 
@@ -1033,7 +948,8 @@
   overflow-x: auto;
   scrollbar-width: none;
   margin: 0 -16px;
-  padding: 0 16px 2px;
+  background: var(--bg-primary);
+  padding: 6px 16px 8px;
   flex: none;
 }
 .daterow::-webkit-scrollbar { width: 0; height: 0; }
@@ -1065,7 +981,6 @@
 .datecell.is-today .datecell__w { color: var(--brand-primary); }
 .datecell.is-past { opacity: .55; }
 
-.daylist { display: flex; flex-direction: column; gap: 8px; }
 
 /* =========================================================
    News — the last block on Main

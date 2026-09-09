@@ -23,7 +23,7 @@
   var today      = calendar.filter(function (d) { return d.isToday; })[0];
   var selectedDay = today;
 
-  var matches    = today.matches;                    // the 10 daily picks
+  var matches    = today.picks;                    // the 10 daily picks
   var picks      = {};                               // matchId -> { outcome, score, derived }
   var accepted   = false;                            // the whole slip has been confirmed
   var currentBalance = BASE_BALANCE;
@@ -241,6 +241,7 @@
 
     updateCta();
     applyWinbar();
+    if (fixtures) renderFixtures();
   }
 
   /* Keep the confirmation control available after the first selection. The
@@ -408,9 +409,10 @@
      ======================================================= */
 
   var dateRow = $('[data-daterow]');
-  var dayList = $('[data-daylist]');
+  var fixtures = $('[data-fixtures]');
+  var expandedGroups = {};
 
-  function renderCalendar() {
+  function renderDateRow() {
     dateRow.innerHTML = '';
 
     calendar.forEach(function (d) {
@@ -425,6 +427,7 @@
       cell.classList.toggle('is-today', d.isToday);
       cell.classList.toggle('is-past', d.isPast);
       cell.addEventListener('click', function () {
+        if (selectedDay.key !== d.key) expandedGroups = {};
         selectedDay = d;
         renderCalendar();
       });
@@ -440,31 +443,133 @@
       });
     }
 
-    // Figma › match-card (678:5469): the fixture standing on a pitch, kickoff
-    // over the halfway line, a crest and a name on either side of it.
-    function side(slug) {
-      return '<span class="ccard__side">' +
-        '<img class="ccard__crest" src="' + T.logo(slug) + '" alt="">' +
-        '<b>' + T.club(slug).name + '</b>' +
-      '</span>';
-    }
-
-    var when = selectedDay.date + ' ' + selectedDay.monthLong;
-
-    dayList.innerHTML = '';
-    selectedDay.matches.forEach(function (m) {
-      dayList.appendChild(el(
-        '<article class="ccard">' +
-          '<span class="ccard__when">' + when + ' • ' + m.kickoff + '</span>' +
-          '<span class="ccard__row">' +
-            side(m.home) +
-            '<span class="ccard__vs">VS</span>' +
-            side(m.away) +
-          '</span>' +
-        '</article>'
-      ));
-    });
   }
+
+  function renderCalendar() {
+    renderDateRow();
+    renderFixtures();
+  }
+
+  function fixtureOrder(a, b) {
+    var rank = { live: 0, upcoming: 1, finished: 2 };
+    return rank[a.status] - rank[b.status] || a.kickoff.localeCompare(b.kickoff) || a.id.localeCompare(b.id);
+  }
+
+  function star(type, id, name, on) {
+    return '<button class="fxstar' + (on ? ' is-on' : '') + '" type="button" data-follow-' + type + '="' + id +
+      '" aria-pressed="' + on + '" aria-label="' + (on ? 'Unfollow ' : 'Follow ') + name + '">' +
+      '<img src="assets/icons/star' + (on ? '-fill' : '') + '.svg" alt="" width="20" height="20"></button>';
+  }
+
+  function fixtureRow(m) {
+    var name = T.club(m.home).name + ' versus ' + T.club(m.away).name;
+    var action = '', state = '', label = name;
+    if (m.status === 'live') {
+      action = ' data-go="live-match" data-live-id="' + m.id + '"';
+      label += ', live, ' + m.score.home + ' to ' + m.score.away + ', ' + m.minute + ' minutes. Open the match';
+      state = '<b class="fxrow__score">' + m.score.home + ' – ' + m.score.away + '</b>' +
+        '<span class="fxrow__minute"><i class="fxrow__dot"></i>' + m.minute + '’</span>';
+    } else if (m.status === 'finished') {
+      state = '<b class="fxrow__score">' + m.score.home + ' – ' + m.score.away + '</b><small class="fxrow__ft">FT</small>';
+    } else {
+      state = '<b class="fxrow__time">' + m.kickoff + '</b>';
+      var pick = picks[m.id];
+      if (pick && hasPick(pick)) state += '<small class="fxrow__pick">' + pick.score.home + ' – ' + pick.score.away + '</small>';
+      if (selectedDay.isToday) {
+        action = ' data-open-pick="' + m.id + '"';
+        label += ', ' + m.kickoff + '. Open your pick';
+      }
+    }
+    function team(slug) {
+      return '<span class="fxrow__team"><img class="fxrow__crest" src="' + T.logo(slug) + '" alt="">' +
+        '<span class="fxrow__name">' + T.club(slug).name + '</span></span>';
+    }
+    return '<div class="fxrow fxrow--' + m.status + '" data-match-id="' + m.id + '"' + action +
+      (action ? ' role="button" tabindex="0" aria-label="' + label + '"' : '') + '>' +
+      '<span class="fxrow__teams">' + team(m.home) + team(m.away) + '</span><span class="fxrow__state">' + state + '</span>' +
+      star('match', m.id, name, T.follows.isMatch(m.id)) + '</div>';
+  }
+
+  function fixtureGroup(id, list, section) {
+    var comp = T.competition(id), key = section + '-' + id;
+    var expanded = !!expandedGroups[key];
+    // Logos have not been supplied yet; render the specified fallback without a failing request.
+    return '<article class="fxgroup" data-competition="' + id + '"><header class="fxgroup__head">' +
+      '<span class="fxgroup__logo fxgroup__logo--mono">' + comp.short + '</span>' +
+      '<span class="fxgroup__copy"><b class="fxgroup__name">' + comp.name + '</b>' +
+      '<small class="fxgroup__round">Matchday ' + list[0].matchday + '</small></span>' +
+      star('competition', id, comp.name, T.follows.isCompetition(id)) + '</header>' +
+      (expanded ? list : list.slice(0, 3)).map(fixtureRow).join('') +
+      (list.length > 3 ? '<button class="fxgroup__more" type="button" data-group-more="' + key + '" aria-expanded="' + expanded + '">' +
+        (expanded ? 'Show less' : 'Show all (' + list.length + ')') +
+        '<img src="assets/icons/chevron-right.svg" alt="" width="14" height="14"></button>' : '') + '</article>';
+  }
+
+  function fixtureSection(title, content, subtitle, icon) {
+    return '<section class="fxsec"><div class="fxsec__head' + (subtitle ? ' fxsec__head--stacked' : '') + '">' +
+      (icon ? '<img class="fxsec__icon" src="assets/icons/star-fill.svg" alt="" width="16" height="16">' : '') +
+      '<span class="fxsec__title">' + title + '</span>' + (subtitle ? '<small class="fxsec__sub">' + subtitle + '</small>' : '') +
+      '</div>' + content + '</section>';
+  }
+
+  function renderFixtures() {
+    if (!fixtures) return;
+    var list = selectedDay.matches.slice().sort(fixtureOrder), groups = {}, html = '';
+    var followed = list.filter(function (m) {
+      return T.follows.isMatch(m.id) || T.follows.isClub(m.home) || T.follows.isClub(m.away);
+    });
+    if (followed.length) html += fixtureSection('Followed Matches', '<article class="fxgroup fxgroup--flat">' + followed.map(fixtureRow).join('') + '</article>', '', true);
+    list.forEach(function (m) { (groups[m.competition] || (groups[m.competition] = [])).push(m); });
+    var ids = Object.keys(groups).sort(function (a, b) { return T.competition(a).order - T.competition(b).order; });
+    var following = ids.filter(function (id) { return T.follows.isCompetition(id); });
+    var others = ids.filter(function (id) { return !T.follows.isCompetition(id); });
+    if (following.length) html += fixtureSection('Followed Competitions', following.map(function (id) { return fixtureGroup(id, groups[id], 'followed'); }).join(''));
+    if (others.length) html += fixtureSection('All Matches', others.map(function (id) { return fixtureGroup(id, groups[id], 'all'); }).join(''), following.length ? "Competitions you don't follow" : '');
+    if (!list.length) html = '<div class="fxempty"><b>No matches on this day</b><small>Pick another date to see the fixtures</small></div>';
+    var content = document.createElement('div');
+    content.innerHTML = html;
+    var fragment = document.createDocumentFragment();
+    while (content.firstChild) fragment.appendChild(content.firstChild);
+    fixtures.replaceChildren(fragment);
+  }
+
+  fixtures.addEventListener('click', function (event) {
+    var matchStar = event.target.closest('[data-follow-match]');
+    var compStar = event.target.closest('[data-follow-competition]');
+    var more = event.target.closest('[data-group-more]');
+    if (matchStar || compStar || more) {
+      event.stopPropagation();
+      var control = matchStar || compStar || more;
+      var attribute = matchStar ? 'data-follow-match' : compStar ? 'data-follow-competition' : 'data-group-more';
+      var value = control.getAttribute(attribute);
+      var section = control.closest('.fxsec').querySelector('.fxsec__title').textContent;
+      if (matchStar) T.follows.toggleMatch(value);
+      else if (compStar) T.follows.toggleCompetition(value);
+      else { expandedGroups[value] = !expandedGroups[value]; renderFixtures(); }
+      var candidates = $$('[' + attribute + ']', fixtures).filter(function (node) { return node.getAttribute(attribute) === value; });
+      var target = candidates.filter(function (node) { return node.closest('.fxsec').querySelector('.fxsec__title').textContent === section; })[0] || candidates[0];
+      if (target) target.focus({ preventScroll: true });
+      return;
+    }
+    var pick = event.target.closest('[data-open-pick]');
+    if (pick) document.dispatchEvent(new CustomEvent('the90:open-pick', { detail: { id: pick.getAttribute('data-open-pick') } }));
+  });
+  fixtures.addEventListener('keydown', function (event) {
+    if (event.target.matches('.fxrow[role="button"]') && (event.key === 'Enter' || event.key === ' ')) {
+      event.preventDefault();
+      event.target.click();
+    }
+  });
+  document.addEventListener('the90:follows', renderCalendar);
+  document.addEventListener('the90:open-pick', function (event) {
+    var id = event.detail && event.detail.id;
+    var index = matches.map(function (m) { return m.id; }).indexOf(id);
+    if (index < 0) return;
+    slideTo(index);
+    var scroller = $('.mainscroll', screen);
+    var topbarHeight = parseFloat(getComputedStyle(screen).getPropertyValue('--topbar-h')) || 126;
+    scroller.scrollTo({ top: scroller.scrollTop + picksWrap.getBoundingClientRect().top - scroller.getBoundingClientRect().top - topbarHeight - 16, behavior: stillness.matches ? 'auto' : 'smooth' });
+  });
 
 
   /* =======================================================
