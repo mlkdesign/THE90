@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>THE90 — Free football prediction game</title>
+<meta name="description" content="Call the results of real matches, lock your slip before kick-off and climb the global table. No stakes, no deposits — just football and bragging rights.">
+<meta property="og:title" content="THE90 — Free football prediction game">
+<meta property="og:description" content="Ten picks a day. One shot at the top.">
+<meta property="og:type" content="website">
+
+<link rel="icon" href="assets/icons/logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/landing.css">
+</head>
+<body>
+<a class="skip" href="#main" data-i18n="skip">Skip to content</a>
+
+<!-- ============================ HEADER ============================ -->
+<header class="hdr" data-hdr>
+  <div class="shell hdr__in">
+    <a class="hdr__logo" href="#top" aria-label="THE90">
+      <img src="assets/icons/logo.svg" alt="THE90" width="108" height="25">
+    </a>
+
+    <nav class="nav" aria-label="Main">
+      <a href="#how"      data-i18n="nav.how">How it works</a>
+      <a href="#features" data-i18n="nav.features">Features</a>
+      <a href="#scoring"  data-i18n="nav.scoring">Scoring</a>
+      <a href="#leagues"  data-i18n="nav.leagues">Leagues</a>
+      <a href="#faq"      data-i18n="nav.faq">FAQ</a>
+    </nav>
+
+    <span class="hdr__spacer"></span>
+
+    <div class="hdr__right">
+      <div class="lang" data-lang>
+        <button class="lang__btn" type="button" aria-haspopup="listbox" aria-expanded="false" data-lang-toggle>
+          <img class="lang__globe" src="assets/icons/globe.svg" alt="" width="15" height="15">
+          <span data-lang-current>EN</span>
+          <img class="lang__caret" src="assets/icons/caret.svg" alt="" width="9" height="6">
+        </button>
+        <ul class="lang__menu" role="listbox" data-lang-menu hidden></ul>
+      </div>
+      <a class="btn btn--primary btn--sm" href="#cta" data-i18n="nav.play">Play free</a>
+
+      <button class="burger" type="button" aria-label="Menu" aria-expanded="false"
+              aria-controls="m-nav" data-burger>
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- mobile drawer -->
+  <nav class="mnav" id="m-nav" aria-label="Mobile" data-mnav hidden>
+    <a href="#how"      data-i18n="nav.how">How it works</a>
+    <a href="#features" data-i18n="nav.features">Features</a>
+    <a href="#scoring"  data-i18n="nav.scoring">Scoring</a>
+    <a href="#leagues"  data-i18n="nav.leagues">Leagues</a>
+    <a href="#faq"      data-i18n="nav.faq">FAQ</a>
+    <a class="btn btn--primary mnav__cta" href="#cta" data-i18n="nav.play">Play free</a>
+  </nav>
+</header>
+
+<main id="main">
+
+  <!-- ============================ HERO ============================ -->
+  <section class="hero" id="top">
+    <img class="hero__bg" src="assets/img/hero-bg.jpg" alt="" width="1672" height="941">
+    <span class="glow glow--hero" aria-hidden="true"></span>
+    <span class="hero__fade hero__fade--top" aria-hidden="true"></span>
+    <span class="hero__fade hero__fade--bottom" aria-hidden="true"></span>
+
+    <div class="hero__in">
+      <div class="hero__copy">
+        <h1 class="hero__title">
+          <span class="line" data-i18n="hero.t1">Ten picks a day.</span>
+          <span class="line" data-i18n="hero.t2">One shot at the top.</span>
+        </h1>
+        <p class="hero__sub line" data-i18n="hero.sub">Call the results of real matches, lock your slip before kick-off and climb the global table. No stakes, no deposits — just football and bragging rights.</p>
+
+        <div class="hero__actions line">
+          <a class="btn btn--primary" href="#cta" data-i18n="hero.cta1">Start playing free</a>
+          <a class="btn btn--ghost" href="#how" data-i18n="hero.cta2">See how it works</a>
+        </div>
+
+        <ul class="stats line">
+          <li class="stat"><b data-count="128000" data-suffix="">128,000</b><span data-i18n="hero.s1">active predictors</span></li>
+          <li class="stat"><b data-count="2.4" data-suffix="M">2.4M</b><span data-i18n="hero.s2">picks submitted</span></li>
+          <li class="stat"><b data-count="12" data-suffix="">12</b><span data-i18n="hero.s3">leagues covered</span></li>
+        </ul>
+      </div>
+
+      <div class="hero__art" data-tilt>
+        <img class="hero__phones" src="assets/img/hero-phones.png" alt="THE90 app screens" width="1400" height="1374">
+        <div class="chip">
+          <span class="chip__k" data-i18n="hero.chip">Exact score</span>
+          <span class="chip__v">+40</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- clubs -->
+    <div class="clubs">
+      <p class="clubs__label" data-i18n="clubs.label">Covering the clubs you actually watch</p>
+      <div class="clubs__viewport">
+        <div class="clubs__track" data-clubs></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ HOW IT WORKS ============================ -->
+  <section class="sec how" id="how">
+    <header class="sec-head">
+      <h2 class="sec-title" data-i18n="how.title">Three minutes a day. That’s the whole game.</h2>
+      <p class="sec-sub" data-i18n="how.sub">Every morning you get ten fixtures. Call them, confirm the slip, then watch the table move as the results land.</p>
+    </header>
+
+    <div class="shell steps">
+      <article class="step" data-reveal>
+        <span class="step__art"><img src="assets/img/step-1.png" alt="" width="760" height="760"></span>
+        <span class="glow glow--step" aria-hidden="true"></span>
+        <h3 class="step__t" data-i18n="how.s1t">Make your ten picks</h3>
+        <p class="step__d" data-i18n="how.s1d">Pick a winner, add an exact score if you’re feeling brave, and answer “both teams to score”. The score fills the rest in for you.</p>
+      </article>
+      <article class="step" data-reveal>
+        <span class="step__art step__art--2"><img src="assets/img/step-2.png" alt="" width="700" height="700"></span>
+        <span class="glow glow--step" aria-hidden="true"></span>
+        <h3 class="step__t" data-i18n="how.s2t">Lock the slip</h3>
+        <p class="step__d" data-i18n="how.s2d">Accept unlocks at 10 of 10. Your projected points are shown before you commit, so you always know what’s on the line.</p>
+      </article>
+      <article class="step" data-reveal>
+        <span class="step__art step__art--3"><img src="assets/img/step-3.png" alt="" width="680" height="680"></span>
+        <span class="glow glow--step" aria-hidden="true"></span>
+        <h3 class="step__t" data-i18n="how.s3t">Climb the table</h3>
+        <p class="step__d" data-i18n="how.s3d">Points land as matches finish. Track your rank globally, inside your private leagues, and against everyone who backed the other side.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============================ FEATURES ============================ -->
+  <section class="sec features" id="features">
+    <header class="sec-head">
+      <h2 class="sec-title" data-i18n="feat.title">Built for people who argue about football</h2>
+    </header>
+
+    <div class="shell features__shell">
+      <!-- wide card with the live match widget -->
+      <article class="fcard fcard--wide" data-reveal>
+        <span class="glow glow--blobA" aria-hidden="true"></span>
+        <span class="glow glow--blobB" aria-hidden="true"></span>
+        <div class="fcard__copy">
+          <h3 class="fcard__t" data-i18n="feat.f1t">Daily challenges</h3>
+          <p class="fcard__d" data-i18n="feat.f1d">Ten fresh fixtures every day with a countdown to lock-in. Miss the window and the slip rolls over — no half-finished rounds.</p>
+        </div>
+
+        <!-- interactive match card -->
+        <div class="mcard" data-mcard>
+          <div class="mcard__head">
+            <img class="mcard__pitch" src="assets/img/pitch.jpg" alt="" width="560" height="210">
+            <span class="mcard__kick" data-i18n="feat.kick">Today • 21:00</span>
+            <span class="mcard__lines" aria-hidden="true">
+              <i class="mcard__box mcard__box--l"></i>
+              <i class="mcard__box mcard__box--r"></i>
+              <i class="mcard__mid"></i>
+              <i class="mcard__circle"></i>
+            </span>
+            <div class="mcard__teams">
+              <div class="mteam">
+                <img src="assets/clubs/real-madrid.png" alt="" width="96" height="54">
+                <span>Real Madrid</span>
+              </div>
+              <span class="mcard__vs">VS</span>
+              <div class="mteam">
+                <img src="assets/clubs/barcelona.png" alt="" width="96" height="97">
+                <span>FC Barcelona</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mcard__body">
+            <div class="mrow">
+              <span class="mrow__label" data-i18n="feat.mres">Match result</span>
+              <span class="mrow__pts">(<span data-i18n="feat.correct">correct result</span> +10<img src="assets/icons/ball.svg" alt="" width="9" height="9">)</span>
+              <img class="mrow__info" src="assets/icons/info.svg" alt="" width="9" height="9">
+            </div>
+            <div class="seg" role="group" data-seg>
+              <button class="seg__b is-on" type="button" data-val="home">Real Madrid</button>
+              <button class="seg__b" type="button" data-val="draw" data-i18n="feat.draw">Draw</button>
+              <button class="seg__b" type="button" data-val="away">FC Barcelona</button>
+            </div>
+
+            <div class="mrow">
+              <span class="mrow__label" data-i18n="feat.mscore">Exact score</span>
+              <span class="mrow__pts">(<span data-i18n="feat.correct">correct result</span> +40<img src="assets/icons/ball.svg" alt="" width="9" height="9">)</span>
+            </div>
+            <div class="steppers">
+              <div class="stp" data-stp>
+                <button class="stp__b" type="button" data-d="-1" aria-label="minus">−</button>
+                <output class="stp__v">2</output>
+                <button class="stp__b stp__b--on" type="button" data-d="1" aria-label="plus">+</button>
+              </div>
+              <div class="stp" data-stp>
+                <button class="stp__b" type="button" data-d="-1" aria-label="minus">−</button>
+                <output class="stp__v">3</output>
+                <button class="stp__b stp__b--on" type="button" data-d="1" aria-label="plus">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- three small cards -->
+      <div class="frow">
+        <article class="fcard fcard--sm" data-reveal>
+          <span class="glow glow--card" aria-hidden="true"></span>
+          <span class="fcard__n">01</span>
+          <h3 class="fcard__t" data-i18n="feat.f2t">Exact-score bonus</h3>
+          <p class="fcard__d" data-i18n="feat.f2d">Calling the winner is worth points. Calling 2–1 is worth a lot more. Odds come from a real Poisson model, so the long shots pay like long shots.</p>
+        </article>
+        <article class="fcard fcard--sm" data-reveal>
+          <span class="glow glow--card" aria-hidden="true"></span>
+          <span class="fcard__n">02</span>
+          <h3 class="fcard__t" data-i18n="feat.f3t">Private leagues</h3>
+          <p class="fcard__d" data-i18n="feat.f3d">Spin up a league for the group chat or the office, set your own rounds and rules, and talk trash in the built-in chat.</p>
+        </article>
+        <article class="fcard fcard--sm" data-reveal>
+          <span class="glow glow--card" aria-hidden="true"></span>
+          <span class="fcard__n">03</span>
+          <h3 class="fcard__t" data-i18n="feat.f4t">Ranks &amp; achievements</h3>
+          <p class="fcard__d" data-i18n="feat.f4d">Climb from Rookie to Master, collect badges for perfect rounds and derby calls, and keep a public accuracy record you can point to.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ LIVE / LEAGUES ============================ -->
+  <section class="live" id="leagues">
+    <img class="live__bg" src="assets/img/stadium.jpg" alt="" width="1122" height="1402">
+    <span class="hero__fade hero__fade--top" aria-hidden="true"></span>
+
+    <div class="live__in">
+      <div class="live__copy" data-reveal>
+        <h2 class="sec-title" data-i18n="live.title">Live matches, live table</h2>
+        <p class="live__sub" data-i18n="live.sub">Follow the games your slip depends on, with the minute ticking and the leaderboard updating as goals go in.</p>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="#cta" data-i18n="hero.cta1">Start playing free</a>
+          <a class="btn btn--ghost" href="#how" data-i18n="hero.cta2">See how it works</a>
+        </div>
+      </div>
+      <div class="live__art" data-tilt>
+        <img src="assets/img/phone-leaders.png" alt="THE90 rankings screen" width="434" height="887">
+      </div>
+    </div>
+    <!-- above the photo and the phone, below the copy — the frame's z-order -->
+    <span class="live__fadeB" aria-hidden="true"></span>
+  </section>
+
+  <!-- ============================ FAQ + CTA ============================ -->
+  <section class="sec faq" id="faq">
+    <div class="faq__in">
+      <div class="faq__left">
+        <h2 class="sec-title sec-title--left" data-i18n="faq.title">Questions, answered</h2>
+        <div class="faq__list" data-faq></div>
+      </div>
+
+      <aside class="faq__right" id="scoring">
+        <div class="faq__phone" data-float>
+          <img src="assets/img/phone-faq.png" alt="THE90 live match screen" width="400" height="818">
+        </div>
+        <div class="faq__cta" id="cta">
+          <h2 class="sec-title" data-i18n="live.title">Live matches, live table</h2>
+          <p class="live__sub" data-i18n="live.sub">Follow the games your slip depends on, with the minute ticking and the leaderboard updating as goals go in.</p>
+          <div class="stores">
+            <a class="store" href="#" aria-label="Download on the App Store">
+              <img src="assets/icons/apple.svg" alt="" width="22.5" height="27">
+              <span><i data-i18n="cta.s1">Download on the</i><b>App Store</b></span>
+            </a>
+            <a class="store" href="#" aria-label="Get it on Google Play">
+              <img src="assets/icons/playstore.svg" alt="" width="23.625" height="27">
+              <span><i data-i18n="cta.s2">GET IT ON</i>
+                <img class="store__word" src="assets/icons/google-play-word.svg" alt="Google Play" width="83.25" height="16.875"></span>
+            </a>
+          </div>
+          <p class="fine" data-i18n="cta.fine">18+. Play for points, not money.</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================ FOOTER ============================ -->
+<footer class="ftr">
+  <div class="shell ftr__in">
+    <div class="ftr__brand">
+      <img src="assets/icons/logo-footer.svg" alt="THE90" width="96" height="22">
+      <p data-i18n="ftr.tagline">The football prediction game for people who never stop arguing about football.</p>
+    </div>
+    <nav class="ftr__cols" aria-label="Footer">
+      <div class="ftr__col">
+        <h4 data-i18n="ftr.c1">PRODUCT</h4>
+        <a href="#how" data-i18n="nav.how">How it works</a>
+        <a href="#features" data-i18n="nav.features">Features</a>
+        <a href="#scoring" data-i18n="nav.scoring">Scoring</a>
+        <a href="#leagues" data-i18n="nav.leagues">Leagues</a>
+      </div>
+      <div class="ftr__col">
+        <h4 data-i18n="ftr.c2">COMPANY</h4>
+        <a href="#" data-i18n="ftr.about">About</a>
+        <a href="#" data-i18n="ftr.careers">Careers</a>
+        <a href="#" data-i18n="ftr.press">Press</a>
+        <a href="#" data-i18n="ftr.contact">Contact</a>
+      </div>
+      <div class="ftr__col">
+        <h4 data-i18n="ftr.c3">LEGAL</h4>
+        <a href="#" data-i18n="ftr.terms">Terms &amp; Conditions</a>
+        <a href="#" data-i18n="ftr.privacy">Privacy policy</a>
+        <a href="#" data-i18n="ftr.play">Responsible play</a>
+      </div>
+    </nav>
+  </div>
+  <div class="shell ftr__bottom">
+    <span data-i18n="ftr.rights">© 2026 THE90. All rights reserved.</span>
+    <span data-i18n="cta.fine">18+. Play for points, not money.</span>
+  </div>
+</footer>
+
+<script src="js/i18n.js"></script>
+<script src="js/landing.js"></script>
+</body>
+</html>
