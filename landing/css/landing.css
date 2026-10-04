@@ -439,9 +439,15 @@ ul{margin:0;padding:0;list-style:none}
 .faq-a p{padding:0 26px 26px;font-size:15px;line-height:25px;color:#fff;opacity:.6}
 
 .faq__right{position:relative;display:flex;flex-direction:column;align-items:flex-start}
-.faq__phone{width:184px;height:252px;margin-left:26px;overflow:hidden;border-radius:18px}
+/* the frame crops the 375px shot to 252px; fade that cut instead of leaving a
+   hard edge, and let the copy sit slightly over the faded tail, as in the frame */
+.faq__phone{
+  width:184px;height:252px;margin-left:26px;overflow:hidden;
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 34%,rgba(0,0,0,0) 88%);
+  mask-image:linear-gradient(180deg,#000 0%,#000 34%,rgba(0,0,0,0) 88%);
+}
 .faq__phone img{width:184px;height:auto}
-.faq__cta{margin-top:54px;width:400px;display:flex;flex-direction:column;gap:14px}
+.faq__cta{margin-top:-40px;width:400px;display:flex;flex-direction:column;gap:14px}
 .faq__cta .sec-title{text-align:left}
 .faq__cta .live__sub{width:400px;margin-top:0}
 .stores{display:flex;gap:16px;margin-top:18px}
@@ -556,7 +562,7 @@ ul{margin:0;padding:0;list-style:none}
   .faq__in{width:100%;grid-template-columns:1fr;gap:48px}
   .faq__right{align-items:center;text-align:center}
   .faq__phone{margin-left:0}
-  .faq__cta{width:100%;max-width:520px;align-items:center;margin-top:36px}
+  .faq__cta{width:100%;max-width:520px;align-items:center;margin-top:-44px}
   .faq__cta .sec-title,.faq__cta .live__sub{text-align:center;width:100%}
   .stores{justify-content:center;flex-wrap:wrap}
 
@@ -618,7 +624,7 @@ ul{margin:0;padding:0;list-style:none}
   .faq-q{padding:18px 18px;font-size:15px;gap:14px}
   .faq-a p{padding:0 18px 20px;font-size:14px;line-height:23px}
   .faq__in{gap:40px}
-  .faq__cta{margin-top:28px}
+  .faq__cta{margin-top:-34px}
   .stores{gap:10px}
   .store{width:146px}
 
