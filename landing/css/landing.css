@@ -826,6 +826,22 @@ html[dir="rtl"] .ftr__col a:hover{transform:translateX(-3px)}
   .winbar__close{display:grid}
 }
 
+/* ---------- tablets: two steps side by side, the third across the row with
+   its picture on the right, the way phones show every step ---------- */
+@media (min-width: 768px) and (max-width: 1023px){
+  .steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+  .step:nth-child(3){
+    grid-column:1 / -1;height:auto;min-height:0;padding:30px 0;
+    display:grid;grid-template-columns:60% 40%;grid-template-rows:auto auto;align-content:center;column-gap:0;row-gap:12px;
+  }
+  .step:nth-child(3) .step__t{grid-column:1;grid-row:1;align-self:end;padding:0 16px 0 30px}
+  .step:nth-child(3) .step__d{grid-column:1;grid-row:2;align-self:start;padding:0 16px 0 30px}
+  .step:nth-child(3) .step__art{
+    position:relative;left:auto;top:auto;grid-column:2;grid-row:1 / span 2;align-self:center;justify-self:center;
+    width:min(86%,210px);height:auto;aspect-ratio:1;translate:-2% -3.9%;
+  }
+}
+
 /* ---------- phones ---------- */
 @media (max-width: 767px){
   :root{--pad:20px}
@@ -859,23 +875,24 @@ html[dir="rtl"] .ftr__col a:hover{transform:translateX(-3px)}
   .sec-title{font-size:clamp(22px,6.2vw,28px)}
   .sec-sub{font-size:15px;line-height:24px}
 
-  /* steps: copy on the left 60%, the art on the right 40%, never overlapping */
+  /* steps: copy on the left 60%, the whole picture centred in the right 40% */
   .steps{flex-direction:column;gap:14px}
   .step{
-    flex:none;width:100%;height:auto;min-height:0;padding:22px 0 22px 20px;
-    display:grid;grid-template-columns:minmax(0,60%) minmax(0,1fr);grid-template-rows:auto auto;align-content:center;
-    column-gap:10px;row-gap:8px;
+    flex:none;width:100%;height:auto;min-height:0;padding:22px 0;
+    display:grid;grid-template-columns:60% 40%;grid-template-rows:auto auto;align-content:center;column-gap:0;row-gap:8px;
   }
-  .step__t{grid-column:1;grid-row:1;align-self:end;font-size:17px;line-height:23px}
-  .step__d{grid-column:1;grid-row:2;align-self:start;font-size:13px;line-height:1.5}
-  /* the tilted art leans out past the card's right edge, so even its rotated
-     corners stay clear of the copy */
+  .step__t{grid-column:1;grid-row:1;align-self:end;padding:0 8px 0 20px;font-size:17px;line-height:23px}
+  .step__d{grid-column:1;grid-row:2;align-self:start;padding:0 8px 0 20px;font-size:13px;line-height:1.5}
+  /* Sized to its column, so even the tilted corners stay inside the card.
+     A tilted picture sits a little off its own box; the nudge re-centres
+     what is actually visible. */
   .step__art,.step__art--2,.step__art--3{
-    position:relative;left:auto;top:auto;grid-column:2;grid-row:1 / span 2;align-self:center;justify-self:end;
-    width:124px;height:124px;margin-right:-26px;
+    position:relative;left:auto;top:auto;grid-column:2;grid-row:1 / span 2;align-self:center;justify-self:center;
+    width:min(86%,150px);height:auto;aspect-ratio:1;margin:0;
   }
-  .step__art--2{width:120px;height:120px}
-  .step__art--3{width:118px;height:118px}
+  .step__art{translate:-3.8% -1.6%}
+  .step__art--2{translate:-4% -.8%}
+  .step__art--3{translate:-2% -3.9%}
   .glow--step{right:-170px;bottom:-190px}
 
   .fcard__t{font-size:21px}
@@ -916,4 +933,7 @@ html[dir="rtl"] .ftr__col a:hover{transform:translateX(-3px)}
 @media (hover: none){
   .hero__art,.live__art{transform:none!important}
   .step:hover,.fcard:hover{transform:none}
+  /* a tap must not leave a picture turned and enlarged past its column */
+  .step:hover .step__art{transform:rotate(-23.07deg)}
+  .step:hover .step__art--2{transform:rotate(-34.79deg)}
 }
