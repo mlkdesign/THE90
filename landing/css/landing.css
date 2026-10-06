@@ -178,9 +178,9 @@ ul{margin:0;padding:0;list-style:none}
 }
 .hero__title{font-size:46px;font-weight:800;color:var(--text);letter-spacing:-.01em}
 .hero__title .line{display:block}
-.hero__sub{width:540px;margin-top:8px;font-size:16px;color:#fff;opacity:.6;line-height:1.5}
-.hero__actions{display:flex;gap:14px;margin-top:16px}
-.stats{display:flex;gap:44px;margin-top:32px}
+.hero__sub{width:540px;margin-top:10px;font-size:16px;color:#fff;opacity:.6;line-height:1.5}
+.hero__actions{display:flex;gap:14px;margin-top:28px}
+.stats{display:flex;gap:44px;margin-top:28px}
 .stat b{display:block;font-size:30px;font-weight:700;line-height:36px;letter-spacing:-.6px;color:var(--text);font-variant-numeric:tabular-nums}
 .stat span{font-size:12px;color:#fff;opacity:.6}
 
@@ -189,7 +189,7 @@ ul{margin:0;padding:0;list-style:none}
 .hero__title .line:nth-child(1){animation-delay:.05s}
 .hero__title .line:nth-child(2){animation-delay:.14s}
 .hero__sub{animation-delay:.23s}
-.hero__actions{animation-delay:.32s}
+.hero__copy .dl{animation-delay:.32s}
 .stats{animation-delay:.41s}
 @keyframes rise{to{opacity:1;transform:none}}
 
@@ -421,10 +421,10 @@ ul{margin:0;padding:0;list-style:none}
 }
 .faq-item:hover{border-color:rgba(255,255,255,.2)}
 .faq-item.is-open{border-color:rgba(36,255,0,.35);background:rgba(36,255,0,.035)}
-.faq-q{display:flex;align-items:center;gap:24px;width:100%;padding:24px 26px;text-align:left;font-size:17px;font-weight:600;color:var(--text);transition:color .25s}
+.faq-q{display:flex;align-items:center;justify-content:space-between;gap:24px;width:100%;padding:24px 26px;text-align:left;font-size:17px;font-weight:600;color:var(--text);transition:color .25s}
 .faq-item.is-open .faq-q{color:var(--brand)}
 .faq-q:hover{color:var(--brand)}
-.faq-ico{flex:none;display:flex;align-items:center;justify-content:center;width:14px;height:14px;
+.faq-ico{flex:none;margin-left:auto;display:flex;align-items:center;justify-content:center;width:14px;height:14px;
   color:var(--muted);transition:transform .3s var(--ease),color .3s}
 .faq-ico svg{display:block;width:11px;height:7px}
 .faq-q:hover .faq-ico{color:var(--text)}
@@ -448,7 +448,7 @@ ul{margin:0;padding:0;list-style:none}
 .faq__cta .live__sub{width:400px;margin-top:0}
 .stores{display:flex;gap:16px;margin-top:18px}
 /* download row: our CTA + the official store badge(s) */
-.dl{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.dl{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:28px}
 .dl .store{height:54px;width:auto;min-width:172px;border-radius:14px;padding:0 16px;gap:10px}
 .dl .store i{white-space:nowrap}
 .dl .store b{font-size:20px}

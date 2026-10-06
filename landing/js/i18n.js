@@ -55,8 +55,7 @@ window.THE90_I18N = (function () {
       'cta.sub':'Free to download, free to play. Your ten picks, the live table and every ticking minute — in your pocket on iOS and Android.',
       'dl.now':'Download Now','dl.ios':'Available on iOS','dl.and':'Available on Android',
       'ftr.tagline':'The football prediction game for people who never stop arguing about football.',
-      'ftr.c1':'PRODUCT','ftr.c2':'COMPANY','ftr.c3':'LEGAL',
-      'ftr.about':'About','ftr.careers':'Careers','ftr.press':'Press','ftr.contact':'Contact',
+      'ftr.c1':'PRODUCT','ftr.c3':'LEGAL',
       'ftr.terms':'Terms & Conditions','ftr.privacy':'Privacy policy','ftr.play':'Responsible play',
       'ftr.rights':'© 2026 THE90. All rights reserved.'
     },
@@ -109,8 +108,7 @@ window.THE90_I18N = (function () {
       'cta.sub':'Скачать и играть бесплатно. Десять прогнозов, живая таблица и каждая минута матча — в кармане, на iOS и Android.',
       'dl.now':'Скачать','dl.ios':'Доступно на iOS','dl.and':'Доступно на Android',
       'ftr.tagline':'Игра на футбольные прогнозы для тех, кто никогда не перестаёт спорить о футболе.',
-      'ftr.c1':'ПРОДУКТ','ftr.c2':'КОМПАНИЯ','ftr.c3':'ПРАВОВОЕ',
-      'ftr.about':'О нас','ftr.careers':'Вакансии','ftr.press':'Пресса','ftr.contact':'Контакты',
+      'ftr.c1':'ПРОДУКТ','ftr.c3':'ПРАВОВОЕ',
       'ftr.terms':'Условия использования','ftr.privacy':'Политика конфиденциальности','ftr.play':'Ответственная игра',
       'ftr.rights':'© 2026 THE90. Все права защищены.'
     }
