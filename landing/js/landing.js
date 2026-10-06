@@ -323,9 +323,12 @@
       cta.classList.add('is-nudging');
     }
 
-    // the button always speaks for the card on screen
+    // the button always speaks for the card on screen, and that card — while
+    // it still waits for its confirmation — is outlined in green
     function updateCta() {
-      var k = Math.min(current(), N - 1), p = picks[k];
+      var at = current();
+      cards.forEach(function (c, i) { c.classList.toggle('is-live', i === at && !banked[i]); });
+      var k = Math.min(at, N - 1), p = picks[k];
       var ready = complete(p) && !banked[k];
       cta.setAttribute('aria-disabled', String(!ready));
       if (ready && !armed) nudge();
