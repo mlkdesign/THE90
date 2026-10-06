@@ -52,13 +52,10 @@ html{background:#0e0e0e;color-scheme:dark}
 .pl{display:none}
 .js .pl{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:#0e0e0e;
   transition:opacity .7s cubic-bezier(.22,.8,.3,1),visibility 0s .7s}
-.pl__logo{position:relative;width:216px;height:50px;transition:transform .8s cubic-bezier(.22,.8,.3,1)}
-.pl__logo img{position:absolute;z-index:1;left:0;top:0;display:block;width:216px;height:50px;max-width:none}
+.pl__logo{position:relative;width:151.2px;height:35px;transition:transform .8s cubic-bezier(.22,.8,.3,1)}
+.pl__logo img{position:absolute;left:0;top:0;display:block;width:151.2px;height:35px;max-width:none}
 .pl__dim{filter:brightness(0) invert(1);opacity:.14}
 .pl__fill{clip-path:inset(0 100% 0 0)}
-/* a soft halo that warms up as the logo fills */
-.pl__logo::before{content:'';position:absolute;left:-90px;right:-90px;top:-70px;bottom:-70px;
-  background:radial-gradient(closest-side,rgba(36,255,0,.2),rgba(36,255,0,0));opacity:var(--p,0)}
 .pl__txt{position:absolute;left:0;right:0;bottom:calc(100px + env(safe-area-inset-bottom,0px));margin:0;text-align:center;
   font:500 13px/1.4 'Sora',system-ui,-apple-system,'Segoe UI',sans-serif;letter-spacing:.06em;color:rgba(255,255,255,.5)}
 .pl__txt b{margin-inline-start:6px;color:#f7faf8;font-weight:600;font-variant-numeric:tabular-nums}
@@ -152,7 +149,6 @@ html.is-loading .line,html.is-loading .hero__phones,html.is-loading .chip{animat
   function paint() {
     var v = Math.min(100, Math.round(shown));
     fill.style.clipPath = 'inset(0 ' + (100 - shown).toFixed(2) + '% 0 0)';
-    pl.style.setProperty('--p', (shown / 100).toFixed(3));
     pct.textContent = v + '%';
     pl.setAttribute('aria-valuenow', v);
   }
@@ -343,14 +339,11 @@ html.is-loading .line,html.is-loading .hero__phones,html.is-loading .chip{animat
           <p class="fcard__d" data-i18n="feat.f1d">Five of today’s fixtures, playable right here. Swipe or drag through the cards, pick a result and set the exact score, then lock each one in with Accept pick. Clear all five to finish the round.</p>
 
           <div class="picksbar">
-            <span class="picksbar__deadline">
-              <img src="assets/icons/timer.svg" alt="" width="16" height="16">
-              <b data-dc-deadline>Closes in 12:00:00</b>
-            </span>
-            <div class="picksbar__progress">
-              <div class="picksbar__meter"><i data-dc-meter></i></div>
+            <div class="picksbar__row">
+              <span class="picksbar__label" data-i18n="dc.selected">Picks selected</span>
               <span class="picksbar__count"><b data-dc-done>0</b><small>/5</small></span>
             </div>
+            <div class="picksbar__meter"><i data-dc-meter></i></div>
           </div>
 
           <!-- the confirmation bar: inline here on wide screens, a bottom sheet on phones -->

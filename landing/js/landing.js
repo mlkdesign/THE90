@@ -137,7 +137,6 @@
     var nextBtn = $('[data-dc-next]', root);
     var meter = $('[data-dc-meter]', root);
     var doneCell = $('[data-dc-done]', root);
-    var deadline = $('[data-dc-deadline]', root);
     var slot = $('[data-winbar-slot]', root);
     var bar = $('[data-winbar]', root);
     var cta = $('[data-win-cta]', bar);
@@ -233,7 +232,6 @@
           '</div>' +
           '<p class="donecard__title" data-i18n="dc.done">All picks accepted</p>' +
           '<p class="donecard__win"><span data-i18n="dc.rating">Rating reward:</span><b>+ 5 ' + BALL + '</b></p>' +
-          '<button class="donecard__edit" type="button" data-i18n="dc.edit" data-done-edit>Edit picks</button>' +
         '</div>' +
       '</article>');
     rail.appendChild(doneCard);
@@ -281,9 +279,13 @@
       return best;
     }
 
+    // where the rail is headed — what a resize must keep, even mid-slide
+    var goal = 0;
+
     function slideTo(k, instant) {
       var list = slides();
       k = Math.max(0, Math.min(list.length - 1, k));
+      goal = k;
       rail.scrollTo({
         left: list[k].offsetLeft - cards[0].offsetLeft,
         behavior: (instant || reduce || document.hidden) ? 'auto' : 'smooth'
@@ -353,8 +355,10 @@
       updateArrows();
     }
 
+    // only ever one card moves: the one in play
     function shake(k) {
       var c = cards[k];
+      cards.forEach(function (o) { if (o !== c) o.classList.remove('is-shake'); });
       c.classList.remove('is-shake');
       void c.offsetWidth;
       c.classList.add('is-shake');
@@ -493,15 +497,9 @@
     cta.addEventListener('click', function () {
       var k = Math.min(current(), N - 1);
       if (cta.getAttribute('aria-disabled') === 'true') {
-        // nothing to confirm here: point at the card that needs a pick
-        var need = complete(picks[k]) ? nextOpen(k) : k;
-        if (need < 0) { finish(); return; }          // everything is in — back to the summary
-        if (need !== k) {
-          slideTo(need);
-          setTimeout(function () { shake(need); }, reduce ? 0 : 420);
-        } else {
-          shake(k);
-        }
+        // nothing to confirm yet: the card in play shakes to show where the
+        // pick goes. One already accepted is not waiting for anything.
+        if (!banked[k]) shake(k);
         return;
       }
       banked[k] = true;                // this is the confirmation the meter counts
@@ -514,13 +512,6 @@
     closeBtn.addEventListener('click', function () {
       dismissed = true;
       updateBar();
-    });
-
-    $('[data-done-edit]', doneCard).addEventListener('click', function () {
-      finished = false;
-      doneCard.hidden = true;
-      refresh();
-      slideTo(0);
     });
 
     // On phones the bar is a sheet fixed to the window. It lives on <body>
@@ -551,8 +542,11 @@
       else if (e.key === 'ArrowLeft') { e.preventDefault(); slideTo(current() - 1); }
     });
 
-    var queued = false, lastSlide = 0;
+    var queued = false, lastSlide = 0, idle;
     rail.addEventListener('scroll', function () {
+      // once the rail stops, wherever it stopped is the new goal (a swipe)
+      clearTimeout(idle);
+      idle = setTimeout(function () { goal = current(); }, 160);
       if (queued) return;
       queued = true;
       soon(function () {
@@ -605,34 +599,22 @@
       if (swallow) { e.preventDefault(); e.stopPropagation(); }
     }, true);
 
-    // a narrower card re-tunes the wheels; keep the current slide in place
-    var resizeTimer;
+    /* A new width can re-tune the wheels and move the snap points, so the rail
+       is put back on its card. Only the width counts: a phone's toolbar
+       sliding away fires resize too, and must not cut a slide short. */
+    var resizeTimer, lastWidth = window.innerWidth;
     window.addEventListener('resize', function () {
+      if (window.innerWidth === lastWidth) return;
+      lastWidth = window.innerWidth;
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(function () {
-        var k = current();
         cards.forEach(function (c, i) { render(i, false); });
-        slideTo(k, true);
+        slideTo(goal, true);
         updateArrows();
       }, 150);
     });
 
-    /* ---- the deadline: midnight, local time, as in the app ---- */
-
-    function two(n) { return (n < 10 ? '0' : '') + n; }
-    function tickDeadline() {
-      var now = new Date();
-      var end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-      var s = Math.max(0, Math.floor((end - now) / 1000));
-      deadline.textContent = s
-        ? t('dc.closes').replace('{t}', two(Math.floor(s / 3600)) + ':' + two(Math.floor(s / 60) % 60) + ':' + two(s % 60))
-        : t('dc.closed');
-    }
-    tickDeadline();
-    setInterval(tickDeadline, 1000);
-
     document.addEventListener('the90:lang', function () {
-      tickDeadline();
       updateCta();
       labelSlides();
     });
@@ -720,7 +702,8 @@
     var wrap = $('[data-lang]'), btn = $('[data-lang-toggle]'), menu = $('[data-lang-menu]');
     menu.innerHTML = I.LOCALES.map(function (l) {
       return '<li role="none"><button class="lang__item" type="button" role="option" data-code="' + l.code + '" lang="' + l.code + '">' +
-        '<span class="lang__code">' + l.short + '</span><em>' + l.label + '</em><b aria-hidden="true">✓</b></button></li>';
+        '<span class="lang__flag"><img src="assets/flags/' + l.flag + '.svg" alt="" width="16" height="16"></span>' +
+        '<em>' + l.label + '</em><b aria-hidden="true">✓</b></button></li>';
     }).join('');
 
     function open(on) {
