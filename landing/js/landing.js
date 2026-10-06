@@ -142,7 +142,7 @@
     var cta = $('[data-win-cta]', bar);
     var closeBtn = $('[data-win-close]', bar);
     var points = $('[data-win-points]', bar);
-    var wide = window.matchMedia('(min-width: 1024px)');
+    var wide = window.matchMedia('(min-width: 768px)');     // the bar lives in the block from tablets up
 
     var BALL = '<img src="assets/icons/soccer-ball.svg" alt="" width="16" height="16">';
 
@@ -337,15 +337,12 @@
       cta.textContent = (!complete(p) && p.outcome) ? t('dc.needscore') : t('dc.accept');
     }
 
-    // wide screens keep the bar under the copy; phones get it as a sheet once
-    // something is picked, while the cards are on screen and it was not closed
+    // tablets and desktops keep the bar in the block for good, even after the
+    // round; phones get it as a sheet once something is picked, while the cards
+    // are on screen, until it is closed or the round is done
     function updateBar() {
-      if (wide.matches) {
-        bar.classList.remove('is-in');
-        slot.classList.toggle('is-gone', finished);
-      } else {
-        bar.classList.toggle('is-in', picks.some(touched) && !finished && !dismissed && inView);
-      }
+      if (wide.matches) bar.classList.remove('is-in');
+      else bar.classList.toggle('is-in', picks.some(touched) && !finished && !dismissed && inView);
     }
 
     function refresh() {

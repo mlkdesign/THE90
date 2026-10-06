@@ -378,11 +378,9 @@ html[dir="rtl"] .dc__copy{direction:rtl}
 .picksbar__meter i{display:block;width:0;height:100%;border-radius:99px;background:var(--brand);transition:width .35s cubic-bezier(.2,.8,.3,1)}
 
 /* ---------------- the confirmation bar — Figma › Footer Section › Potential win ---------------- */
+/* on desktops and tablets the bar is part of the block and stays for good,
+   even once the round is done; only phones float it and let it go */
 .winbar-slot{width:100%;max-width:340px;margin-top:20px}
-/* the round is done: the bar fades out but keeps its place, so the block
-   holds its height */
-.winbar-slot.is-gone > .winbar{opacity:0;visibility:hidden;pointer-events:none;transform:translateY(8px);
-  transition:opacity .3s var(--ease),transform .3s var(--ease),visibility 0s .3s}
 .winbar{width:100%;transition:opacity .3s var(--ease),transform .3s var(--ease)}
 .winbar__card{
   padding:0 12px 12px;display:flex;flex-direction:column;overflow:hidden;
@@ -431,8 +429,10 @@ html[dir="rtl"] .dc__copy{direction:rtl}
   overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;
   scroll-snap-type:x mandatory;scroll-padding-right:var(--end);
   scrollbar-width:none;-webkit-overflow-scrolling:touch;
-  -webkit-mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.12) 20%,rgba(0,0,0,.55) calc(var(--front) - 60px),#000 calc(var(--front) - var(--gap)));
-  mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.12) 20%,rgba(0,0,0,.55) calc(var(--front) - 60px),#000 calc(var(--front) - var(--gap)));
+  /* every stop is a share of the room left of the card in play, so the fade
+     keeps its shape at any width instead of collapsing into a hard edge */
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.12) calc(var(--front) * .35),rgba(0,0,0,.55) calc(var(--front) * .72),#000 calc(var(--front) - var(--gap)));
+  mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.12) calc(var(--front) * .35),rgba(0,0,0,.55) calc(var(--front) * .72),#000 calc(var(--front) - var(--gap)));
   cursor:grab;-webkit-user-select:none;user-select:none;outline:none;
 }
 .dc__rail::-webkit-scrollbar{display:none}
@@ -580,8 +580,9 @@ html[dir="rtl"] .dc__copy{direction:rtl}
 .mcard.is-shake .mcard__body{border-color:rgba(36,255,0,.55);box-shadow:0 0 0 1px rgba(36,255,0,.25),0 0 26px -6px rgba(36,255,0,.55)}
 
 /* ---------------- the closing card: the tick, the total, a way back in ---------------- */
-.mcard--done{border-color:transparent;background:none;container-type:normal}
-.donecard{min-height:364px;padding:24px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center}
+/* exactly as tall as the match cards beside it, so arriving here moves nothing */
+.mcard--done{border-color:transparent;background:none;container-type:normal;align-self:stretch}
+.donecard{height:100%;padding:24px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center}
 .donecard__art{position:relative;width:140px;height:140px;margin-bottom:4px}
 .donecard__art > svg{display:block;width:100%;height:100%}
 /* only if the animation could not load */
@@ -766,7 +767,8 @@ html[dir="rtl"] .ftr__col a:hover{transform:translateX(-3px)}
   .features{padding-top:24px;padding-bottom:64px}
   .dc{grid-template-columns:380px minmax(0,1fr)}
   .dc__copy{padding:40px 0 40px 36px}
-  .frow{grid-template-columns:repeat(2,1fr)}
+  /* the three small cards go in a row or in a column — never two and a stray */
+  .frow{grid-template-columns:repeat(3,minmax(0,1fr))}
 
   /* live */
   .live{height:auto;padding:64px 0 0}
@@ -794,7 +796,7 @@ html[dir="rtl"] .ftr__col a:hover{transform:translateX(-3px)}
   .ftr__brand,.ftr__brand p{width:100%}
 }
 
-/* ---------- the rail stacks under its copy; the bar becomes a bottom sheet ---------- */
+/* ---------- the rail stacks under its copy ---------- */
 @media (max-width: 1023px){
   .dc{grid-template-columns:minmax(0,1fr);min-height:0}
   .dc__copy{padding:32px 28px 0}
@@ -810,22 +812,23 @@ html[dir="rtl"] .ftr__col a:hover{transform:translateX(-3px)}
   .mcard{scroll-snap-align:start}
   .dc__arrow--prev{left:12px}
   .dc__arrow--next{right:12px}
+}
 
-  .winbar-slot{display:none}
-  .winbar{
-    position:fixed;z-index:150;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));
-    width:auto;max-width:420px;margin:0 auto;
-    opacity:0;visibility:hidden;pointer-events:none;transform:translateY(calc(100% + 24px));
-    transition:opacity .26s ease,transform .32s cubic-bezier(.2,.8,.3,1),visibility 0s .32s;
-  }
-  .winbar.is-in{opacity:1;visibility:visible;pointer-events:auto;transform:none;transition-delay:0s}
-  .winbar__card{box-shadow:0 24px 60px -12px rgba(0,0,0,.9)}
-  .winbar__close{display:grid}
+/* ---------- small tablets: the three small cards stack rather than split two and one ---------- */
+@media (max-width: 899px){
+  .frow{grid-template-columns:minmax(0,1fr)}
+  .fcard--sm{min-height:0}
 }
 
 /* ---------- tablets: two steps side by side, the third across the row with
    its picture on the right, the way phones show every step ---------- */
 @media (min-width: 768px) and (max-width: 1023px){
+  /* Daily challenges: title and copy on the left, Accept pick on the right,
+     always there, as on desktop */
+  .dc__copy{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,340px);column-gap:36px;align-items:start}
+  .dc__copy > :not(.winbar-slot){grid-column:1}
+  .winbar-slot{grid-column:2;grid-row:1 / span 3;align-self:center;max-width:none;margin-top:0}
+
   .steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
   .step:nth-child(3){
     grid-column:1 / -1;height:auto;min-height:0;padding:30px 0;
@@ -896,7 +899,18 @@ html[dir="rtl"] .ftr__col a:hover{transform:translateX(-3px)}
   .frow{grid-template-columns:1fr;gap:16px}
   .fcard--sm{min-height:0;padding:26px 22px}
 
-  /* daily challenges: one card per screen, the next one peeking */
+  /* daily challenges: one card per screen, the next one peeking; Accept pick
+     floats as a bottom sheet and leaves once the round is done */
+  .winbar-slot{display:none}
+  .winbar{
+    position:fixed;z-index:150;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));
+    width:auto;max-width:420px;margin:0 auto;
+    opacity:0;visibility:hidden;pointer-events:none;transform:translateY(calc(100% + 24px));
+    transition:opacity .26s ease,transform .32s cubic-bezier(.2,.8,.3,1),visibility 0s .32s;
+  }
+  .winbar.is-in{opacity:1;visibility:visible;pointer-events:auto;transform:none;transition-delay:0s}
+  .winbar__card{box-shadow:0 24px 60px -12px rgba(0,0,0,.9)}
+  .winbar__close{display:grid}
   .dc__copy{padding:28px 20px 0;align-items:center;text-align:center}
   .dc .fcard__d{max-width:none}
   .picksbar{max-width:none}
