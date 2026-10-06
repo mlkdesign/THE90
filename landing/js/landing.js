@@ -34,7 +34,8 @@
       return '<div class="faq-item' + (i === 0 ? ' is-open' : '') + '">' +
         '<button class="faq-q" type="button" aria-expanded="' + (i === 0) + '">' +
           '<span data-i18n="faq.' + q + '"></span>' +
-          '<span class="faq-ico" aria-hidden="true"><i></i><i></i></span>' +
+          '<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 9 6" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+            '<path d="M0.9 1.2L4.5 4.8L8.1 1.2" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' +
         '</button>' +
         '<div class="faq-a"><div><p data-i18n="faq.a' + (i + 1) + '"></p></div></div>' +
       '</div>';
@@ -53,6 +54,31 @@
       if (open) { item.classList.add('is-open'); q.setAttribute('aria-expanded', 'true'); }
     });
   })();
+
+  /* ---------------- download row ----------------
+     iOS / Android get our button plus that platform's badge; any other OS
+     gets both official badges instead. Runs before i18n so applyLang() sees
+     the platform key this sets. */
+  (function downloads() {
+    var ua = navigator.userAgent || '';
+    var plat = (navigator.userAgentData && navigator.userAgentData.platform) || '';
+    var ios = /iPad|iPhone|iPod/.test(ua) ||
+      (/Mac/.test(ua + plat) && navigator.maxTouchPoints > 1); /* iPadOS reports as Mac */
+    var and = /Android/i.test(ua) || /Android/i.test(plat);
+    var os = ios ? 'ios' : and ? 'and' : 'other';
+
+    document.documentElement.setAttribute('data-os', os);
+
+    $$('[data-dl]').forEach(function (row) {
+      var bIos = row.querySelector('[data-dl-ios]');
+      var bAnd = row.querySelector('[data-dl-and]');
+      if (os === 'other') { row.querySelector('.dl__now').hidden = true; return; }
+      var keep = os === 'ios' ? bIos : bAnd;
+      (os === 'ios' ? bAnd : bIos).hidden = true;
+      /* the plate beside our button names the platform */
+      keep.querySelector('i').setAttribute('data-i18n', os === 'ios' ? 'dl.ios' : 'dl.and');
+    });
+  }());
 
   /* ---------------- i18n ---------------- */
   function t(k) {
