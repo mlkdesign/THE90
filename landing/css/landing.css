@@ -275,6 +275,8 @@ ul{margin:0;padding:0;list-style:none}
 
 /* every card answers the pointer the same way: the border lights, the card lifts */
 .step:hover,.fcard:hover{border-color:rgba(36,255,0,.4);transform:translateY(-6px)}
+/* …except Daily challenges: it is played in, so it stays put */
+.fcard.dc:hover{transform:none}
 
 /* =========================================================
    How it works
