@@ -21,13 +21,31 @@
 }
 
 *,*::before,*::after{box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:96px}
+/* hidden on the root reaches the viewport, so nothing can pan sideways — and
+   body only clips, so it never turns into a scroller the sticky header would
+   then stick to */
+html{scroll-behavior:smooth;scroll-padding-top:96px;overflow-x:hidden}
 body{
   margin:0;background:var(--bg);color:var(--text);
-  font-family:'Sora',system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.5;
-  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  font-family:'Sora',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:16px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;overflow-x:clip;
 }
+/* Sora is Latin only: Cyrillic and Vietnamese read best set wholly in Inter,
+   the other scripts pair Sora's Latin with a matching Noto face */
+html[lang="ru"] body,html[lang="uk"] body,html[lang="vi"] body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif}
+html[lang="ar"] body{font-family:'Sora','Noto Sans Arabic',system-ui,sans-serif}
+html[lang="hi"] body{font-family:'Sora','Noto Sans Devanagari',system-ui,sans-serif}
+html[lang="ja"] body{font-family:'Sora','Noto Sans JP',system-ui,sans-serif}
+html[lang="ko"] body{font-family:'Sora','Noto Sans KR',system-ui,sans-serif}
+html[lang="zh"] body{font-family:'Sora','Noto Sans SC',system-ui,sans-serif}
+/* tracking breaks joined and ideographic scripts; tall scripts need air */
+html[lang="ar"] body *,html[lang="hi"] body *,html[lang="ja"] body *,html[lang="ko"] body *,html[lang="zh"] body *{letter-spacing:normal!important}
+html[lang="ar"] :is(h1,h2,h3),html[lang="hi"] :is(h1,h2,h3){line-height:1.4}
+html[lang="ja"] :is(h1,h2,h3),html[lang="ko"] :is(h1,h2,h3),html[lang="zh"] :is(h1,h2,h3){line-height:1.3}
+
 img{display:block;max-width:100%}
+/* no dragging, saving or long-press copying of the artwork */
+img,svg{-webkit-user-drag:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 h1,h2,h3,h4{margin:0;line-height:1.1}
@@ -37,8 +55,10 @@ ul{margin:0;padding:0;list-style:none}
 :focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:8px}
 
 .shell{width:min(var(--shell),100%);margin-inline:auto}
-.skip{position:absolute;left:-9999px;top:0;z-index:300;padding:12px 20px;background:var(--brand);color:var(--on-brand);font-weight:600;border-radius:0 0 12px 0}
-.skip:focus{left:0}
+/* parked above the page rather than far off to the side, where an RTL page
+   would let you scroll to it */
+.skip{position:absolute;inset-inline-start:0;top:0;z-index:300;padding:12px 20px;background:var(--brand);color:var(--on-brand);font-weight:600;border-end-end-radius:12px;transform:translateY(-110%)}
+.skip:focus{transform:none}
 
 /* ---------------- buttons ---------------- */
 .btn{
@@ -58,11 +78,6 @@ ul{margin:0;padding:0;list-style:none}
   transform:skewX(-18deg);transition:left .65s var(--ease);
 }
 .btn--primary:hover::after{left:140%}
-.btn--ghost{
-  background:rgba(255,255,255,.1);color:var(--text);
-  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
-}
-.btn--ghost:hover{background:rgba(255,255,255,.16);color:var(--text);transform:translateY(-2px)}
 
 /* ---------------- shared glow ---------------- */
 .glow{
@@ -95,13 +110,13 @@ ul{margin:0;padding:0;list-style:none}
 .hdr__spacer{flex:1}
 
 .nav{display:flex;align-items:center;gap:30px}
-.nav a{position:relative;font-size:14.5px;color:#fff;opacity:.6;transition:opacity .2s}
+.nav a{position:relative;font-size:14.5px;color:#fff;opacity:.6;transition:opacity .2s;white-space:nowrap}
 .nav a::after{
-  content:'';position:absolute;left:0;right:100%;bottom:-7px;height:2px;border-radius:2px;
-  background:var(--brand);box-shadow:0 0 10px rgba(36,255,0,.8);transition:right .28s var(--ease);
+  content:'';position:absolute;inset-inline-start:0;inset-inline-end:100%;bottom:-7px;height:2px;border-radius:2px;
+  background:var(--brand);box-shadow:0 0 10px rgba(36,255,0,.8);transition:inset-inline-end .28s var(--ease);
 }
 .nav a:hover{opacity:1}
-.nav a:hover::after{right:0}
+.nav a:hover::after{inset-inline-end:0}
 
 .hdr__right{display:flex;align-items:center;gap:12px}
 
@@ -121,9 +136,11 @@ ul{margin:0;padding:0;list-style:none}
 @keyframes drawer{from{opacity:0;transform:translateY(-10px)}}
 .mnav a{padding:14px 4px;font-size:16px;color:rgba(255,255,255,.75);border-bottom:1px solid var(--line-soft)}
 .mnav a:active{color:var(--brand)}
-.mnav__cta{margin-top:16px;border-bottom:0;color:var(--on-brand);justify-content:center}
+/* the drawer's link colour must not reach the green button */
+.mnav a.mnav__cta{margin-top:16px;border-bottom:0;color:var(--on-brand);justify-content:center}
+.mnav a.mnav__cta:active{color:var(--on-brand)}
 
-/* language switcher */
+/* language switcher — eighteen languages, two columns */
 .lang{position:relative}
 .lang__btn{
   display:flex;align-items:center;gap:7px;height:38px;padding:0 12px;
@@ -136,19 +153,28 @@ ul{margin:0;padding:0;list-style:none}
 .lang__caret{transition:transform .25s var(--ease)}
 .lang.is-open .lang__caret{transform:rotate(180deg)}
 .lang__menu{
-  position:absolute;top:calc(100% + 8px);right:0;z-index:10;min-width:170px;padding:6px;
-  border:1px solid var(--line);border-radius:14px;background:#121212;
+  position:absolute;top:calc(100% + 8px);inset-inline-end:0;z-index:10;
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px;
+  width:min(420px,calc(100vw - 32px));max-height:min(72vh,560px);overflow-y:auto;overscroll-behavior:contain;padding:6px;
+  border:1px solid var(--line);border-radius:16px;background:#121212;
   box-shadow:0 20px 48px -16px rgba(0,0,0,.85);animation:pop .18s var(--ease);
+  scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.18) transparent;
 }
 @keyframes pop{from{opacity:0;transform:translateY(-8px) scale(.97)}}
 .lang__item{
-  display:flex;align-items:center;gap:10px;width:100%;padding:9px 11px;border-radius:10px;
-  font-size:14px;color:rgba(255,255,255,.65);text-align:left;transition:background .16s,color .16s;
+  display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border-radius:10px;
+  font-size:14px;color:rgba(255,255,255,.7);text-align:start;transition:background .16s,color .16s;
 }
 .lang__item:hover{background:rgba(255,255,255,.07);color:#fff}
+.lang__code{
+  flex:none;display:grid;place-items:center;width:30px;height:22px;border-radius:6px;
+  background:rgba(255,255,255,.08);font:600 10.5px/1 'Sora',system-ui,sans-serif;letter-spacing:.04em;color:rgba(255,255,255,.75);
+  transition:background .16s,color .16s;
+}
+.lang__item em{font-style:normal;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lang__item b{opacity:0;font-weight:400;color:var(--brand)}
 .lang__item[aria-selected="true"]{color:var(--brand)}
-.lang__item em{font-style:normal;flex:1}
-.lang__item b{opacity:0;font-weight:400}
+.lang__item[aria-selected="true"] .lang__code{background:rgba(36,255,0,.16);color:var(--brand)}
 .lang__item[aria-selected="true"] b{opacity:1}
 
 /* =========================================================
@@ -179,12 +205,11 @@ ul{margin:0;padding:0;list-style:none}
 .hero__title{font-size:46px;font-weight:800;color:var(--text);letter-spacing:-.01em}
 .hero__title .line{display:block}
 .hero__sub{width:540px;margin-top:10px;font-size:16px;color:#fff;opacity:.6;line-height:1.5}
-.hero__actions{display:flex;gap:14px;margin-top:28px}
 .stats{display:flex;gap:44px;margin-top:28px}
 .stat b{display:block;font-size:30px;font-weight:700;line-height:36px;letter-spacing:-.6px;color:var(--text);font-variant-numeric:tabular-nums}
 .stat span{font-size:12px;color:#fff;opacity:.6}
 
-/* entrance */
+/* entrance — held by html.is-loading until the preloader lifts */
 .line{opacity:0;transform:translateY(18px);animation:rise .8s var(--ease) forwards}
 .hero__title .line:nth-child(1){animation-delay:.05s}
 .hero__title .line:nth-child(2){animation-delay:.14s}
@@ -202,10 +227,11 @@ ul{margin:0;padding:0;list-style:none}
   opacity:0;animation:rise 1s var(--ease) .18s forwards;
   filter:drop-shadow(0 40px 80px rgba(0,0,0,.6));
 }
+/* grows with the label rather than clipping a longer translation */
 .chip{
-  position:absolute;left:249px;top:101px;width:105px;
+  position:absolute;left:249px;top:101px;min-width:105px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:10px 30px;border-radius:16px;background:rgba(255,255,255,.1);
+  padding:10px 16px;border-radius:16px;background:rgba(255,255,255,.1);
   -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
   box-shadow:0 10px 30px -12px rgba(0,0,0,.8);
   opacity:0;
@@ -213,14 +239,15 @@ ul{margin:0;padding:0;list-style:none}
   animation:rise .7s var(--ease) .6s forwards, bob 5s ease-in-out 1.4s infinite;
 }
 .chip__k{font-size:11.5px;color:rgba(255,255,255,.5);white-space:nowrap}
-.chip__v{font-size:19px;font-weight:700;color:var(--brand);text-shadow:0 0 18px rgba(36,255,0,.6)}
+.chip__v{font-size:19px;font-weight:700;color:var(--brand);text-shadow:0 0 18px rgba(36,255,0,.6);direction:ltr;unicode-bidi:isolate}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 
 /* ---------------- clubs ---------------- */
 .clubs{position:absolute;left:0;bottom:0;z-index:2;width:100%;height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px}
 .clubs__label{font-size:13px;color:#fff}
+/* the marquee runs left whatever the page direction */
 .clubs__viewport{
-  width:100%;overflow:hidden;
+  width:100%;overflow:hidden;direction:ltr;
   -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
   mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
 }
@@ -239,11 +266,17 @@ ul{margin:0;padding:0;list-style:none}
 .sec{position:relative;padding:0 var(--pad)}
 .sec-head{display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
 .sec-title{font-size:32px;font-weight:800;color:var(--text)}
-.sec-title--left{text-align:left}
+.sec-title--left{text-align:start}
 .sec-sub{width:600px;font-size:17px;line-height:27px;color:#fff}
 
+/* one transition list for reveal and hover alike, so revealing a card never
+   strips the easing off its hover */
 [data-reveal]{opacity:0;transform:translateY(26px)}
-[data-reveal].is-in{opacity:1;transform:none;transition:opacity .7s var(--ease),transform .7s var(--ease)}
+[data-reveal].is-in{opacity:1;transform:none;
+  transition:opacity .7s var(--ease),transform .55s var(--ease),border-color .35s,box-shadow .45s var(--ease)}
+
+/* every card answers the pointer the same way: the border lights, the card lifts */
+.step:hover,.fcard:hover{border-color:rgba(36,255,0,.4);transform:translateY(-6px)}
 
 /* =========================================================
    How it works
@@ -256,13 +289,12 @@ ul{margin:0;padding:0;list-style:none}
   border:1px solid var(--line);border-radius:28px;overflow:hidden;
   background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,0));
   display:flex;flex-direction:column;gap:16px;
-  transition:border-color .35s,transform .45s var(--ease),box-shadow .45s var(--ease);
+  transition:border-color .35s,transform .45s var(--ease);
 }
-.step:hover{border-color:rgba(36,255,0,.4);transform:translateY(-6px)}
 /* positions mirror the Figma art boxes inside the 381x400 card */
 .step__art{
   position:absolute;left:83px;top:141px;width:352px;height:352px;
-  transform:rotate(-23.07deg);transition:transform .7s var(--ease),filter .5s;
+  transform:rotate(-23.07deg);transition:transform .7s var(--ease);
   pointer-events:none;
 }
 .step__art--2{transform:rotate(-34.79deg);width:328px;height:328px;left:83px;top:148px}
@@ -288,100 +320,286 @@ ul{margin:0;padding:0;list-style:none}
 .fcard{
   position:relative;border:1px solid var(--line);border-radius:28px;overflow:hidden;
   background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,0));
-  transition:border-color .35s,transform .45s var(--ease),box-shadow .45s var(--ease);
+  transition:border-color .35s,transform .45s var(--ease);
 }
-.fcard:hover{border-color:rgba(255,255,255,.22);transform:translateY(-5px)}
-.fcard--wide{min-height:230px;padding:44px 46px;overflow:visible}
-.fcard--wide:hover{border-color:rgba(36,255,0,.32)}
-.fcard__copy{position:relative;z-index:3;width:470px}
 .fcard__t{font-size:24px;font-weight:700;color:var(--text);margin-bottom:12px}
-.fcard--sm .fcard__t{font-size:20px;font-weight:600}
 .fcard__d{font-size:14px;line-height:1.55;color:#fff;opacity:.5}
 
-
+/* ---------------- three small cards — Figma › row/3 (1057:12331) ---------------- */
 .frow{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-.fcard--sm{padding:30px 28px 34px;min-height:180px}
+.fcard--sm{
+  min-height:248px;padding:32px 30px;background:#151515;
+  display:flex;flex-direction:column;align-items:flex-start;gap:16px;
+}
+.fcard--sm > :not(.fglow){position:relative;z-index:1}
 .fcard__n{
-  display:inline-flex;align-items:center;justify-content:center;
-  width:38px;height:38px;margin-bottom:22px;border-radius:12px;
-  background:rgba(36,255,0,.12);color:var(--brand);font-size:13px;font-weight:600;
-  transition:background .3s;
+  display:inline-flex;align-items:center;justify-content:center;flex:none;
+  width:50px;height:50px;border-radius:16px;
+  background:rgba(255,255,255,.1);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  color:var(--brand);font-size:14px;font-weight:400;
 }
-.fcard--sm:hover .fcard__n{background:rgba(36,255,0,.22)}
-.glow--card{
-  right:-110px;bottom:-130px;width:300px;height:300px;opacity:.5;
-  animation:drift 15s ease-in-out infinite;
-}
-.fcard--sm:nth-child(2) .glow--card{animation-delay:-5s}
-.fcard--sm:nth-child(3) .glow--card{animation-delay:-9s}
+.fcard--sm .fcard__t{margin:0;font-size:20px;font-weight:600;line-height:28px}
+.fcard--sm .fcard__d{line-height:18px}
+/* Each card's glow is one blurred brand circle; Figma frames it 381x248 from
+   the card's top-right corner and offsets the circle inside that frame. */
+.fglow{position:absolute;top:-1px;right:-1px;width:381px;height:248px;pointer-events:none}
+.fglow > span{position:absolute;animation:drift 15s ease-in-out infinite}
+.fglow img{display:block;width:100%;height:100%;max-width:none}
+.fglow--1 > span{inset:-231.85% -148.29% -47.98% 0}
+.fglow--2 > span{inset:-266.13% -60.37% -13.71% -86.88%;animation-delay:-5s}
+.fglow--3 > span{inset:-10.89% -51.97% -268.95% -95.28%;animation-delay:-9s}
 
-/* ---------------- interactive match card ---------------- */
+/* =========================================================
+   Daily challenges — the app's pick rail, playable on the page
+   Figma › Main › Picks-bar + match-card, wired as in js/main.js
+   ========================================================= */
+/* The block keeps one physical layout in every language: copy on the left,
+   cards on the right, clipped by the block's own edge. */
+.dc{
+  display:grid;grid-template-columns:420px minmax(0,1fr);min-height:472px;
+  direction:ltr;
+}
+.dc__copy{
+  position:relative;z-index:3;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;
+  padding:44px 0 44px 46px;
+}
+html[dir="rtl"] .dc__copy{direction:rtl}
+.dc__try{
+  display:inline-flex;align-items:center;gap:8px;height:28px;padding:0 12px;margin-bottom:18px;
+  border:1px solid rgba(36,255,0,.28);border-radius:99px;background:rgba(36,255,0,.08);
+  color:var(--brand);font-size:12px;font-weight:600;white-space:nowrap;
+}
+.dc__try i{width:6px;height:6px;border-radius:50%;background:var(--brand);animation:ping 1.8s ease-out infinite}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(36,255,0,.6)}80%,100%{box-shadow:0 0 0 8px rgba(36,255,0,0)}}
+.dc .fcard__t{margin-bottom:10px}
+.dc .fcard__d{max-width:350px}
+
+/* progress + deadline, as on Main */
+.picksbar{width:100%;max-width:340px;margin-top:24px;display:flex;flex-direction:column;gap:8px}
+.picksbar__deadline{display:flex;align-items:center;gap:6px;font-size:12px;line-height:18px;color:rgba(255,255,255,.55)}
+.picksbar__deadline img{flex:none}
+.picksbar__deadline b{font-weight:500;color:var(--text);font-variant-numeric:tabular-nums}
+.picksbar__progress{display:flex;align-items:center;gap:16px}
+.picksbar__meter{flex:1 1 auto;height:8px;padding:2px;overflow:hidden;border-radius:99px;background:rgba(255,255,255,.1)}
+.picksbar__meter i{display:block;width:0;height:100%;border-radius:99px;background:var(--brand);transition:width .35s cubic-bezier(.2,.8,.3,1)}
+.picksbar__count{flex:none;display:flex;align-items:baseline;gap:3px;direction:ltr}
+.picksbar__count b{font-size:12px;font-weight:600;color:var(--text);font-variant-numeric:tabular-nums}
+.picksbar__count small{font-size:10px;color:rgba(255,255,255,.5)}
+
+/* ---------------- the confirmation bar — Figma › Footer Section › Potential win ---------------- */
+.winbar-slot{width:100%;max-width:340px;display:grid;grid-template-rows:1fr;margin-top:20px;
+  transition:grid-template-rows .45s var(--ease),margin-top .45s var(--ease)}
+.winbar-slot > .winbar{min-height:0;overflow:hidden}
+/* the round is done: the bar folds away and the copy recentres */
+.winbar-slot.is-gone{grid-template-rows:0fr;margin-top:0}
+.winbar-slot.is-gone > .winbar{opacity:0;transform:translateY(8px)}
+.winbar{width:100%;transition:opacity .3s var(--ease),transform .3s var(--ease)}
+.winbar__card{
+  padding:0 12px 12px;display:flex;flex-direction:column;overflow:hidden;
+  border:1px solid rgba(255,255,255,.1);border-radius:24px;
+  background:linear-gradient(0deg,rgba(0,208,255,0) 0%,rgba(0,208,255,.2) 100%),#0e100e;
+  background-clip:padding-box;
+}
+.winbar__row{padding:12px 8px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.winbar__points{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.5);font-size:12px;font-weight:300;line-height:18px}
+.winbar__points b,.winbar__reward b{display:flex;align-items:center;gap:2px;color:var(--text);font-size:12px;font-weight:600;line-height:18px;font-variant-numeric:tabular-nums;white-space:nowrap;direction:ltr}
+.winbar__points b img,.winbar__reward b img{box-sizing:border-box;display:block;width:16px;height:16px;padding:1.5px}
+/* inline on wide screens there is nothing to dismiss */
+.winbar__close{width:28px;height:28px;margin:-9px;flex:none;display:none;place-items:center;border-radius:50%;opacity:.6;
+  transition:opacity .16s,transform .16s,background .16s}
+.winbar__close:hover{opacity:1;background:rgba(255,255,255,.08)}
+.winbar__close:active{transform:scale(.9)}
+.winbar__cta{
+  height:38px;display:flex;align-items:center;justify-content:center;padding:0 12px;border-radius:12px;
+  background:var(--brand);color:var(--on-brand);font-size:12px;font-weight:600;line-height:18px;
+  transition:filter .18s,transform .12s,background .2s,color .2s;
+}
+.winbar__cta:hover:not([aria-disabled="true"]){filter:brightness(1.06)}
+.winbar__cta:active:not([aria-disabled="true"]){transform:scale(.98)}
+/* armed only once the card on screen has a full pick — still clickable, so a
+   press can point at the card that needs it */
+.winbar__cta[aria-disabled="true"]{background:rgba(255,255,255,.12);color:rgba(255,255,255,.4);cursor:not-allowed}
+@keyframes winbar-nudge{
+  0%,100%{transform:none;box-shadow:0 0 0 0 rgba(36,255,0,0)}
+  35%    {transform:scale(1.03);box-shadow:0 0 0 6px rgba(36,255,0,.18)}
+  70%    {transform:scale(1.01);box-shadow:0 0 0 10px rgba(36,255,0,0)}
+}
+.winbar__cta.is-nudging{animation:winbar-nudge 1.1s ease-in-out 1}
+.winbar__reward{margin:0;padding:16px 8px 2px;display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;color:rgba(255,255,255,.5);font-size:12px;font-weight:300;line-height:18px}
+
+/* ---------------- the stage: cards fade out on the left, the block cuts them on the right ---------------- */
+.dc__stage{
+  --lead:110px;--card:358px;--gap:16px;
+  position:relative;min-width:0;display:flex;align-items:center;
+}
+.dc__rail{
+  position:relative;width:100%;display:flex;align-items:center;gap:var(--gap);
+  padding:44px 0 44px var(--lead);
+  overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;
+  scroll-snap-type:x mandatory;scroll-padding-left:var(--lead);
+  scrollbar-width:none;-webkit-overflow-scrolling:touch;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.35) calc(var(--lead) * .5),#000 var(--lead));
+  mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.35) calc(var(--lead) * .5),#000 var(--lead));
+  cursor:grab;-webkit-user-select:none;user-select:none;outline:none;
+}
+.dc__rail::-webkit-scrollbar{display:none}
+/* room after the last card, so it can come to rest where the first one did */
+.dc__rail::after{content:'';flex:0 0 max(0px,calc(100% - var(--card) - var(--gap)));height:1px}
+.dc__rail:focus-visible{box-shadow:inset 0 0 0 2px rgba(36,255,0,.5)}
+.dc__rail.is-dragging{cursor:grabbing}
+.dc__rail.is-dragging .mcard{pointer-events:none}
+.dc__rail.is-free{scroll-snap-type:none}
+
+.dc__arrow{
+  position:absolute;top:50%;z-index:4;width:44px;height:44px;margin-top:-22px;
+  display:grid;place-items:center;border-radius:50%;color:#fff;
+  border:1px solid rgba(255,255,255,.18);background:rgba(14,16,14,.55);
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  box-shadow:0 12px 30px -10px rgba(0,0,0,.85);
+  transition:opacity .25s,transform .25s var(--ease),background .2s,border-color .2s,visibility 0s;
+}
+.dc__arrow svg{display:block;width:13px;height:9px}
+.dc__arrow--prev{left:calc(var(--lead) / 2 - 22px)}
+.dc__arrow--prev svg{transform:rotate(90deg)}
+.dc__arrow--next{right:22px}
+.dc__arrow--next svg{transform:rotate(-90deg)}
+.dc__arrow:hover{background:rgba(36,255,0,.16);border-color:rgba(36,255,0,.55);transform:scale(1.07)}
+.dc__arrow:active{transform:scale(.95)}
+.dc__arrow.is-off{opacity:0;visibility:hidden;pointer-events:none;transform:scale(.8);
+  transition:opacity .25s,transform .25s var(--ease),visibility 0s .25s}
+
+/* ---------------- the pick card — exactly the app's, see css/main.css ---------------- */
 .mcard{
-  position:absolute;right:46px;top:-28px;z-index:4;width:300px;
-  border:1px solid rgba(36,255,0,.55);border-radius:18px;overflow:hidden;
-  background:#101510;
-  box-shadow:0 0 0 1px rgba(36,255,0,.12),0 30px 70px -26px rgba(0,0,0,.9),0 0 50px -16px rgba(36,255,0,.45);
-  transition:transform .5s var(--ease),box-shadow .5s var(--ease);
+  position:relative;isolation:isolate;flex:0 0 var(--card);width:var(--card);
+  overflow:hidden;border:1px solid rgba(255,255,255,.1);border-radius:24px;background:var(--bg);
+  scroll-snap-align:start;scroll-snap-stop:always;container-type:inline-size;
+  -webkit-user-select:none;user-select:none;
 }
-.fcard--wide:hover .mcard{transform:translateY(-6px) rotate(-1deg)}
-.mcard__head{position:relative;height:126px;overflow:hidden;isolation:isolate;border-radius:17px 17px 0 0}
-.mcard__pitch{position:absolute;inset:-6px;width:calc(100% + 12px);height:calc(100% + 12px);object-fit:cover;opacity:.4}
-.mcard__head::after{
-  content:'';position:absolute;inset:-4px;z-index:1;
-  background:linear-gradient(180deg,rgba(14,14,14,.55) 0%,rgba(14,14,14,0) 40%,rgba(16,21,16,.9) 100%);
+.mcard__pitch{position:absolute;z-index:0;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+.mcard__head{position:relative;z-index:2;height:150px;overflow:hidden}
+/* a little contrast for the time badge; the dashed stadium stays clear */
+.mcard__head::before{
+  content:'';position:absolute;z-index:1;top:0;left:0;width:100%;height:40px;pointer-events:none;
+  background:linear-gradient(180deg,rgba(6,18,13,.78),rgba(6,18,13,0));
 }
-.mcard__kick{
-  position:absolute;z-index:3;left:50%;transform:translateX(-50%);top:0;
-  padding:5px 10px;border-radius:0 0 10px 10px;background:#ef2c2c;
-  font-size:8.5px;color:var(--text);white-space:nowrap;
+.pitch{
+  position:absolute;z-index:1;left:50%;top:5px;width:calc(100% - 10px);height:174px;transform:translateX(-50%);
+  overflow:hidden;border:1px dashed var(--text);border-radius:19px;opacity:.3;
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 64%,transparent 100%);
+  mask-image:linear-gradient(180deg,#000 0%,#000 64%,transparent 100%);
 }
-.mcard__lines{position:absolute;z-index:1;left:50%;transform:translateX(-50%);top:4px;width:292px;height:122px;border:1px dashed rgba(247,250,248,.3);border-bottom:0;border-radius:16px 16px 0 0}
-.mcard__box{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:58px;border:1px dashed rgba(247,250,248,.3)}
-.mcard__box--l{left:-1px;border-left:0}
-.mcard__box--r{right:-1px;border-right:0}
-.mcard__mid{position:absolute;left:50%;top:0;bottom:0;border-left:1px dashed rgba(247,250,248,.25)}
-.mcard__circle{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:57px;height:57px;border:1px dashed rgba(247,250,248,.3);border-radius:50%}
-.mcard__teams{position:absolute;z-index:3;left:0;right:0;top:50%;transform:translateY(-44%);display:flex;align-items:center}
-.mteam{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
-.mteam img{width:auto;height:42px;object-fit:contain;filter:drop-shadow(0 0 16px rgba(36,255,0,.7));transition:transform .4s var(--ease)}
-.mteam:hover img{transform:scale(1.12)}
-.mteam span{font-size:10px;font-weight:600;color:#fff;text-align:center}
-.mcard__vs{width:20px;font-size:13px;font-weight:600;color:#fff;text-align:center}
+.pitch__box{position:absolute;top:calc(50% - 9.5px);width:48px;height:69px;transform:translateY(-50%);border:1px dashed var(--text)}
+.pitch__box--l{left:-1px;border-left:0}
+.pitch__box--r{right:-1px;border-right:0}
+.pitch__mid{position:absolute;left:50%;top:3px;bottom:3px;width:0;border-left:1px dashed var(--text)}
+.pitch__circle{position:absolute;left:50%;top:calc(50% - 9px);width:68px;height:68px;transform:translate(-50%,-50%);border:1px dashed var(--text);border-radius:50%}
+.mcard__when{
+  position:absolute;z-index:2;top:0;left:50%;transform:translateX(-50%);
+  padding:6px 12px;border-radius:0 0 12px 12px;background:#ef2c2c;
+  color:var(--text);font-size:10px;line-height:18px;white-space:nowrap;
+}
+.mcard__teams{position:absolute;z-index:2;left:0;top:46px;width:100%;height:74px;display:flex;align-items:center}
+.mcard__team{flex:1 0 0;min-width:1px;display:flex;flex-direction:column;align-items:center;gap:8px}
+/* every crest sits in the same square, centred, whatever its own shape */
+.mcard__crest{display:block;flex:none;width:50px;height:50px;object-fit:contain;filter:drop-shadow(0 0 30px rgba(36,255,0,.7))}
+.mcard__name{max-width:100%;padding:0 4px;color:#fff;font-size:12px;font-weight:600;line-height:16px;text-align:center}
+.mcard__vs{flex:none;width:23px;color:#fff;font-size:16px;font-weight:600;line-height:20px;text-align:center}
 
-.mcard__body{position:relative;z-index:3;padding:12px 12px 14px;display:flex;flex-direction:column;gap:8px}
-.mrow{display:flex;align-items:center;gap:6px}
-.mrow__label{font-size:10.5px;font-weight:600;color:var(--text)}
-.mrow__pts{display:flex;align-items:center;gap:2px;font-size:9px;color:rgba(255,255,255,.5)}
-.mrow__pts img{display:inline-block;width:9px;height:9px}
-.mrow__info{margin-left:auto;opacity:.5}
+.mcard__bodywrap{position:relative;z-index:2;padding:0 8px 8px}
+.mcard__body{
+  --cell:48px;
+  position:relative;padding:12px;display:flex;flex-direction:column;gap:12px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.1);border-radius:24px 24px 16px 16px;
+  background:rgba(255,255,255,.1);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  transition:box-shadow .3s,border-color .3s;
+}
+.mcard__block{display:flex;flex-direction:column;gap:8px}
+.mcard__labelrow{width:100%;padding:0 8px;display:flex;flex-wrap:wrap;align-items:center;gap:0 8px}
+.mcard__label{margin:0;color:var(--text);font-size:12px;font-weight:600;line-height:18px;white-space:nowrap}
+.mcard__hint{display:inline-flex;align-items:center;color:rgba(255,255,255,.5);font-size:12px;font-weight:300;line-height:18px;white-space:nowrap}
+.mcard__hint img{box-sizing:border-box;display:block;width:16px;height:16px;padding:1.5px;flex:none}
 
-.seg{display:flex;gap:4px;padding:4px;border-radius:11px;background:rgba(255,255,255,.07)}
-.seg__b{
-  flex:1;height:30px;border-radius:8px;font-size:9.5px;font-weight:500;color:rgba(255,255,255,.55);
-  transition:background .25s,color .25s,box-shadow .25s,transform .18s var(--ease);
+.mcard .seg{
+  width:100%;height:60px;padding:4px;display:flex;align-items:center;gap:4px;
+  border:1px solid rgba(255,255,255,.1);border-radius:16px;
+  background:rgba(255,255,255,.1);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
 }
-.seg__b:hover:not(.is-on){background:rgba(255,255,255,.07);color:#fff}
-.seg__b.is-on{background:var(--brand);color:var(--on-brand);font-weight:600;box-shadow:0 0 18px rgba(36,255,0,.55)}
-.seg__b:active{transform:scale(.96)}
+.mcard .seg__btn{
+  position:relative;flex:1 0 0;min-width:1px;height:100%;padding:8px 6px;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:12px;
+  color:rgba(247,250,248,.5);font-size:12px;font-weight:400;line-height:16px;text-align:center;
+  overflow-wrap:anywhere;transition:background .22s,color .22s;
+}
+.mcard .seg__btn span{display:block}
+.mcard .seg__btn:hover:not(.is-on){background:rgba(255,255,255,.1)}
+.mcard .seg__btn.is-on{background:var(--brand);color:var(--on-brand);font-weight:600}
 
-.steppers{display:flex;gap:10px}
-.stp{flex:1;display:flex;align-items:center;justify-content:center;gap:7px}
-.stp__b{
-  width:26px;height:26px;border-radius:50%;border:1px solid rgba(255,255,255,.28);
-  font-size:13px;line-height:1;color:#fff;display:grid;place-items:center;
-  transition:background .22s,border-color .22s,transform .16s var(--ease),box-shadow .25s;
+.scores{display:flex;align-items:center;justify-content:center;gap:16px;direction:ltr}
+.scorepad{height:var(--cell);display:flex;align-items:center;gap:8px}
+.scorepad__step{
+  width:32px;height:32px;flex:none;display:flex;align-items:center;justify-content:center;border-radius:32px;
+  background:var(--brand);color:var(--on-brand);font-size:14px;font-weight:600;line-height:20px;
+  transition:filter .16s,opacity .16s,transform .12s;
 }
-.stp__b:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.5)}
-.stp__b--on{background:var(--brand);border-color:var(--brand);color:var(--on-brand);box-shadow:0 0 16px rgba(36,255,0,.5)}
-.stp__b--on:hover{background:#45ff28;box-shadow:0 0 24px rgba(36,255,0,.8)}
-.stp__b:active{transform:scale(.9)}
-.stp__v{
-  min-width:34px;height:30px;display:grid;place-items:center;border-radius:9px;
-  background:rgba(255,255,255,.08);font-size:11px;font-weight:600;color:#fff;
-  font-variant-numeric:tabular-nums;transition:color .2s,background .2s;
+.scorepad__step:hover:not(:disabled){filter:brightness(1.08)}
+.scorepad__step:active:not(:disabled){transform:scale(.9)}
+.scorepad__step:disabled{background:rgba(255,255,255,.4);color:var(--text);cursor:not-allowed}
+/* the wheel: one window onto a column of values */
+.drum{
+  position:relative;width:48px;height:var(--cell);flex:none;overflow:hidden;
+  border:1px solid rgba(255,255,255,.1);border-radius:16px;
+  background:rgba(255,255,255,.1);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  cursor:grab;touch-action:none;
 }
-.stp__v.is-bump{animation:bump .36s var(--ease)}
-@keyframes bump{40%{transform:scale(1.26);color:var(--brand)}}
+.drum:active{cursor:grabbing}
+.drum:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.drum__reel{will-change:transform}
+.drum__cell{height:var(--cell);display:flex;align-items:center;justify-content:center;color:rgba(247,250,248,.5);font-size:12px;line-height:18px;transition:color .18s}
+.drum__cell.is-current{color:var(--text);font-weight:600}
+.drum__cell--none.is-current{color:rgba(247,250,248,.5);font-weight:400}
+
+/* a narrow card (phones) tightens the controls so both wheels still fit */
+@container (max-width: 330px){
+  .mcard__body{--cell:42px;padding:10px}
+  .scores{gap:10px}
+  .scorepad{gap:5px}
+  .scorepad__step{width:28px;height:28px;font-size:13px}
+  .drum{width:42px;border-radius:14px}
+  .mcard .seg{height:56px}
+  .mcard .seg__btn{padding:6px 4px;font-size:11px;line-height:14px}
+  .mcard__labelrow{padding:0 4px}
+  .mcard__label,.mcard__hint{font-size:11px}
+}
+
+/* pressing Accept without a pick: the card that needs one shakes */
+@keyframes pc-shake{
+  0%,100%{transform:translateX(0)}
+  14%{transform:translateX(-8px)}28%{transform:translateX(7px)}
+  42%{transform:translateX(-5px)}56%{transform:translateX(4px)}
+  70%{transform:translateX(-2px)}84%{transform:translateX(1px)}
+}
+.mcard.is-shake{animation:pc-shake .55s cubic-bezier(.36,.07,.19,.97)}
+.mcard.is-shake .mcard__body{border-color:rgba(36,255,0,.55);box-shadow:0 0 0 1px rgba(36,255,0,.25),0 0 26px -6px rgba(36,255,0,.55)}
+
+/* ---------------- the closing card: the tick, the total, a way back in ---------------- */
+.mcard--done{border-color:transparent;background:none;container-type:normal}
+.donecard{min-height:364px;padding:24px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center}
+.donecard__art{position:relative;width:140px;height:140px;margin-bottom:4px}
+.donecard__art > svg{display:block;width:100%;height:100%}
+/* only if the animation could not load */
+.donecard__art > .donecard__static{display:none;position:absolute;inset:0}
+.donecard__art.is-static > .donecard__static{display:block}
+.donecard__title{max-width:260px;margin:0;color:var(--text);font-size:16px;font-weight:600;line-height:22px}
+.donecard__win{margin:0;display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.5);font-size:12px;line-height:18px}
+.donecard__win b{display:flex;align-items:center;gap:4px;color:var(--text);font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;direction:ltr}
+.donecard__win b img{box-sizing:border-box;display:block;width:16px;height:16px;padding:1.5px}
+.donecard__edit{
+  height:38px;margin-top:12px;padding:0 24px;display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(255,255,255,.2);border-radius:12px;color:var(--text);font-size:12px;font-weight:600;line-height:18px;
+  transition:border-color .18s,background .18s,transform .12s;
+}
+.donecard__edit:hover{border-color:rgba(255,255,255,.45);background:rgba(255,255,255,.06)}
+.donecard__edit:active{transform:scale(.98)}
 
 /* =========================================================
    Live / leagues
@@ -402,9 +620,9 @@ ul{margin:0;padding:0;list-style:none}
    bottom fade can slot between the phone (z1) and the copy (z3) */
 .live__in{position:relative;width:1440px;height:100%;margin-inline:auto}
 .live__copy{position:absolute;z-index:3;left:var(--pad);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:32px;align-items:flex-start}
-.live__copy .sec-title{text-align:left}
+.live__copy .sec-title{text-align:start}
+.live__copy .dl{margin-top:0}
 .live__sub{width:540px;font-size:16px;color:#fff;opacity:.6;line-height:1.5;margin-top:-24px}
-.live__copy .hero__actions{margin-top:0;animation:none;opacity:1;transform:none}
 .live__art{position:absolute;z-index:1;left:845px;top:104px;width:303px;transition:transform .5s var(--ease)}
 .live__art img{width:303px;height:auto;filter:drop-shadow(0 30px 60px rgba(0,0,0,.7))}
 
@@ -421,10 +639,10 @@ ul{margin:0;padding:0;list-style:none}
 }
 .faq-item:hover{border-color:rgba(255,255,255,.2)}
 .faq-item.is-open{border-color:rgba(36,255,0,.35);background:rgba(36,255,0,.035)}
-.faq-q{display:flex;align-items:center;justify-content:space-between;gap:24px;width:100%;padding:24px 26px;text-align:left;font-size:17px;font-weight:600;color:var(--text);transition:color .25s}
+.faq-q{display:flex;align-items:center;justify-content:space-between;gap:24px;width:100%;padding:24px 26px;text-align:start;font-size:17px;font-weight:600;color:var(--text);transition:color .25s}
 .faq-item.is-open .faq-q{color:var(--brand)}
 .faq-q:hover{color:var(--brand)}
-.faq-ico{flex:none;margin-left:auto;display:flex;align-items:center;justify-content:center;width:14px;height:14px;
+.faq-ico{flex:none;margin-inline-start:auto;display:flex;align-items:center;justify-content:center;width:14px;height:14px;
   color:var(--muted);transition:transform .3s var(--ease),color .3s}
 .faq-ico svg{display:block;width:11px;height:7px}
 .faq-q:hover .faq-ico{color:var(--text)}
@@ -438,13 +656,13 @@ ul{margin:0;padding:0;list-style:none}
 /* the frame crops the 375px shot to 252px; fade that cut instead of leaving a
    hard edge, and let the copy sit slightly over the faded tail, as in the frame */
 .faq__phone{
-  width:184px;height:252px;margin-left:26px;overflow:hidden;
+  width:184px;height:252px;margin-inline-start:26px;overflow:hidden;
   -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 34%,rgba(0,0,0,0) 88%);
   mask-image:linear-gradient(180deg,#000 0%,#000 34%,rgba(0,0,0,0) 88%);
 }
 .faq__phone img{width:184px;height:auto}
 .faq__cta{margin-top:-40px;width:400px;display:flex;flex-direction:column;gap:14px}
-.faq__cta .sec-title{text-align:left}
+.faq__cta .sec-title{text-align:start}
 .faq__cta .live__sub{width:400px;margin-top:0}
 .stores{display:flex;gap:16px;margin-top:18px}
 /* download row: our CTA + the official store badge(s) */
@@ -479,7 +697,21 @@ ul{margin:0;padding:0;list-style:none}
 .ftr__col h4{margin-bottom:4px;font-size:13px;font-weight:600;letter-spacing:1.3px;color:rgba(255,255,255,.5)}
 .ftr__col a{font-size:14.5px;color:var(--muted);transition:color .2s,transform .2s var(--ease)}
 .ftr__col a:hover{color:var(--brand);transform:translateX(3px)}
-.ftr__bottom{display:flex;justify-content:space-between;padding:22px 0;border-top:1px solid var(--line-soft);font-size:13px;color:rgba(255,255,255,.5)}
+.ftr__bottom{display:flex;justify-content:space-between;gap:16px;padding:22px 0;border-top:1px solid var(--line-soft);font-size:13px;color:rgba(255,255,255,.5)}
+
+/* =========================================================
+   Right-to-left (Arabic)
+   The 1440 frame is absolutely positioned, so its two big
+   compositions are mirrored by hand; everything in flow
+   follows the direction on its own.
+   ========================================================= */
+@media (min-width: 1440px){
+  html[dir="rtl"] .hero__copy,html[dir="rtl"] .live__copy{left:auto;right:var(--pad)}
+  html[dir="rtl"] .hero__art{left:90px}
+  html[dir="rtl"] .glow--hero{left:272px}
+  html[dir="rtl"] .live__art{left:292px}
+}
+html[dir="rtl"] .ftr__col a:hover{transform:translateX(-3px)}
 
 /* =========================================================
    Motion preferences
@@ -521,7 +753,9 @@ ul{margin:0;padding:0;list-style:none}
   .hero__art{position:relative;inset:auto;width:100%;max-width:640px;height:auto;
     display:flex;justify-content:center;transform:none!important}
   .hero__phones{position:static;width:100%;height:auto}
-  .chip{left:4%;top:12%}
+  /* the artwork is the photo itself here, so the chip keeps the place Figma
+     gives it on that photo: (215, 135) of 673 x 661 — just over the phone */
+  .chip{left:31.9%;top:20.4%}
   .glow--hero{left:50%;top:38%;transform:translateX(-50%)}
   .hero__bg{height:100%}
   .hero__fade--top{height:40%}
@@ -539,10 +773,8 @@ ul{margin:0;padding:0;list-style:none}
   .step{flex:1 1 300px;height:360px}
 
   .features{padding-top:24px;padding-bottom:64px}
-  .fcard--wide{display:flex;flex-direction:column;gap:28px;padding:32px 28px;overflow:hidden}
-  .fcard__copy{width:100%}
-  .mcard{position:static;margin:0 auto;width:300px}
-  .fcard--wide:hover .mcard{transform:none}
+  .dc{grid-template-columns:380px minmax(0,1fr)}
+  .dc__copy{padding:40px 0 40px 36px}
   .frow{grid-template-columns:repeat(2,1fr)}
 
   /* live */
@@ -560,7 +792,7 @@ ul{margin:0;padding:0;list-style:none}
   .faq{padding-top:64px;padding-bottom:64px}
   .faq__in{width:100%;grid-template-columns:1fr;gap:48px}
   .faq__right{align-items:center;text-align:center}
-  .faq__phone{margin-left:0}
+  .faq__phone{margin-inline-start:0}
   .faq__cta{width:100%;max-width:520px;align-items:center;margin-top:-44px}
   .faq__cta .sec-title,.faq__cta .live__sub{text-align:center;width:100%}
   .stores{justify-content:center;flex-wrap:wrap}
@@ -571,6 +803,30 @@ ul{margin:0;padding:0;list-style:none}
   .ftr__brand,.ftr__brand p{width:100%}
 }
 
+/* ---------- the rail stacks under its copy; the bar becomes a bottom sheet ---------- */
+@media (max-width: 1023px){
+  .dc{grid-template-columns:minmax(0,1fr);min-height:0}
+  .dc__copy{padding:32px 28px 0}
+  .dc .fcard__d{max-width:560px}
+  .dc__stage{--lead:28px}
+  .dc__rail{padding:28px 0 32px var(--lead);
+    -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 var(--lead));
+    mask-image:linear-gradient(90deg,transparent 0,#000 var(--lead))}
+  .dc__arrow--prev{left:12px}
+  .dc__arrow--next{right:12px}
+
+  .winbar-slot{display:none}
+  .winbar{
+    position:fixed;z-index:150;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));
+    width:auto;max-width:420px;margin:0 auto;
+    opacity:0;visibility:hidden;pointer-events:none;transform:translateY(calc(100% + 24px));
+    transition:opacity .26s ease,transform .32s cubic-bezier(.2,.8,.3,1),visibility 0s .32s;
+  }
+  .winbar.is-in{opacity:1;visibility:visible;pointer-events:auto;transform:none;transition-delay:0s}
+  .winbar__card{box-shadow:0 24px 60px -12px rgba(0,0,0,.9)}
+  .winbar__close{display:grid}
+}
+
 /* ---------- phones ---------- */
 @media (max-width: 767px){
   :root{--pad:20px}
@@ -578,21 +834,24 @@ ul{margin:0;padding:0;list-style:none}
   .hdr,.hdr__in{height:64px}
   .hdr__logo img{width:92px;height:auto}
   .lang__btn{height:34px;padding:0 10px}
+  .lang__menu{grid-template-columns:minmax(0,1fr);width:min(250px,calc(100vw - 32px));max-height:min(62vh,440px)}
   /* no room for the CTA next to logo + language + burger; the drawer has it */
   .hdr__right > .btn--sm{display:none}
   .mnav__cta{display:flex}
 
+  /* content reads down the middle of the screen */
   .hero{padding-top:18px}
-  .hero__title{font-size:clamp(28px,8.4vw,38px)}
-  .hero__sub{font-size:15px}
-  .hero__actions{flex-direction:column;align-items:stretch;width:100%;gap:10px}
-  .hero__actions .btn{width:100%;height:50px}
-  .stats{gap:0;justify-content:space-between;width:100%}
+  .hero__copy{align-items:center;text-align:center}
+  .hero__title{font-size:clamp(28px,8.4vw,38px);letter-spacing:-.02em}
+  .hero__sub{font-size:15px;margin-inline:auto}
+  .dl{justify-content:center}
+  .stats{gap:0;justify-content:space-around;width:100%}
+  .stat{text-align:center}
   .stat b{font-size:clamp(19px,5.6vw,26px);line-height:1.2}
   .stat span{font-size:11px}
-  .chip{left:10px;top:6%;width:88px;padding:8px 12px}
-  .chip__v{font-size:17px}
-  .hero__title{letter-spacing:-.02em}
+  .chip{min-width:0;padding:7px 12px;border-radius:13px}
+  .chip__k{font-size:10px}
+  .chip__v{font-size:16px}
 
   .clubs{gap:18px;margin-top:28px}
   .clubs__track{gap:30px}
@@ -601,25 +860,45 @@ ul{margin:0;padding:0;list-style:none}
   .sec-title{font-size:clamp(22px,6.2vw,28px)}
   .sec-sub{font-size:15px;line-height:24px}
 
-  .steps{flex-direction:column;gap:16px}
-  .step{flex:none;width:100%;height:auto;min-height:300px;padding:26px 22px 28px}
-  .step__art{left:auto;right:-70px;top:auto;bottom:-70px;width:260px;height:260px}
-  .step__art--2{left:auto;right:-70px;top:auto;bottom:-70px;width:250px;height:250px}
-  .step__art--3{left:auto;right:-60px;top:auto;bottom:-70px;width:240px;height:240px}
-  .step__t{font-size:19px;line-height:26px}
+  /* steps: copy on the left 60%, the art on the right 40%, never overlapping */
+  .steps{flex-direction:column;gap:14px}
+  .step{
+    flex:none;width:100%;height:auto;min-height:0;padding:22px 0 22px 20px;
+    display:grid;grid-template-columns:minmax(0,60%) minmax(0,1fr);grid-template-rows:auto auto;align-content:center;
+    column-gap:10px;row-gap:8px;
+  }
+  .step__t{grid-column:1;grid-row:1;align-self:end;font-size:17px;line-height:23px}
+  .step__d{grid-column:1;grid-row:2;align-self:start;font-size:13px;line-height:1.5}
+  /* the tilted art leans out past the card's right edge, so even its rotated
+     corners stay clear of the copy */
+  .step__art,.step__art--2,.step__art--3{
+    position:relative;left:auto;top:auto;grid-column:2;grid-row:1 / span 2;align-self:center;justify-self:end;
+    width:124px;height:124px;margin-right:-26px;
+  }
+  .step__art--2{width:120px;height:120px}
+  .step__art--3{width:118px;height:118px}
+  .glow--step{right:-170px;bottom:-190px}
 
-  .fcard--wide{padding:26px 20px}
   .fcard__t{font-size:21px}
-  .mcard{width:100%;max-width:300px}
   .frow{grid-template-columns:1fr;gap:16px}
-  .fcard--sm{padding:24px 22px 26px;min-height:0}
+  .fcard--sm{min-height:0;padding:26px 22px}
+
+  /* daily challenges: one card per screen, the next one peeking */
+  .dc__copy{padding:28px 20px 0;align-items:center;text-align:center}
+  .dc .fcard__d{max-width:none}
+  .picksbar{max-width:none}
+  .picksbar__deadline{justify-content:center}
+  .dc__stage{--lead:20px;--gap:12px;--card:min(358px,calc(100vw - 90px))}
+  .dc__rail{padding:24px 0 26px var(--lead)}
+  .dc__arrow{display:none}
 
   .live{padding-top:48px}
-  .live__copy{gap:20px}
-  .live__copy .hero__actions{width:100%}
+  .live__copy{gap:20px;align-items:center;text-align:center}
+  .live__copy .sec-title{text-align:center}
   .live__art img{width:240px}
 
   .faq{padding-top:48px;padding-bottom:48px}
+  .faq__left .sec-title--left{text-align:center}
   .faq-q{padding:18px 18px;font-size:15px;gap:14px}
   .faq-a p{padding:0 18px 20px;font-size:14px;line-height:23px}
   .faq__in{gap:40px}
@@ -628,11 +907,15 @@ ul{margin:0;padding:0;list-style:none}
   .store{width:146px}
 
   .ftr{padding-top:48px}
-  .ftr__cols{flex-direction:column;gap:28px}
+  .ftr__in{align-items:center;text-align:center}
+  .ftr__brand img{margin-inline:auto}
+  .ftr__cols{flex-direction:column;align-items:center;gap:28px;width:100%}
+  .ftr__col{align-items:center}
   .ftr__bottom{flex-direction:column;gap:10px;text-align:center;padding:18px 0}
 }
 
-/* pointer-driven tilt is meaningless on touch */
+/* pointer-driven tilt and hover lifts are meaningless on touch */
 @media (hover: none){
   .hero__art,.live__art{transform:none!important}
+  .step:hover,.fcard:hover{transform:none}
 }
