@@ -576,7 +576,7 @@ html[dir="rtl"] .dc__copy{direction:rtl}
   42%{transform:translateX(-5px)}56%{transform:translateX(4px)}
   70%{transform:translateX(-2px)}84%{transform:translateX(1px)}
 }
-.mcard.is-shake{animation:pc-shake .55s cubic-bezier(.36,.07,.19,.97)}
+.mcard.is-shake .mcard__head,.mcard.is-shake .mcard__bodywrap{animation:pc-shake .55s cubic-bezier(.36,.07,.19,.97)}
 .mcard.is-shake .mcard__body{border-color:rgba(36,255,0,.55);box-shadow:0 0 0 1px rgba(36,255,0,.25),0 0 26px -6px rgba(36,255,0,.55)}
 
 /* ---------------- the closing card: the tick, the total, a way back in ---------------- */
