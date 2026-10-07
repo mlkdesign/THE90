@@ -466,13 +466,16 @@ html[dir="rtl"] .dc__copy{direction:rtl}
 /* ---------------- the pick card — exactly the app's, see css/main.css ---------------- */
 .mcard{
   position:relative;isolation:isolate;flex:0 0 var(--card);width:var(--card);
-  overflow:hidden;border:1px solid rgba(255,255,255,.1);border-radius:24px;background:var(--bg);
   scroll-snap-align:end;scroll-snap-stop:always;container-type:inline-size;
   -webkit-user-select:none;user-select:none;
+}
+.mcard__visual{
+  position:relative;isolation:isolate;width:100%;overflow:hidden;
+  border:1px solid rgba(255,255,255,.1);border-radius:24px;background:var(--bg);
   transition:border-color .35s,box-shadow .35s;
 }
 /* the card waiting for its confirmation — the app's picked-card outline */
-.mcard.is-live{border-color:var(--brand);box-shadow:0 0 0 1px rgba(36,255,0,.25),0 10px 30px -14px rgba(36,255,0,.45)}
+.mcard.is-live .mcard__visual{border-color:var(--brand);box-shadow:0 0 0 1px rgba(36,255,0,.25),0 10px 30px -14px rgba(36,255,0,.45)}
 .mcard__pitch{position:absolute;z-index:0;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
 .mcard__head{position:relative;z-index:2;height:150px;overflow:hidden}
 /* a little contrast for the time badge; the dashed stadium stays clear */
@@ -576,12 +579,12 @@ html[dir="rtl"] .dc__copy{direction:rtl}
   42%{transform:translateX(-5px)}56%{transform:translateX(4px)}
   70%{transform:translateX(-2px)}84%{transform:translateX(1px)}
 }
-.mcard.is-shake .mcard__head,.mcard.is-shake .mcard__bodywrap{animation:pc-shake .55s cubic-bezier(.36,.07,.19,.97)}
+.mcard.is-shake .mcard__visual{animation:pc-shake .55s cubic-bezier(.36,.07,.19,.97)}
 .mcard.is-shake .mcard__body{border-color:rgba(36,255,0,.55);box-shadow:0 0 0 1px rgba(36,255,0,.25),0 0 26px -6px rgba(36,255,0,.55)}
 
 /* ---------------- the closing card: the tick, the total, a way back in ---------------- */
 /* exactly as tall as the match cards beside it, so arriving here moves nothing */
-.mcard--done{border-color:transparent;background:none;container-type:normal;align-self:stretch}
+.mcard--done{container-type:normal;align-self:stretch}
 .donecard{height:100%;padding:24px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center}
 .donecard__art{position:relative;width:140px;height:140px;margin-bottom:4px}
 .donecard__art > svg{display:block;width:100%;height:100%}

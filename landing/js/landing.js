@@ -285,6 +285,7 @@
     function cardMarkup(m, i) {
       var h = NAMES[m.home], a = NAMES[m.away];
       return '<article class="mcard" role="group" aria-roledescription="slide" data-card="' + i + '">' +
+        '<div class="mcard__visual">' +
         '<img class="mcard__pitch" src="assets/img/match-card-background.png" alt="" width="358" height="356">' +
         '<div class="mcard__head">' +
           '<div class="pitch">' +
@@ -313,7 +314,7 @@
             '</div>' +
             '<div class="scores">' + drum('home', h) + drum('away', a) + '</div>' +
           '</div>' +
-        '</div></div>' +
+        '</div></div></div>' +
       '</article>';
     }
 
