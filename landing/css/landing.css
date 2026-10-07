@@ -694,7 +694,7 @@ html[dir="rtl"] .dc__copy{direction:rtl}
 .store span{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;min-width:0;color:#fff;
   font-family:'Inter',sans-serif;text-align:left;direction:ltr}
 .store i{display:block;width:100%;font-style:normal;font-size:11.4px;font-weight:400;line-height:1.1;
-  text-transform:lowercase;letter-spacing:normal;white-space:normal}
+  text-transform:none;letter-spacing:normal;white-space:normal}
 .store b{font-size:19px;font-weight:500;letter-spacing:-.53px;line-height:1.05}
 /* the exported wordmark is stored flipped (Figma wraps it in -scale-y-100) */
 .store__word{margin-top:2px;transform:scaleY(-1)}
