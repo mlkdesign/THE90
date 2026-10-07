@@ -100,6 +100,107 @@
     });
   }());
 
+  /* ---------------- app screens carousel ---------------- */
+  (function appCarousel() {
+    var root = $('[data-app-carousel]');
+    if (!root) return;
+    var rail = $('[data-carousel-slides]', root);
+    var caption = $('[data-carousel-caption]', root);
+    var description = $('[data-carousel-description]', root);
+    var count = 8;
+    var middle = count * 2;
+    var position = middle;
+    var timer = null;
+    var inView = false;
+    var slides = [];
+
+    for (var i = 0; i < count * 5; i++) {
+      var button = document.createElement('button');
+      button.className = 'app-carousel__slide';
+      button.type = 'button';
+      button.dataset.index = i % count;
+      button.dataset.position = i;
+      button.innerHTML = '<img src="assets/img/carousel/' + (i % count + 1) + '.png" alt="" width="228" height="500">';
+      rail.appendChild(button);
+      slides.push(button);
+    }
+
+    function draw() {
+      var step = slides[1].offsetLeft - slides[0].offsetLeft;
+      var current = ((position % count) + count) % count;
+      rail.style.setProperty('--track-x', -(position * step + slides[0].offsetWidth / 2) + 'px');
+      slides.forEach(function (slide, i) {
+        var active = i === position;
+        slide.classList.toggle('is-active', active);
+        slide.setAttribute('aria-current', active ? 'true' : 'false');
+        slide.tabIndex = Math.abs(i - position) <= 2 ? 0 : -1;
+      });
+      caption.dataset.i18n = 'carousel.s' + (current + 1) + 't';
+      description.dataset.i18n = 'carousel.s' + (current + 1) + 'd';
+      caption.textContent = t(caption.dataset.i18n);
+      description.textContent = t(description.dataset.i18n);
+    }
+
+    function stop() { if (timer) clearInterval(timer); timer = null; }
+    function start() {
+      stop();
+      if (inView && !document.hidden && !reduce) {
+        timer = setInterval(function () { position++; draw(); }, 4000);
+      }
+    }
+
+    function settle() {
+      var centered = middle + ((position % count) + count) % count;
+      if (position === centered) return;
+      position = centered;
+      rail.classList.add('is-reset');
+      draw();
+      void rail.offsetWidth;
+      rail.classList.remove('is-reset');
+    }
+
+    rail.addEventListener('transitionend', function (event) {
+      if (event.target === rail && event.propertyName === 'transform') settle();
+    });
+    rail.addEventListener('click', function (event) {
+      var slide = event.target.closest('.app-carousel__slide');
+      if (!slide) return;
+      position = Number(slide.dataset.position);
+      draw();
+      start();
+    });
+    document.addEventListener('the90:lang', function () {
+      $('[data-carousel-stage]', root).setAttribute('aria-label', t('carousel.title'));
+      slides.forEach(function (slide, i) {
+        var n = i % count + 1;
+        slide.setAttribute('aria-label', t('carousel.show') + ' ' + n + ': ' + t('carousel.s' + n + 't'));
+      });
+      draw();
+    });
+    document.addEventListener('visibilitychange', start);
+    window.addEventListener('resize', function () {
+      rail.classList.add('is-reset');
+      draw();
+      void rail.offsetWidth;
+      rail.classList.remove('is-reset');
+    });
+    rail.classList.add('is-reset');
+    draw();
+    void rail.offsetWidth;
+    rail.classList.remove('is-reset');
+    ready(function () {
+      rail.classList.add('is-reset');
+      draw();
+      void rail.offsetWidth;
+      rail.classList.remove('is-reset');
+      var observer = new IntersectionObserver(function (entries) {
+        inView = entries[0].isIntersecting;
+        start();
+      }, { threshold: .2 });
+      observer.observe(root);
+    });
+  }());
+
   /* ---------------- daily challenges ----------------
      The app's pick rail, playable on the page — the same card and the same
      rules as js/pick-card.js and js/main.js: a pick is complete once it has
@@ -712,7 +813,10 @@
       wrap.classList.toggle('is-open', on);
       if (on) {
         var cur = $('.lang__item[aria-selected="true"]', menu);
-        if (cur && cur.scrollIntoView) cur.scrollIntoView({ block: 'nearest' });
+        if (cur) {
+          var itemTop = cur.getBoundingClientRect().top - menu.getBoundingClientRect().top + menu.scrollTop;
+          menu.scrollTop = Math.max(0, itemTop - menu.clientHeight / 2 + cur.offsetHeight / 2);
+        }
       }
     }
     btn.addEventListener('click', function (e) { e.stopPropagation(); open(menu.hidden); });

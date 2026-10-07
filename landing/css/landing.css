@@ -594,29 +594,50 @@ html[dir="rtl"] .dc__copy{direction:rtl}
 .donecard__win b img{box-sizing:border-box;display:block;width:16px;height:16px;padding:1.5px}
 
 /* =========================================================
+   App screens carousel
+   ========================================================= */
+.app-carousel{padding:64px 0 80px;overflow:hidden;text-align:center;background:var(--bg)}
+.app-carousel__title{max-width:760px;margin:0 auto 64px;padding:0 20px}
+.app-carousel__stage{position:relative;width:100%;height:500px;direction:ltr}
+.app-carousel__slides{position:absolute;top:0;left:50%;display:flex;gap:40px;width:max-content;height:100%;
+  transform:translate3d(var(--track-x, 0px),0,0);transition:transform .75s var(--ease);will-change:transform}
+.app-carousel__slides.is-reset{transition:none}
+.app-carousel__slide{
+  position:relative;flex:none;width:228px;height:500px;padding:0;overflow:hidden;
+  border:1px solid rgba(255,255,255,.1);border-radius:34px;
+  opacity:.5;transition:opacity .5s ease,border-color .3s ease;
+}
+.app-carousel__slide img{display:block;width:100%;height:100%;max-width:none;object-fit:cover;pointer-events:none}
+.app-carousel__slide.is-active,.app-carousel__slide:hover,.app-carousel__slide:focus-visible{opacity:1}
+.app-carousel__slide:hover{border-color:rgba(255,255,255,.35)}
+.app-carousel__phone{position:absolute;z-index:2;top:-6.5px;left:50%;width:252px;height:513px;max-width:none;transform:translateX(-50%);pointer-events:none}
+.app-carousel__copy{max-width:500px;min-height:78px;margin:32px auto 0;padding:0 20px}
+.app-carousel__caption{font-size:20px;font-weight:600;line-height:28px}
+.app-carousel__description{margin-top:16px;color:rgba(255,255,255,.5);font-size:14px;line-height:1.45}
+.app-carousel__actions{justify-content:center;margin-top:32px;padding:0 20px}
+
+/* =========================================================
    Live / leagues
    ========================================================= */
-.live{position:relative;height:516px;overflow:hidden}
-/* Figma puts the 721px photo at y=-204 inside the 516px section, so its lower
-   edge lands on the section bottom and the fade below can blend it into the bg */
+.live{position:relative;padding:64px 0 80px;overflow:hidden}
 .live__bg{
-  position:absolute;left:0;top:-204px;
-  width:100%;height:721px;object-fit:cover;object-position:center;opacity:.4;
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:.4;
 }
 .live .hero__fade--top{height:373px}
 .live__fadeB{
   position:absolute;left:0;bottom:0;width:100%;height:200px;z-index:2;pointer-events:none;
   background:linear-gradient(0deg,var(--bg) 0%,rgba(14,14,14,.88) 42%,rgba(14,14,14,0) 100%);
 }
-/* no z-index here on purpose: without a stacking context the section-level
-   bottom fade can slot between the phone (z1) and the copy (z3) */
-.live__in{position:relative;width:1440px;height:100%;margin-inline:auto}
-.live__copy{position:absolute;z-index:3;left:var(--pad);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:32px;align-items:flex-start}
-.live__copy .sec-title{text-align:start}
+.live__in{position:relative;display:flex;flex-direction:column;align-items:center;width:min(100%,1200px);margin-inline:auto}
+.live__copy{position:relative;z-index:3;order:2;display:flex;flex-direction:column;gap:24px;align-items:center;
+  width:min(100%,720px);margin-top:-180px;padding-inline:var(--pad);text-align:center}
+.live__copy .sec-title{text-align:center}
 .live__copy .dl{margin-top:0}
-.live__sub{width:540px;font-size:16px;color:#fff;opacity:.6;line-height:1.5;margin-top:-24px}
-.live__art{position:absolute;z-index:1;left:845px;top:104px;width:303px;transition:transform .5s var(--ease)}
-.live__art img{width:303px;height:auto;filter:drop-shadow(0 30px 60px rgba(0,0,0,.7))}
+.live__sub{width:100%;max-width:540px;font-size:16px;color:#fff;opacity:.6;line-height:1.5}
+.live__art{position:relative;z-index:1;order:1;width:303px;margin-inline:auto;
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 65%,transparent 98%);
+  mask-image:linear-gradient(180deg,#000 0%,#000 65%,transparent 98%)}
+.live__art img{width:100%;height:auto}
 
 /* =========================================================
    FAQ + CTA
@@ -660,7 +681,7 @@ html[dir="rtl"] .dc__copy{direction:rtl}
 /* download row: our CTA + the official store badge(s) */
 .dl{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:28px}
 .dl .store{height:54px;width:auto;min-width:172px;border-radius:14px;padding:0 16px;gap:10px}
-.dl .store i{white-space:nowrap}
+.dl .store i{white-space:normal}
 .dl .store b{font-size:20px}
 .store{
   position:relative;display:flex;align-items:center;gap:8px;
@@ -670,8 +691,10 @@ html[dir="rtl"] .dc__copy{direction:rtl}
 }
 .store:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.4);box-shadow:0 14px 30px -12px rgba(0,0,0,.9)}
 .store img{flex:none}
-.store span{display:flex;flex-direction:column;justify-content:center;color:#fff;font-family:'Inter',sans-serif}
-.store i{font-style:normal;font-size:11.4px;line-height:1.1}
+.store span{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;min-width:0;color:#fff;
+  font-family:'Inter',sans-serif;text-align:left;direction:ltr}
+.store i{display:block;width:100%;font-style:normal;font-size:11.4px;font-weight:400;line-height:1.1;
+  text-transform:lowercase;letter-spacing:normal;white-space:normal}
 .store b{font-size:19px;font-weight:500;letter-spacing:-.53px;line-height:1.05}
 /* the exported wordmark is stored flipped (Figma wraps it in -scale-y-100) */
 .store__word{margin-top:2px;transform:scaleY(-1)}
@@ -698,10 +721,9 @@ html[dir="rtl"] .dc__copy{direction:rtl}
    follows the direction on its own.
    ========================================================= */
 @media (min-width: 1440px){
-  html[dir="rtl"] .hero__copy,html[dir="rtl"] .live__copy{left:auto;right:var(--pad)}
+  html[dir="rtl"] .hero__copy{left:auto;right:var(--pad)}
   html[dir="rtl"] .hero__art{left:90px}
   html[dir="rtl"] .glow--hero{left:272px}
-  html[dir="rtl"] .live__art{left:292px}
 }
 html[dir="rtl"] .ftr__col a:hover{transform:translateX(-3px)}
 
@@ -739,6 +761,7 @@ html[dir="rtl"] .ftr__col a:hover{transform:translateX(-3px)}
   .hero__in{position:static;width:100%;height:auto;display:flex;flex-direction:column;
     align-items:center;gap:8px}
   .hero__copy{position:static;transform:none;width:100%;max-width:720px;padding:0 var(--pad)}
+  .hero__copy{align-items:center;text-align:center}
   .hero__sub{width:100%;max-width:560px}
   /* relative, not static: the chip is anchored to the artwork, not the section.
      inset must be cleared or the desktop left:613px would shove it off-screen. */
@@ -771,13 +794,10 @@ html[dir="rtl"] .ftr__col a:hover{transform:translateX(-3px)}
   .frow{grid-template-columns:repeat(3,minmax(0,1fr))}
 
   /* live */
-  .live{height:auto;padding:64px 0 0}
-  .live__in{position:static;width:100%;height:auto;display:flex;flex-direction:column;
-    align-items:center;gap:40px}
-  .live__copy{position:static;transform:none;width:100%;max-width:720px;padding:0 var(--pad);gap:24px}
-  .live__sub{width:100%;max-width:560px;margin-top:0}
-  .live__art{position:static;width:auto;transform:none!important}
-  .live__bg{top:0;height:100%}
+  .live{padding:64px 0 80px}
+  .live__in{width:100%}
+  .live__copy{width:100%;max-width:720px;padding:0 var(--pad);gap:24px}
+  .live__copy .dl{justify-content:center}
   .live .hero__fade--top{height:38%}
   .live__fadeB{height:46%}
 
@@ -796,10 +816,42 @@ html[dir="rtl"] .ftr__col a:hover{transform:translateX(-3px)}
   .ftr__brand,.ftr__brand p{width:100%}
 }
 
+@media (min-width: 768px) and (max-width: 1439px){
+  .dc{grid-template-columns:minmax(0,1fr)}
+  .dc__stage{grid-row:1}
+  .dc__copy{grid-row:2;display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,340px);
+    column-gap:36px;align-items:start;padding:32px 28px 40px}
+  .dc__copy > :not(.winbar-slot){grid-column:1}
+  .winbar-slot{grid-column:2;grid-row:1 / span 3;align-self:center;max-width:none;margin-top:0}
+  .faq__in{grid-template-columns:minmax(0,1.6fr) minmax(250px,1fr);gap:clamp(28px,4vw,60px)}
+  .faq__right{align-items:flex-start;text-align:start}
+  .faq__phone{margin-inline-start:26px}
+  .faq__cta{align-items:flex-start;max-width:100%;margin-top:-40px}
+  .faq__cta .sec-title,.faq__cta .live__sub{text-align:start}
+  .faq__cta .live__sub{width:100%}
+  .faq__cta .stores{justify-content:flex-start}
+}
+
+@media (max-width: 767px){
+  .app-carousel{padding:52px 0 64px}
+  .app-carousel__title{margin-bottom:44px}
+  .app-carousel__stage{height:494px}
+  .app-carousel__slides{gap:31px}
+  .app-carousel__slide{width:225px;height:494px;border-radius:34px}
+  .app-carousel__phone{top:-7px;width:250px;height:auto}
+  .app-carousel__copy{min-height:92px;margin-top:28px}
+  .app-carousel__caption{font-size:18px}
+  .app-carousel__actions{margin-top:24px}
+}
+
+@media (prefers-reduced-motion: reduce){
+  .app-carousel__slides,.app-carousel__slide{transition:none}
+}
+
 /* ---------- the rail stacks under its copy ---------- */
 @media (max-width: 1023px){
   .dc{grid-template-columns:minmax(0,1fr);min-height:0}
-  .dc__copy{padding:32px 28px 0}
+  .dc__copy{padding:32px 28px 40px}
   .dc .fcard__d{max-width:560px}
   /* stacked under the copy there is nothing to fade into: the app's own rail,
      the card in play on the left and the next one peeking on the right */
@@ -823,12 +875,6 @@ html[dir="rtl"] .ftr__col a:hover{transform:translateX(-3px)}
 /* ---------- tablets: two steps side by side, the third across the row with
    its picture on the right, the way phones show every step ---------- */
 @media (min-width: 768px) and (max-width: 1023px){
-  /* Daily challenges: title and copy on the left, Accept pick on the right,
-     always there, as on desktop */
-  .dc__copy{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,340px);column-gap:36px;align-items:start}
-  .dc__copy > :not(.winbar-slot){grid-column:1}
-  .winbar-slot{grid-column:2;grid-row:1 / span 3;align-self:center;max-width:none;margin-top:0}
-
   .steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
   .step:nth-child(3){
     grid-column:1 / -1;height:auto;min-height:0;padding:30px 0;
@@ -918,10 +964,9 @@ html[dir="rtl"] .ftr__col a:hover{transform:translateX(-3px)}
   .dc__rail{padding:24px 0 26px var(--lead)}
   .dc__arrow{display:none}
 
-  .live{padding-top:48px}
-  .live__copy{gap:20px;align-items:center;text-align:center}
-  .live__copy .sec-title{text-align:center}
-  .live__art img{width:240px}
+  .live{padding-top:48px;padding-bottom:64px}
+  .live__copy{gap:20px;margin-top:-156px}
+  .live__art{width:240px}
 
   .faq{padding-top:48px;padding-bottom:48px}
   .faq__left .sec-title--left{text-align:center}
@@ -942,7 +987,7 @@ html[dir="rtl"] .ftr__col a:hover{transform:translateX(-3px)}
 
 /* pointer-driven tilt and hover lifts are meaningless on touch */
 @media (hover: none){
-  .hero__art,.live__art{transform:none!important}
+  .hero__art{transform:none!important}
   .step:hover,.fcard:hover{transform:none}
   /* a tap must not leave a picture turned and enlarged past its column */
   .step:hover .step__art{transform:rotate(-23.07deg)}

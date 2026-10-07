@@ -67,6 +67,15 @@ window.THE90_I18N = (function () {
       'dc.done':'All picks accepted','dc.rating':'Rating reward:',
       'dc.prev':'Previous match','dc.next':'Next match','dc.slide':'Match {n} of {total}','dc.carousel':'Today’s matches',
       'live.title':'Live matches, live table',
+      'carousel.title':'The whole game, in your hands','carousel.show':'Show screen',
+      'carousel.s1t':'Join the game','carousel.s1d':'Create your account and get ready for your first picks.',
+      'carousel.s2t':'You’re in','carousel.s2d':'Registration is complete. Your football journey starts here.',
+      'carousel.s3t':'Make it yours','carousel.s3d':'Track your profile, rating and achievements in one place.',
+      'carousel.s4t':'Pick today’s matches','carousel.s4d':'Choose your results, lock your slip and follow the action.',
+      'carousel.s5t':'Explore tournaments','carousel.s5d':'See upcoming fixtures and every round of the competition.',
+      'carousel.s6t':'Climb the table','carousel.s6d':'Follow the leaders and see where your predictions take you.',
+      'carousel.s7t':'Play with your people','carousel.s7d':'Join a league, compete with friends and share the wins.',
+      'carousel.s8t':'Every detail counts','carousel.s8d':'Explore tournament results, standings and live progress.',
       'live.sub':'Follow the games your slip depends on, with the minute ticking and the leaderboard updating as goals go in.',
       'faq.title':'Questions, answered',
       'faq.q1':'Is it really free?',
@@ -598,6 +607,15 @@ window.THE90_I18N = (function () {
       'dc.done':'Все прогнозы приняты','dc.rating':'Награда в рейтинг:',
       'dc.prev':'Предыдущий матч','dc.next':'Следующий матч','dc.slide':'Матч {n} из {total}','dc.carousel':'Матчи сегодня',
       'live.title':'Live-матчи и живая таблица',
+      'carousel.title':'Вся игра — в ваших руках','carousel.show':'Показать экран',
+      'carousel.s1t':'Присоединяйтесь к игре','carousel.s1d':'Создайте аккаунт и подготовьтесь к первым прогнозам.',
+      'carousel.s2t':'Вы в игре','carousel.s2d':'Регистрация завершена. Пора начинать футбольный сезон.',
+      'carousel.s3t':'Ваш профиль','carousel.s3d':'Следите за рейтингом, статистикой и достижениями.',
+      'carousel.s4t':'Прогнозируйте матчи','carousel.s4d':'Выбирайте исходы, подтверждайте прогнозы и следите за игрой.',
+      'carousel.s5t':'Открывайте турниры','carousel.s5d':'Смотрите расписание и раунды любимых соревнований.',
+      'carousel.s6t':'Поднимайтесь в таблице','carousel.s6d':'Следите за лидерами и своим местом в рейтинге.',
+      'carousel.s7t':'Играйте с друзьями','carousel.s7d':'Вступайте в лиги, соревнуйтесь и делитесь победами.',
+      'carousel.s8t':'Всё о турнире','carousel.s8d':'Результаты, таблица и ход турнира в одном месте.',
       'live.sub':'Следите за матчами, от которых зависит ваш купон: минута идёт, таблица обновляется с каждым голом.',
       'faq.title':'Коротко о главном',
       'faq.q1':'Это правда бесплатно?',
@@ -1094,6 +1112,41 @@ window.THE90_I18N = (function () {
       'ftr.rights':'© 2026 THE90. 保留所有权利。'
     }
   };
+
+  /* Short captions for the eight app screens. Each pair is title, description.
+     Kept together so a language switch updates the whole carousel at once. */
+  var CAROUSEL = {
+    es:['Todo el juego en tus manos','Únete al juego','Crea tu cuenta y prepárate para tus primeros pronósticos.','Ya estás dentro','Registro completo. Empieza tu temporada de fútbol.','Tu perfil','Consulta tu puntuación, estadísticas y logros.','Pronostica los partidos','Elige resultados, confirma tu boleto y sigue la acción.','Explora torneos','Consulta los próximos partidos y cada ronda.','Sube en la tabla','Sigue a los líderes y descubre tu posición.','Juega con los tuyos','Únete a una liga y compite con tus amigos.','Cada detalle cuenta','Explora resultados, posiciones y el progreso del torneo.'],
+    pt:['O jogo todo nas suas mãos','Entre no jogo','Crie sua conta e prepare seus primeiros palpites.','Você está dentro','Cadastro concluído. Sua temporada começa agora.','Seu perfil','Acompanhe pontos, estatísticas e conquistas.','Palpite nos jogos','Escolha resultados, confirme e acompanhe os jogos.','Explore torneios','Veja os próximos jogos e todas as rodadas.','Suba na tabela','Siga os líderes e veja sua posição.','Jogue com amigos','Entre em uma liga e dispute com seus amigos.','Cada detalhe conta','Veja resultados, classificação e andamento do torneio.'],
+    fr:['Tout le jeu entre vos mains','Rejoignez le jeu','Créez votre compte et préparez vos premiers pronostics.','Vous y êtes','Inscription terminée. Votre saison commence ici.','Votre profil','Suivez vos points, statistiques et succès.','Pronostiquez les matchs','Choisissez les résultats, validez et suivez le jeu.','Explorez les tournois','Découvrez les matchs à venir et chaque phase.','Grimpez au classement','Suivez les leaders et votre position.','Jouez entre amis','Rejoignez une ligue et défiez vos amis.','Chaque détail compte','Consultez résultats, classement et progression du tournoi.'],
+    de:['Das ganze Spiel in deiner Hand','Mach mit','Erstelle dein Konto und gib deine ersten Tipps ab.','Du bist dabei','Registrierung abgeschlossen. Deine Saison beginnt hier.','Dein Profil','Verfolge Punkte, Statistiken und Erfolge.','Tippe auf Spiele','Wähle Ergebnisse, bestätige Tipps und bleib dran.','Entdecke Turniere','Sieh kommende Spiele und alle Runden.','Steig in der Tabelle auf','Verfolge die Spitze und deinen Platz.','Spiel mit Freunden','Tritt einer Liga bei und fordere Freunde heraus.','Jedes Detail zählt','Sieh Ergebnisse, Tabelle und Turnierverlauf.'],
+    it:['Tutto il gioco nelle tue mani','Entra in gioco','Crea il tuo account e preparati ai primi pronostici.','Ci sei','Registrazione completata. La stagione inizia qui.','Il tuo profilo','Segui punti, statistiche e traguardi.','Pronostica le partite','Scegli i risultati, conferma e segui il gioco.','Esplora i tornei','Scopri le prossime partite e ogni turno.','Scala la classifica','Segui i leader e la tua posizione.','Gioca con gli amici','Entra in una lega e sfida i tuoi amici.','Ogni dettaglio conta','Esplora risultati, classifica e andamento del torneo.'],
+    nl:['Het hele spel in je handen','Doe mee','Maak een account en bereid je eerste voorspellingen voor.','Je bent binnen','Registratie voltooid. Je seizoen begint hier.','Jouw profiel','Volg je punten, statistieken en prestaties.','Voorspel wedstrijden','Kies uitslagen, bevestig je keuzes en volg het spel.','Ontdek toernooien','Bekijk komende duels en alle rondes.','Klim in de ranglijst','Volg de koplopers en bekijk je positie.','Speel met vrienden','Sluit je aan bij een competitie en daag vrienden uit.','Elk detail telt','Bekijk uitslagen, standen en het toernooiverloop.'],
+    pl:['Cała gra w Twoich rękach','Dołącz do gry','Załóż konto i przygotuj pierwsze typy.','Jesteś w grze','Rejestracja zakończona. Twój sezon zaczyna się tutaj.','Twój profil','Śledź punkty, statystyki i osiągnięcia.','Typuj mecze','Wybierz wyniki, zatwierdź typy i śledź grę.','Odkrywaj turnieje','Zobacz nadchodzące mecze i każdą rundę.','Pnĳ się w tabeli','Śledź liderów i swoje miejsce.','Graj ze znajomymi','Dołącz do ligi i rywalizuj ze znajomymi.','Liczy się każdy szczegół','Sprawdź wyniki, tabelę i przebieg turnieju.'],
+    tr:['Bütün oyun avucunda','Oyuna katıl','Hesabını oluştur ve ilk tahminlerine hazırlan.','Artık oyundasın','Kayıt tamamlandı. Futbol sezonun burada başlıyor.','Profilin','Puanlarını, istatistiklerini ve başarılarını takip et.','Maçları tahmin et','Sonuçları seç, kuponunu onayla ve maçı izle.','Turnuvaları keşfet','Yaklaşan maçları ve tüm turları gör.','Sıralamada yüksel','Liderleri ve kendi sıranı takip et.','Arkadaşlarınla oyna','Bir lige katıl ve arkadaşlarınla yarış.','Her ayrıntı önemli','Sonuçları, puan durumunu ve turnuva akışını gör.'],
+    uk:['Уся гра у ваших руках','Долучайтеся до гри','Створіть акаунт і підготуйте перші прогнози.','Ви у грі','Реєстрацію завершено. Ваш сезон починається тут.','Ваш профіль','Стежте за балами, статистикою та досягненнями.','Прогнозуйте матчі','Обирайте результати, підтверджуйте й стежте за грою.','Досліджуйте турніри','Переглядайте майбутні матчі та всі раунди.','Підіймайтеся в таблиці','Стежте за лідерами та своїм місцем.','Грайте з друзями','Долучайтеся до ліги й змагайтеся з друзями.','Кожна деталь важлива','Переглядайте результати, таблицю та хід турніру.'],
+    ar:['اللعبة كلها بين يديك','انضم إلى اللعبة','أنشئ حسابك واستعد لتوقعاتك الأولى.','أنت في اللعبة','اكتمل التسجيل. يبدأ موسمك هنا.','ملفك الشخصي','تابع نقاطك وإحصاءاتك وإنجازاتك.','توقع نتائج المباريات','اختر النتائج وأكد توقعاتك وتابع اللعب.','اكتشف البطولات','شاهد المباريات القادمة وكل جولة.','تقدم في الترتيب','تابع المتصدرين ومركزك في الجدول.','العب مع أصدقائك','انضم إلى دوري وتنافس مع أصدقائك.','كل تفصيل مهم','استكشف النتائج والترتيب وسير البطولة.'],
+    hi:['पूरा खेल आपके हाथ में','खेल में शामिल हों','अपना खाता बनाएं और पहले अनुमान के लिए तैयार हों।','आप खेल में हैं','पंजीकरण पूरा हुआ। आपका सीज़न यहीं शुरू होता है।','आपकी प्रोफ़ाइल','अंक, आँकड़े और उपलब्धियाँ देखें।','मैचों का अनुमान लगाएं','नतीजे चुनें, पुष्टि करें और खेल पर नज़र रखें।','टूर्नामेंट देखें','आने वाले मैच और हर दौर देखें।','तालिका में ऊपर बढ़ें','शीर्ष खिलाड़ियों और अपनी जगह पर नज़र रखें।','दोस्तों के साथ खेलें','लीग से जुड़ें और दोस्तों से मुकाबला करें।','हर जानकारी अहम है','नतीजे, तालिका और टूर्नामेंट की प्रगति देखें।'],
+    id:['Seluruh permainan di tanganmu','Ikut bermain','Buat akun dan siapkan prediksi pertamamu.','Kamu sudah masuk','Pendaftaran selesai. Musimmu dimulai di sini.','Profilmu','Pantau poin, statistik, dan pencapaianmu.','Prediksi pertandingan','Pilih hasil, konfirmasi, dan ikuti laga.','Jelajahi turnamen','Lihat laga mendatang dan setiap babak.','Naik di klasemen','Ikuti para pemimpin dan posisimu.','Main bersama teman','Gabung liga dan bersaing dengan teman.','Setiap detail berarti','Lihat hasil, klasemen, dan jalannya turnamen.'],
+    vi:['Cả trận đấu trong tay bạn','Tham gia trò chơi','Tạo tài khoản và chuẩn bị dự đoán đầu tiên.','Bạn đã tham gia','Đăng ký hoàn tất. Mùa giải bắt đầu từ đây.','Hồ sơ của bạn','Theo dõi điểm, thống kê và thành tích.','Dự đoán trận đấu','Chọn kết quả, xác nhận và theo dõi trận đấu.','Khám phá giải đấu','Xem các trận sắp tới và mọi vòng đấu.','Leo bảng xếp hạng','Theo dõi người dẫn đầu và vị trí của bạn.','Chơi cùng bạn bè','Tham gia giải và thi đấu cùng bạn bè.','Mọi chi tiết đều quan trọng','Xem kết quả, bảng xếp hạng và tiến trình giải.'],
+    ja:['ゲームのすべてを手の中に','ゲームに参加','アカウントを作成して最初の予想に備えよう。','参加完了','登録完了。ここからシーズンが始まります。','あなたのプロフィール','ポイント、成績、実績をまとめて確認。','試合を予想','結果を選んで確定し、試合を見届けよう。','大会を探す','今後の試合と各ラウンドをチェック。','順位を上げよう','上位選手と自分の順位を確認。','友達とプレイ','リーグに参加して友達と競おう。','細部までチェック','結果、順位表、大会の進行を確認。'],
+    ko:['모든 경기를 손안에','게임에 참여하세요','계정을 만들고 첫 예측을 준비하세요.','참여 완료','가입이 끝났습니다. 시즌이 여기서 시작됩니다.','내 프로필','포인트, 통계, 업적을 확인하세요.','경기 예측하기','결과를 고르고 확정한 뒤 경기를 지켜보세요.','토너먼트 살펴보기','예정된 경기와 모든 라운드를 확인하세요.','순위 올리기','선두와 내 순위를 확인하세요.','친구와 함께하기','리그에 참여해 친구들과 겨루세요.','모든 정보 한눈에','결과, 순위표, 대회 진행 상황을 살펴보세요.'],
+    zh:['整场比赛，尽在掌中','加入游戏','创建账号，准备你的首次竞猜。','加入成功','注册完成。你的赛季从这里开始。','你的个人资料','查看积分、数据和成就。','预测比赛','选择赛果、确认竞猜并关注比赛。','探索赛事','查看即将开始的比赛和每轮赛程。','冲上排行榜','关注领先者和自己的名次。','与好友同玩','加入联赛，与好友一较高下。','每个细节都重要','查看赛果、积分榜和赛事进程。']
+  };
+  var CAROUSEL_SHOW = {
+    es:'Mostrar pantalla',pt:'Mostrar tela',fr:'Afficher l’écran',de:'Bildschirm anzeigen',it:'Mostra schermata',
+    nl:'Toon scherm',pl:'Pokaż ekran',tr:'Ekranı göster',uk:'Показати екран',ar:'عرض الشاشة',
+    hi:'स्क्रीन दिखाएं',id:'Tampilkan layar',vi:'Hiện màn hình',ja:'画面を表示',ko:'화면 보기',zh:'显示画面'
+  };
+  Object.keys(CAROUSEL).forEach(function (code) {
+    var v = CAROUSEL[code], d = DICT[code];
+    d['carousel.title'] = v[0];
+    d['carousel.show'] = CAROUSEL_SHOW[code];
+    for (var i = 1; i <= 8; i++) {
+      d['carousel.s' + i + 't'] = v[i * 2 - 1];
+      d['carousel.s' + i + 'd'] = v[i * 2];
+    }
+  });
 
   return { LOCALES:LOCALES, DICT:DICT, INTL:INTL, DEFAULT:'en' };
 })();
