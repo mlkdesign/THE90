@@ -1357,21 +1357,15 @@
     button.addEventListener('click', function () { openEditor(null); });
   });
 
-  /* The way to a first round from the league page itself — Premium buys the
-     rounds, so only the owner of such a league is offered one. */
+  /* Creator members can start a round here. Before activation the separate
+     Creator banner owns that space and opens the offer sheet. */
   var newRound = $('[data-league-new-round]');
   if (newRound) {
-    newRound.addEventListener('click', function () {
-      // without Premium the gold button is the way to it, not to a round
-      if (newRound.dataset.mode !== 'premium') openEditor(null);
-    });
+    newRound.addEventListener('click', function () { openEditor(null); });
     document.addEventListener('the90:league-membership', function (event) {
       var detail = event.detail || {};
-      newRound.hidden = !detail.own;
-      newRound.dataset.mode = detail.premium ? 'round' : 'premium';
-      newRound.textContent = detail.premium ? 'Create round' : 'Activate premium';
-      if (detail.premium) delete newRound.dataset.settingsSheet;
-      else newRound.dataset.settingsSheet = 'premium';
+      newRound.hidden = !detail.own || !detail.premium;
+      newRound.textContent = 'Create round';
     });
   }
 

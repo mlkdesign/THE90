@@ -267,10 +267,45 @@ button.settings-row:hover { background: rgba(255,255,255,.035); }
   background: var(--brand-primary);
 }
 .settings-theme-card--light > strong { color: var(--text-on-brand); }
-.settings-theme-special { margin-top: 4px; }
-.settings-theme-card--premium > strong { color: #dda72d; }
-.settings-theme-card--premium > span { position: absolute; z-index: 1; right: 18px; top: 30px; font-size: 16px; }
-
+.settings-theme-card--light.is-coming-soon::after {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background: rgba(0, 0, 0, .16);
+  pointer-events: none;
+}
+.settings-theme-card.is-coming-soon:disabled { cursor: default; opacity: 1; }
+.theme-coming-soon {
+  position: absolute;
+  z-index: 3;
+  right: 16px;
+  top: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+  color: #06120d;
+  transform: translateY(-50%);
+}
+.theme-coming-soon b {
+  padding: 2px 7px;
+  border-radius: 8px;
+  background: rgba(6, 18, 13, .84);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 12px;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+.theme-coming-soon time {
+  color: #06120d;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 13px;
+  white-space: nowrap;
+}
 /* Delete account */
 .settings-delete { position: absolute; inset: 104px 0 0; padding: 16px; }
 .settings-delete__warning {
@@ -409,3 +444,173 @@ button.settings-row:hover { background: rgba(255,255,255,.035); }
 .settings-cancel { width: 100%; height: 44px; border-radius: 16px; font-size: 13px; }
 .settings-outline-danger { border: 1px solid var(--input-border-error); color: var(--input-border-error); }
 .settings-cancel { background: rgba(255,255,255,.1); }
+
+/* THE90 Creator offer. This is the 580px bottom sheet from modal · joined. */
+.settings-sheet__panel--creator {
+  height: 580px;
+  padding: 0;
+  overflow: hidden;
+  border-color: rgba(255,255,255,.1);
+  background: var(--bg-surface);
+}
+.creator-modal__close {
+  position: absolute;
+  z-index: 8;
+  top: 16px;
+  right: 17px;
+  width: 32px;
+  height: 32px;
+  padding: 8px;
+  display: grid;
+  place-items: center;
+  opacity: .9;
+}
+.creator-modal__close:hover { opacity: 1; }
+.creator-modal__close:focus-visible { outline: 2px solid #ffc94a; outline-offset: 1px; }
+.creator-modal__close img { display: block; width: 16px; height: 16px; }
+.creator-modal__cover {
+  position: relative;
+  width: 390px;
+  height: 150px;
+  flex: none;
+  overflow: hidden;
+}
+.creator-modal__bg,
+.creator-modal__shade {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.creator-modal__bg {
+  object-fit: cover;
+  transform: scaleX(-1);
+  filter: blur(1px);
+}
+.creator-modal__shade {
+  background:
+    linear-gradient(180deg, rgba(26,26,26,0) 21%, #1a1a1a 100%),
+    linear-gradient(90deg, rgba(0,0,0,.08), rgba(0,0,0,.36));
+}
+.creator-modal__art {
+  position: absolute;
+  left: 166px;
+  bottom: -95.86px;
+  width: 261.86px;
+  height: 261.86px;
+  object-fit: contain;
+  transform: rotate(-40.92deg);
+}
+.creator-modal__intro {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  left: 15px;
+  width: 206px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #fff;
+  font-size: 12px;
+  line-height: 15px;
+  transform: translateY(-50%);
+}
+.creator-brand--modal strong { font-size: 20px; line-height: 20px; }
+.creator-modal__content {
+  height: 430px;
+  padding: 0 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.creator-features {
+  height: 194px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid rgba(255, 201, 74, .1);
+  border-radius: 24px;
+  background: rgba(255, 201, 74, .1);
+}
+.creator-feature {
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.creator-feature > span {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: #ffc94a;
+}
+.creator-feature > span img { display: block; width: 12px; height: 12px; }
+.creator-feature p {
+  min-width: 0;
+  margin: 0;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+}
+.creator-feature strong { color: #fff; font-size: 12px; font-weight: 600; line-height: 18px; }
+.creator-feature small { color: var(--text-primary); font-size: 10px; line-height: 12.5px; }
+.creator-pricing { height: 99px; display: flex; gap: 8px; }
+.creator-price {
+  min-width: 0;
+  height: 99px;
+  padding: 12px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 16px;
+  background: rgba(255,255,255,.1);
+  color: #fff;
+  text-align: left;
+}
+.creator-price.is-selected {
+  border-color: var(--brand-primary);
+  background:
+    linear-gradient(270deg, rgba(36,255,0,0), rgba(36,255,0,.2)),
+    #101a15;
+}
+.creator-price__top {
+  width: 100%;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.creator-price__top b {
+  height: 20px;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  border-radius: 12px;
+  background: #f05d5d;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 13px;
+  white-space: nowrap;
+}
+.creator-price.is-selected .creator-price__top b { background: var(--brand-primary); color: var(--text-on-brand); }
+.creator-price__top i {
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid rgba(255,255,255,.1);
+  border-radius: 50%;
+  background: rgba(255,255,255,.1);
+}
+.creator-price > strong { font-size: 18px; font-weight: 700; line-height: 22.5px; white-space: nowrap; }
+.creator-price > strong small { color: var(--text-primary); font-family: Inter, sans-serif; font-size: 12px; font-weight: 400; }
+.creator-price > em { margin-top: -4px; color: var(--brand-primary); font-size: 12px; font-weight: 600; font-style: normal; line-height: 18px; }
+.creator-modal__cta { height: 52px; flex: none; font-size: 16px; }
+.creator-modal__note { margin: 0; color: var(--text-primary); font-size: 10px; line-height: 12.5px; text-align: center; opacity: .5; }

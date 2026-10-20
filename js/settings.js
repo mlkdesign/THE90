@@ -41,6 +41,33 @@
     });
   });
 
+  /* White Light launches thirty days after the first visit. The deadline is
+     persisted so refreshing the prototype never restarts the countdown. */
+  var THEME_RELEASE_KEY = 'the90.lightThemeRelease.v1';
+  var THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+  var themeRelease = Number(window.localStorage.getItem(THEME_RELEASE_KEY));
+  if (!themeRelease) {
+    themeRelease = Date.now() + THIRTY_DAYS;
+    window.localStorage.setItem(THEME_RELEASE_KEY, String(themeRelease));
+  }
+
+  function two(value) { return String(value).padStart(2, '0'); }
+  function updateThemeCountdown() {
+    var remaining = Math.max(0, themeRelease - Date.now());
+    var seconds = Math.floor(remaining / 1000);
+    var days = Math.floor(seconds / 86400);
+    var hours = Math.floor(seconds % 86400 / 3600);
+    var minutes = Math.floor(seconds % 3600 / 60);
+    var secs = seconds % 60;
+    var label = two(days) + 'd ' + two(hours) + 'h ' + two(minutes) + 'm ' + two(secs) + 's';
+    $$('[data-theme-countdown]').forEach(function (timer) {
+      timer.textContent = label;
+      timer.setAttribute('datetime', new Date(themeRelease).toISOString());
+    });
+  }
+  updateThemeCountdown();
+  window.setInterval(updateThemeCountdown, 1000);
+
   /* Delete confirmation */
   var deleteChecks = $$('.settings-delete__checks input');
   var deleteConfirm = $('[data-delete-confirm]');
@@ -78,6 +105,18 @@
     if (opener) openSheet(opener.dataset.settingsSheet);
     if (event.target.closest('[data-sheet-close]')) closeSheet();
     if (event.target === overlay) closeSheet();
+  });
+
+  /* Pricing cards behave like a compact radio group in the Creator sheet. */
+  var creatorPlans = $$('[data-creator-plan]');
+  creatorPlans.forEach(function (plan) {
+    plan.addEventListener('click', function () {
+      creatorPlans.forEach(function (item) {
+        var selected = item === plan;
+        item.classList.toggle('is-selected', selected);
+        item.setAttribute('aria-checked', String(selected));
+      });
+    });
   });
 
   /* Languages */

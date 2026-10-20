@@ -509,22 +509,11 @@ button.mz-showcase__item:active { transform: scale(.94); }
 }
 .mz-theme--light::after { display: none; }
 .mz-theme--light strong { color: var(--text-on-brand); }
-.mz-theme--premium:disabled { cursor: default; opacity: 1; }
-.mz-theme--premium strong {
-  background: linear-gradient(180deg, #ffc94a 0%, #ff8800 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+.mz-theme--light.is-coming-soon::after {
+  display: block;
+  background: rgba(0, 0, 0, .16);
 }
-.mz-theme__lock {
-  position: relative !important;
-  z-index: 2 !important;
-  inset: auto !important;
-  width: 15px !important;
-  height: 17px !important;
-  flex: none;
-  object-fit: fill !important;
-}
+.mz-theme.is-coming-soon:disabled { cursor: default; opacity: 1; }
 
 /* --- app bar scrolls with the profile content --- */
 /* Pinned over the scroller: the wordmark, the bell and the gear stay where

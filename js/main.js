@@ -14,7 +14,7 @@
   var screen = $('[data-screen="main"]');
   if (!screen) return;
 
-  var TOTAL_PICKS  = 10;
+  var TOTAL_PICKS  = 5;
 
   var BASE_BALANCE = 10000;
   var DAILY_REWARD = 5;
@@ -23,7 +23,7 @@
   var today      = calendar.filter(function (d) { return d.isToday; })[0];
   var selectedDay = today;
 
-  var matches    = today.picks;                    // the 10 daily picks
+  var matches    = today.picks.slice(0, TOTAL_PICKS); // the five daily picks
   var picks      = {};                               // matchId -> { outcome, score, derived }
   var accepted   = false;                            // the whole slip has been confirmed
   var currentBalance = BASE_BALANCE;
@@ -77,7 +77,7 @@
   /* =======================================================
      The round
 
-     Ten cards on one horizontal rail, one card per swipe.
+     Five cards on one horizontal rail, one card per swipe.
 
      Answering a card reveals the confirmation card and arms its
      button; pressing it is what banks the pick and moves the

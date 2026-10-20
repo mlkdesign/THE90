@@ -108,7 +108,7 @@
       sheetPreview.alt = '';
     }
     var free = includedInPremium(avatar);
-    if (sheetPrice) sheetPrice.textContent = free ? 'Included in Premium' : avatar.price + ' Coins';
+    if (sheetPrice) sheetPrice.textContent = free ? 'Included with Creator' : avatar.price + ' Coins';
     if (sheetConfirm) {
       sheetConfirm.textContent = free ? 'Use this avatar' : 'Unlock for ' + avatar.price + ' Coins';
     }
@@ -164,7 +164,7 @@
 
         var price = document.createElement('span');
         price.className = 'avatar-card__price';
-        price.textContent = includedInPremium(avatar) ? 'In Premium' : avatar.price + ' Coins';
+        price.textContent = includedInPremium(avatar) ? 'Creator benefit' : avatar.price + ' Coins';
         card.appendChild(price);
       } else if (chosen === avatar.id) {
         var tick = document.createElement('img');

@@ -877,6 +877,12 @@
 }
 .ad__slide:nth-child(2) { background: linear-gradient(110deg, rgba(19,26,45,.78), rgba(17,55,32,.7)); }
 .ad__slide:nth-child(3) { background: linear-gradient(110deg, rgba(39,20,16,.7), rgba(26,57,21,.72)); }
+.ad__art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 .ad__tag {
   position: absolute;
   right: 8px;
@@ -884,40 +890,6 @@
   z-index: 4;
   font-size: 10px;
   color: rgba(255, 255, 255, .55);
-}
-.ad__text { position: absolute; left: 16px; top: 16px; width: 210px; z-index: 2; }
-.ad__text h3 {
-  margin: 0 0 6px;
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 24px;
-  color: #fff;
-}
-.ad__text p {
-  margin: 0 0 12px;
-  font-size: 12px;
-  line-height: 18px;
-  color: rgba(255, 255, 255, .8);
-}
-.ad__text p b { color: #ffc94a; font-weight: 600; }
-.ad__btn {
-  height: 32px;
-  padding: 0 16px;
-  border-radius: 10px;
-  background: #fff;
-  color: var(--text-on-brand);
-  font-size: 12px;
-  font-weight: 600;
-  transition: filter .18s ease;
-}
-.ad__btn:hover { filter: brightness(.92); }
-.ad__model {
-  position: absolute;
-  right: 6px;
-  bottom: -6px;
-  height: 178px;
-  width: auto;
-  z-index: 1;
 }
 .ad__dots {
   position: absolute;

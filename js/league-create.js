@@ -166,7 +166,7 @@
 
     var body = el('span', 'theleagues-card__body');
     var copy = el('span', 'theleagues-card__copy');
-    if (league.premium) copy.appendChild(el('em', 'theleagues-card__tag', 'Premium'));
+    if (league.premium) copy.appendChild(el('em', 'theleagues-card__tag', 'Creator'));
     copy.appendChild(el('h3', 'theleagues-card__title', league.name));
     copy.appendChild(el('p', null, league.description || league.subtitle || BLURB));
 
@@ -253,9 +253,8 @@
       /* The sheet closes itself on the way out — data-sheet-close on the
          button — so what is left on screen is the news. */
       var name = viewing.league && viewing.league.name;
-      reward('Your league is Premium!',
-        (name || 'This league') + ' can run its own rounds now, and it comes with a custom ' +
-        'background, theme and league stickers.');
+      reward('Creator status is active!',
+        (name || 'This league') + ' can now run custom rounds, invite its community and track results live.');
     });
   });
 

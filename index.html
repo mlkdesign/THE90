@@ -17,18 +17,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="css/style.css?v=8">
-<link rel="stylesheet" href="css/main.css?v=66">
+<link rel="stylesheet" href="css/main.css?v=67">
 <link rel="stylesheet" href="css/fixtures.css?v=1">
 <link rel="stylesheet" href="css/rankings.css?v=15">
 <link rel="stylesheet" href="css/leagues.css?v=61">
 <link rel="stylesheet" href="css/arena.css?v=67">
 <link rel="stylesheet" href="css/live.css?v=5">
-<link rel="stylesheet" href="css/league.css?v=49">
-<link rel="stylesheet" href="css/my-zone.css?v=8">
+<link rel="stylesheet" href="css/league.css?v=50">
+<link rel="stylesheet" href="css/my-zone.css?v=9">
 <link rel="stylesheet" href="css/ranks.css?v=1">
 <link rel="stylesheet" href="css/notifications.css?v=2">
 <link rel="stylesheet" href="css/community.css?v=11">
-<link rel="stylesheet" href="css/settings.css?v=5">
+<link rel="stylesheet" href="css/settings.css?v=6">
 </head>
 <body>
 
@@ -328,7 +328,7 @@
                 </div>
                 <div class="picksbar__progress">
                   <div class="picksbar__meter"><i data-picks-meter></i></div>
-                  <span class="picksbar__count"><b data-picks-done>0</b><small data-picks-total>/10</small></span>
+                  <span class="picksbar__count"><b data-picks-done>0</b><small data-picks-total>/5</small></span>
                 </div>
               </div>
 
@@ -336,7 +336,7 @@
                 <article class="mcard mcard--done" data-picks-done-card hidden>
                   <div class="donecard">
                     <div class="donecard__art" data-done-art aria-hidden="true"></div>
-                    <p class="donecard__title">Congratulations! All 10 picks are in.</p>
+                    <p class="donecard__title">Congratulations! All 5 picks are in.</p>
                     <p class="donecard__win">
                       Rating reward:
                       <b><span data-done-points>+ 5</span><img src="assets/icons/soccer-ball.svg" alt="" width="16" height="16"></b>
@@ -351,19 +351,19 @@
                 <span class="ad__tag">Sponsored AD</span>
                 <div class="ad__track" data-ad-track>
                   <article class="ad__slide is-active">
-                    <div class="ad__text"><h3>Weekend<br>Boost Special</h3><p>Deposit now and get up to <b>€500 bonus</b></p><button class="ad__btn" type="button">Claim Now</button></div>
-                    <img class="ad__model" src="assets/img/ad-model.png" alt="">
+                    <img class="ad__art" src="assets/ads/follow-instagram.png" alt="Follow The90 on Instagram">
                   </article>
                   <article class="ad__slide">
-                    <div class="ad__text"><h3>Champions<br>Night Bonus</h3><p>Make your picks and earn <b>double points</b></p><button class="ad__btn" type="button">Play Now</button></div>
-                    <img class="ad__model" src="assets/img/ad-model.png" alt="">
+                    <img class="ad__art" src="assets/ads/invite-friends.png" alt="Invite friends and get 100 coins for each">
                   </article>
                   <article class="ad__slide">
-                    <div class="ad__text"><h3>Daily<br>Winning Streak</h3><p>Return every day for an <b>extra reward</b></p><button class="ad__btn" type="button">Join Now</button></div>
-                    <img class="ad__model" src="assets/img/ad-model.png" alt="">
+                    <img class="ad__art" src="assets/ads/pepsi-football.png" alt="Pepsi — Celebrate Football">
+                  </article>
+                  <article class="ad__slide">
+                    <img class="ad__art" src="assets/ads/nike-vapour.png" alt="Nike Vapour Edge Pro">
                   </article>
                 </div>
-                <div class="ad__dots" data-ad-dots><button class="is-active" type="button" aria-label="Ad 1"></button><button type="button" aria-label="Ad 2"></button><button type="button" aria-label="Ad 3"></button></div>
+                <div class="ad__dots" data-ad-dots><button class="is-active" type="button" aria-label="Ad 1"></button><button type="button" aria-label="Ad 2"></button><button type="button" aria-label="Ad 3"></button><button type="button" aria-label="Ad 4"></button></div>
               </div>
 
               <!-- Calendar -->
@@ -946,11 +946,28 @@
                 </button>
               </div>
 
-              <!-- what Premium unlocked, offered where it is used: only the
-                   owner of such a league sees it -->
+              <!-- Creator unlocks custom rounds. The button appears only once
+                   Creator is active; before that the owner sees the banner. -->
               <button class="league-newround" type="button" data-league-new-round hidden>Create round</button>
 
-                <!-- Only a Premium league has anything to switch between:
+              <button class="creator-card" type="button" data-premium-card data-settings-sheet="creator"
+                      aria-haspopup="dialog" aria-controls="creator-modal" hidden>
+                <span class="creator-card__visual" aria-hidden="true">
+                  <img class="creator-card__bg" src="assets/creator/banner-bg.png" alt="">
+                  <span class="creator-card__shade"></span>
+                  <img class="creator-card__art" src="assets/creator/banner-art.png" alt="">
+                </span>
+                <span class="creator-card__content">
+                  <span class="creator-brand creator-brand--card">
+                    <img src="assets/creator/banner-mark.svg" alt="" width="10" height="8">
+                    <strong><em>THE90</em> CREATOR</strong>
+                  </span>
+                  <span class="creator-card__copy">Exclusive status. More opportunities. More recognition.</span>
+                  <span class="creator-card__cta">Become a Creator</span>
+                </span>
+              </button>
+
+                <!-- Only a Creator league has anything to switch between:
                      js/league-tabs.js unhides this for those. -->
                 <div class="league-tabs-sticky" hidden>
                   <div class="league-tabs" role="tablist" aria-label="League sections" data-league-tabs>
@@ -1014,29 +1031,6 @@
 
 </section>
                 </div>
-
-              <!-- only shown inside a league you own -->
-              <article class="premium-card" data-premium-card hidden>
-                <p class="premium-card__eyebrow">
-                  <img src="assets/settings/star.svg" alt="" width="14" height="14">
-                  Superleague
-                </p>
-                <h3>Make your league Premium</h3>
-                <p class="premium-card__lead">Paid customization: background, colors and league stickers — a signature look only for your group.</p>
-                <p class="premium-card__features">
-                  <span>Background · Theme</span>
-                  <span>Colors · Accents</span>
-                  <span>Custom <b>stickers</b></span>
-                </p>
-                <p class="premium-card__split">
-                  <img src="assets/settings/users.svg" alt="" width="20" height="13">
-                  <span>Monthly payment <b>is split</b> across all members — everyone pays their share</span>
-                </p>
-                <div class="premium-card__foot">
-                  <span class="premium-card__price">from <b>99</b> Coins/mo ÷ 12</span>
-                  <button class="btn btn--primary premium-card__cta" type="button" data-settings-sheet="premium">Activate Premium</button>
-                </div>
-              </article>
 
             </main>
           </div>
@@ -1460,15 +1454,10 @@
                     <strong>Dark night</strong>
                     <i aria-hidden="true"></i>
                   </button>
-                  <button class="mz-theme mz-theme--light" type="button" data-theme-choice="light" aria-pressed="false">
+                  <button class="mz-theme mz-theme--light is-coming-soon" type="button" aria-label="White light theme, coming soon" disabled>
                     <img src="assets/my-zone/theme-light.png" alt="">
                     <strong>White light</strong>
-                    <i aria-hidden="true"></i>
-                  </button>
-                  <button class="mz-theme mz-theme--premium" type="button" aria-label="Premium gold theme, locked" disabled>
-                    <img src="assets/my-zone/theme-premium.png" alt="">
-                    <strong>Premium gold</strong>
-                    <img class="mz-theme__lock" src="assets/my-zone/lock.svg" alt="Locked" width="15" height="17">
+                    <span class="theme-coming-soon"><b>Coming Soon</b><time data-theme-countdown>30d 00h 00m 00s</time></span>
                   </button>
                 </div>
               </section>
@@ -1859,12 +1848,9 @@
             <button class="settings-theme-card is-selected" type="button" data-settings-theme="Dark night">
               <img src="assets/my-zone/theme-dark.png" alt=""><strong>Dark night</strong><i></i>
             </button>
-            <button class="settings-theme-card settings-theme-card--light" type="button" data-settings-theme="White light">
-              <img src="assets/my-zone/theme-light.png" alt=""><strong>White light</strong><i></i>
-            </button>
-            <h2 class="settings-section-title settings-theme-special">Special</h2>
-            <button class="settings-theme-card settings-theme-card--premium" type="button" disabled>
-              <img src="assets/my-zone/theme-premium.png" alt=""><strong>Premium gold</strong><span>🔒</span>
+            <button class="settings-theme-card settings-theme-card--light is-coming-soon" type="button" aria-label="White light theme, coming soon" disabled>
+              <img src="assets/my-zone/theme-light.png" alt=""><strong>White light</strong>
+              <span class="theme-coming-soon"><b>Coming Soon</b><time data-theme-countdown>30d 00h 00m 00s</time></span>
             </button>
           </div>
         </section>
@@ -1932,23 +1918,43 @@
               <button class="settings-cancel" type="button" data-sheet-close>Maybe later</button>
             </div>
           </section>
-          <section class="settings-sheet__panel settings-sheet__panel--premium" data-settings-panel="premium" hidden>
-            <i class="settings-sheet__handle"></i>
-            <div class="settings-sheet__content premium-sheet">
-              <h2>Activate Premium</h2>
-              <ul class="premium-sheet__list">
-                <li><img src="assets/icons/check.svg" alt="" width="16" height="16">Your own league background</li>
-                <li><img src="assets/icons/check.svg" alt="" width="16" height="16">Custom theme: accent and card colors</li>
-                <li><img src="assets/icons/check.svg" alt="" width="16" height="16">League sticker pack</li>
-                <li><img src="assets/icons/check.svg" alt="" width="16" height="16">2 paid avatars included, free</li>
-                <li><img src="assets/icons/check.svg" alt="" width="16" height="16">Extended member limit</li>
-              </ul>
-              <div class="premium-sheet__price">
-                <span>99 Coins / month</span>
-                <span>÷ 12 members</span>
-                <strong>9 Coins per member</strong>
+          <section class="settings-sheet__panel settings-sheet__panel--creator" id="creator-modal"
+                   data-settings-panel="creator" role="dialog" aria-modal="true"
+                   aria-labelledby="creator-modal-title" hidden>
+            <button class="creator-modal__close" type="button" data-sheet-close aria-label="Close Creator details">
+              <img src="assets/creator/close.svg" alt="" width="16" height="16">
+            </button>
+            <header class="creator-modal__cover">
+              <img class="creator-modal__bg" src="assets/creator/banner-bg.png" alt="">
+              <span class="creator-modal__shade"></span>
+              <img class="creator-modal__art" src="assets/creator/banner-art.png" alt="">
+              <span class="creator-modal__intro">
+                <span class="creator-brand creator-brand--modal" id="creator-modal-title">
+                  <img src="assets/creator/modal-mark.svg" alt="" width="16" height="13">
+                  <strong><em>THE90</em> CREATOR</strong>
+                </span>
+                <span>Exclusive status. More opportunities. More recognition.</span>
+              </span>
+            </header>
+            <div class="creator-modal__content">
+              <div class="creator-features">
+                <div class="creator-feature"><span><img src="assets/creator/check.svg" alt=""></span><p><strong>Create Custom Rounds</strong><small>Choose matches, set your own rules and scoring.</small></p></div>
+                <div class="creator-feature"><span><img src="assets/creator/check.svg" alt=""></span><p><strong>Invite Friends</strong><small>Build your league and grow your community.</small></p></div>
+                <div class="creator-feature"><span><img src="assets/creator/check.svg" alt=""></span><p><strong>Full Control</strong><small>Set deadlines, categories and prizes.</small></p></div>
+                <div class="creator-feature"><span><img src="assets/creator/check.svg" alt=""></span><p><strong>Track Results</strong><small>Real-time leaderboard for your rounds.</small></p></div>
               </div>
-              <button class="btn btn--primary" type="button" data-premium-confirm data-sheet-close>Activate for 9 Coins/mo</button>
+              <div class="creator-pricing" role="radiogroup" aria-label="Creator billing period">
+                <button class="creator-price is-selected" type="button" role="radio" aria-checked="true" data-creator-plan="monthly">
+                  <span class="creator-price__top"><b>Most popular</b><img src="assets/creator/radio-selected.svg" alt="" width="20" height="20"></span>
+                  <strong>€4.99 <small>/ month</small></strong><em>14 days free trial</em>
+                </button>
+                <button class="creator-price" type="button" role="radio" aria-checked="false" data-creator-plan="yearly">
+                  <span class="creator-price__top"><b>Best price</b><i aria-hidden="true"></i></span>
+                  <strong>€39.99 <small>/ year</small></strong><em>Save 33%</em>
+                </button>
+              </div>
+              <button class="btn btn--primary creator-modal__cta" type="button" data-premium-confirm data-sheet-close>Start 14 Days Free Trial</button>
+              <p class="creator-modal__note">No commitment. Cancel anytime.</p>
             </div>
           </section>
           <section class="settings-sheet__panel settings-sheet__panel--logout" data-settings-panel="logout" hidden>
@@ -1977,7 +1983,7 @@
               </div>
               <button class="winbar__cta" type="button" data-win-next>Accept pick</button>
               <p class="winbar__reward">
-                <span>Complete all 10 picks and get reward:</span>
+                <span>Complete all 5 picks and get reward:</span>
                 <b>+ 5 <img src="assets/icons/soccer-ball.svg" alt="" width="16" height="16"></b>
               </p>
             </div>
@@ -2116,7 +2122,7 @@
 <script src="js/pick-card.js?v=24"></script>
 <script src="js/leaderboard.js?v=1"></script>
 <script src="js/app.js?v=18"></script>
-<script src="js/main.js?v=31"></script>
+<script src="js/main.js?v=32"></script>
 <script src="js/news.js?v=1"></script>
 <script src="js/live.js?v=3"></script>
 <script src="js/rankings.js?v=10"></script>
@@ -2125,19 +2131,19 @@
 <script src="js/arena-join.js?v=3"></script>
 <script src="js/league.js?v=24"></script>
 <script src="js/leagues.js?v=5"></script>
-<script src="js/league-create.js?v=38"></script>
+<script src="js/league-create.js?v=39"></script>
 <script src="js/league-pager.js?v=9"></script>
 <script src="js/league-rules.js?v=2"></script>
 <script src="js/league-tabs.js?v=9"></script>
 <script src="js/league-round.js?v=5"></script>
 <script src="js/league-menu.js?v=6"></script>
 <script src="js/league-participants.js?v=2"></script>
-<script src="js/league-rounds.js?v=61"></script>
+<script src="js/league-rounds.js?v=62"></script>
 <script src="js/my-zone.js?v=2"></script>
 <script src="js/ranks.js?v=3"></script>
 <script src="js/notifications.js?v=7"></script>
 <script src="js/community.js?v=7"></script>
-<script src="js/settings.js?v=2"></script>
-<script src="js/avatars.js?v=3"></script>
+<script src="js/settings.js?v=3"></script>
+<script src="js/avatars.js?v=4"></script>
 </body>
 </html>
