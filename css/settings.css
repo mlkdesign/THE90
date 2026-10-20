@@ -484,22 +484,12 @@ button.settings-row:hover { background: rgba(255,255,255,.035); }
 }
 .creator-modal__bg {
   object-fit: cover;
-  transform: scaleX(-1);
-  filter: blur(1px);
+  object-position: center;
 }
 .creator-modal__shade {
   background:
     linear-gradient(180deg, rgba(26,26,26,0) 21%, #1a1a1a 100%),
     linear-gradient(90deg, rgba(0,0,0,.08), rgba(0,0,0,.36));
-}
-.creator-modal__art {
-  position: absolute;
-  left: 166px;
-  bottom: -95.86px;
-  width: 261.86px;
-  height: 261.86px;
-  object-fit: contain;
-  transform: rotate(-40.92deg);
 }
 .creator-modal__intro {
   position: absolute;
