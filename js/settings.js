@@ -106,6 +106,9 @@
     if (event.target.closest('[data-sheet-close]')) closeSheet();
     if (event.target === overlay) closeSheet();
   });
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && overlay && !overlay.hidden) closeSheet();
+  });
 
   /* Pricing cards behave like a compact radio group in the Creator sheet. */
   var creatorPlans = $$('[data-creator-plan]');

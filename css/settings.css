@@ -445,8 +445,8 @@ button.settings-row:hover { background: rgba(255,255,255,.035); }
 .settings-outline-danger { border: 1px solid var(--input-border-error); color: var(--input-border-error); }
 .settings-cancel { background: rgba(255,255,255,.1); }
 
-/* THE90 Creator offer. This is the 580px bottom sheet from modal · joined. */
-.settings-sheet__panel--creator {
+/* Shared 580px bottom-sheet frame used by Creator and Rankings prizes. */
+.settings-sheet__panel--modal {
   height: 580px;
   padding: 0;
   overflow: hidden;

@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="css/style.css?v=9">
 <link rel="stylesheet" href="css/main.css?v=68">
 <link rel="stylesheet" href="css/fixtures.css?v=1">
-<link rel="stylesheet" href="css/rankings.css?v=16">
+<link rel="stylesheet" href="css/rankings.css?v=18">
 <link rel="stylesheet" href="css/leagues.css?v=62">
 <link rel="stylesheet" href="css/arena.css?v=67">
 <link rel="stylesheet" href="css/live.css?v=5">
@@ -28,7 +28,7 @@
 <link rel="stylesheet" href="css/ranks.css?v=1">
 <link rel="stylesheet" href="css/notifications.css?v=2">
 <link rel="stylesheet" href="css/community.css?v=12">
-<link rel="stylesheet" href="css/settings.css?v=7">
+<link rel="stylesheet" href="css/settings.css?v=8">
 </head>
 <body>
 
@@ -444,7 +444,7 @@
                 <p data-rankings-participants></p>
               </header>
 
-              <button class="rankings-prizes" type="button" data-rankings-prizes>Prizes <img src="assets/rankings/prizes-chevron.svg" alt="" width="16" height="16"></button>
+              <button class="rankings-prizes" type="button" data-rankings-prizes data-settings-sheet="rankings-prizes">Prizes <img src="assets/rankings/prizes-chevron.svg" alt="" width="16" height="16"></button>
               <div class="rankings-timer" aria-label="Season countdown">
                 <p data-season-label>Season ends in</p>
                 <div><strong data-season-days>0</strong><small>Days</small></div><b>:</b>
@@ -478,17 +478,14 @@
               <div class="rankings-rewards__copy">
                 <p>Season Rewards</p><strong>UP TO 100,000 COINS</strong>
                 <p>+ exclusive Champion Prize!</p>
-                <button type="button" data-rankings-prizes>View Rewards</button>
+                <button type="button" data-rankings-prizes data-settings-sheet="rankings-prizes">View Rewards</button>
               </div>
             </section>
 
             <div class="rankings-list" aria-label="Global leaderboard" data-rankings-list></div>
           </div>
 
-          <dialog role="dialog" class="rankings-prize-sheet" aria-modal="true" aria-labelledby="rankings-prizes-title" data-rankings-prize-sheet>
-            <header><h2 id="rankings-prizes-title">Prizes</h2><button type="button" data-rankings-prizes-close>Close</button></header>
-            <div class="rankings-prize-sheet__list" tabindex="0" role="region" aria-label="Season prizes" data-rankings-prize-cards></div>
-          </dialog>
+
           <!-- everything scrolling up dissolves into the status bar -->
           <div class="rankings-scrim" aria-hidden="true"></div>
         </section>
@@ -1933,7 +1930,7 @@
               <button class="settings-cancel" type="button" data-sheet-close>Maybe later</button>
             </div>
           </section>
-          <section class="settings-sheet__panel settings-sheet__panel--creator" id="creator-modal"
+          <section class="settings-sheet__panel settings-sheet__panel--modal settings-sheet__panel--creator" id="creator-modal"
                    data-settings-panel="creator" role="dialog" aria-modal="true"
                    aria-labelledby="creator-modal-title" hidden>
             <button class="creator-modal__close" type="button" data-sheet-close aria-label="Close Creator details">
@@ -1970,6 +1967,17 @@
               <button class="btn btn--primary creator-modal__cta" type="button" data-premium-confirm data-sheet-close>Start 14 Days Free Trial</button>
               <p class="creator-modal__note">No commitment. Cancel anytime.</p>
             </div>
+          </section>
+          <section class="settings-sheet__panel settings-sheet__panel--modal settings-sheet__panel--prizes"
+                   data-settings-panel="rankings-prizes" role="dialog" aria-modal="true"
+                   aria-labelledby="rankings-prizes-title" hidden>
+            <button class="creator-modal__close" type="button" data-sheet-close aria-label="Close prizes">
+              <img src="assets/creator/close.svg" alt="" width="16" height="16">
+            </button>
+            <header class="rankings-prizes__header">
+              <h2 id="rankings-prizes-title">Prizes</h2>
+            </header>
+            <div class="rankings-prizes__list" tabindex="0" role="region" aria-label="Season prizes" data-rankings-prize-cards></div>
           </section>
           <section class="settings-sheet__panel settings-sheet__panel--logout" data-settings-panel="logout" hidden>
             <i class="settings-sheet__handle"></i>
@@ -2139,7 +2147,7 @@
 <script src="js/main.js?v=32"></script>
 <script src="js/news.js?v=1"></script>
 <script src="js/live.js?v=3"></script>
-<script src="js/rankings.js?v=11"></script>
+<script src="js/rankings.js?v=13"></script>
 <script src="js/thearena.js?v=8"></script>
 <script src="js/tournament.js?v=60"></script>
 <script src="js/arena-join.js?v=3"></script>
@@ -2157,7 +2165,7 @@
 <script src="js/ranks.js?v=3"></script>
 <script src="js/notifications.js?v=7"></script>
 <script src="js/community.js?v=7"></script>
-<script src="js/settings.js?v=3"></script>
+<script src="js/settings.js?v=4"></script>
 <script src="js/avatars.js?v=4"></script>
 </body>
 </html>

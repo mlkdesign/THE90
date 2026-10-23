@@ -221,59 +221,51 @@
   updateSeason();
   window.setInterval(updateSeason, 60000);
 
-  var prizes = screen.querySelector('[data-rankings-prize-sheet]');
+  var prizes = document.querySelector('[data-settings-panel="rankings-prizes"]');
   var prizeCards = prizes.querySelector('[data-rankings-prize-cards]');
+  var settingsOverlay = document.querySelector('[data-settings-overlay]');
   document.querySelectorAll('[data-tournament-panel="prizes"] .arena-prize').forEach(function (card) {
     prizeCards.appendChild(card.cloneNode(true));
   });
   var prizeOpener = null;
   var previousOverflow = '';
-  // Native dialogs live in the top layer, outside the scaled phone mockup.
-  function positionPrizes() {
-    var app = screen.closest('.app');
-    var bounds = app.getBoundingClientRect();
-    var scale = bounds.width / app.offsetWidth;
-    prizes.style.left = bounds.left + 'px';
-    prizes.style.right = 'auto';
-    prizes.style.bottom = (window.innerHeight - bounds.bottom) + 'px';
-    prizes.style.margin = '0';
-    prizes.style.width = app.offsetWidth + 'px';
-    prizes.style.maxWidth = 'none';
-    prizes.style.maxHeight = (app.offsetHeight - 32) + 'px';
-    prizes.style.transformOrigin = 'bottom left';
-    prizes.style.transform = 'scale(' + scale + ')';
+  function restorePrizes() {
+    scroll.style.overflowY = previousOverflow;
+    var opener = prizeOpener;
+    if (opener && screen.classList.contains('is-active')) {
+      requestAnimationFrame(function () { opener.focus({ preventScroll: true }); });
+    }
+    prizeOpener = null;
   }
-  window.addEventListener('resize', function () {
-    if (prizes.open) requestAnimationFrame(function () { requestAnimationFrame(positionPrizes); });
-  });
-  function closePrizes() { if (prizes.open) prizes.close(); }
+  function closePrizes() {
+    if (!prizes.hidden) prizes.querySelector('[data-sheet-close]').click();
+  }
   screen.querySelectorAll('[data-rankings-prizes]').forEach(function (button) {
     button.addEventListener('click', function () {
-      if (prizes.open) return;
+      if (!prizes.hidden) return;
       prizeOpener = button;
       previousOverflow = scroll.style.overflowY;
       scroll.style.overflowY = 'hidden';
-      positionPrizes();
-      prizes.showModal();
-      prizes.querySelector('button').focus({ preventScroll: true });
+      requestAnimationFrame(function () {
+        if (!prizes.hidden) prizes.querySelector('[data-sheet-close]').focus({ preventScroll: true });
+      });
     });
   });
-  prizes.querySelector('[data-rankings-prizes-close]').addEventListener('click', closePrizes);
-  prizes.addEventListener('click', function (event) {
-    var rect = prizes.getBoundingClientRect();
-    if (event.target === prizes && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) closePrizes();
+  settingsOverlay.addEventListener('click', function (event) {
+    if (prizes.hidden) return;
+    if (event.target === settingsOverlay || (event.target.closest('[data-sheet-close]') && prizes.contains(event.target.closest('[data-sheet-close]')))) {
+      restorePrizes();
+    }
   });
-  prizes.addEventListener('close', function () {
-    scroll.style.overflowY = previousOverflow;
-    if (prizeOpener && screen.classList.contains('is-active')) prizeOpener.focus({ preventScroll: true });
-  });
-  // Native modal dialog makes the background inert; explicitly wrap Tab as well.
   prizes.addEventListener('keydown', function (event) {
     if (event.key !== 'Tab') return;
     var focusable = prizes.querySelectorAll('button, a[href], input, [tabindex="0"]');
     var first = focusable[0], last = focusable[focusable.length - 1];
     if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
     else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  });
+  settingsOverlay.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && !prizes.hidden) restorePrizes();
   });
   window.addEventListener('the90:screen', function (event) {
     if (event.detail !== 'rankings') closePrizes();
