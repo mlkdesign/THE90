@@ -534,20 +534,14 @@
 .rankings-podium__place { position: absolute; z-index: 1; top: 23px; width: 20px; height: 20px; display: grid; place-items: center; border-radius: 50%; background: #949494; color: #f7faf8; font-size: 14px; font-style: normal; font-weight: 600; }
 .rankings-podium__user--first .rankings-podium__place { top: 33px; background: #ffd626; color: #0e0e0e; }
 .rankings-podium__user--third .rankings-podium__place { background: #f7faf8; color: #0e0e0e; }
-.rankings-rewards { position: relative; width: 358px; height: 126px; margin: 16px 16px; padding: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,.1); border-radius: 24px; background: var(--bg-primary); }
-.rankings-rewards__art { position: absolute; width: 149px; height: 149px; top: 4px; left: 187px; object-fit: cover; }
-.rankings-rewards__copy { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
-.rankings-rewards p { margin: 0; font-size: 12px; line-height: 15px; }
-.rankings-rewards strong { color: var(--brand-primary); font-size: 14px; line-height: 16px; }
-.rankings-rewards button { height: 32px; margin-top: 4px; padding: 0 16px; border-radius: 12px; background: #f7faf8; color: #0e0e0e; font-size: 12px; font-weight: 700; }
-.screen--rankings .rankings-list { box-shadow: none; }
+.screen--rankings .rankings-list { margin-top: 20px; box-shadow: none; }
 .screen--rankings .rankings-list::before { display: none; }
 .settings-sheet__panel--prizes { display: flex; flex-direction: column; color: var(--text-primary); }
 .rankings-prizes__header { min-height: 64px; flex: none; display: flex; align-items: center; justify-content: center; padding: 16px 56px; }
 .rankings-prizes__header h2 { margin: 0; font-size: 20px; line-height: 25px; text-align: center; }
 .rankings-prizes__list { min-height: 0; padding: 0 16px max(24px,env(safe-area-inset-bottom)); overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 16px; }
 .rankings-prizes__list .arena-prize { flex-shrink: 0; max-width: 100%; }
-.rankings-prizes:focus-visible, .rankings-rewards button:focus-visible, .settings-sheet__panel--prizes button:focus-visible { outline: 2px solid var(--brand-primary); outline-offset: 2px; }
+.rankings-prizes:focus-visible, .settings-sheet__panel--prizes button:focus-visible { outline: 2px solid var(--brand-primary); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) {
   .screen--rankings .rankings-podium__user { animation: none; }
 }
@@ -556,6 +550,4 @@
 .screen--rankings .rankings-podium__user::before { content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: url('../assets/rankings/leader-silver.png') center/cover; filter: blur(19px); transform: scaleX(-1); clip-path: inset(0 round 20px); }
 .screen--rankings .rankings-podium__user--first::before { background-image: url('../assets/rankings/leader-gold.png'); filter: blur(23px); clip-path: inset(0 round 24px); }
 .screen--rankings .rankings-podium__user--third::before { display: none; }
-.rankings-rewards::before { content: ''; position: absolute; inset: -12px; background: url('../assets/rankings/rewards-background.png') center/cover; filter: blur(23px); transform: scaleX(-1); }
-
 .rankings-prizes__list:focus-visible { outline: 2px solid var(--brand-primary); outline-offset: -2px; }
