@@ -61,6 +61,13 @@
 
   var leagues = load(OWN_KEY, null) || SEEDED.slice();
   var premium = load(PREMIUM_KEY, false) === true;
+  function ensureLeagueIds() {
+    leagues.forEach(function (league) {
+      if (!league.id) league.id = 'own-' + (window.crypto && crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
+    });
+    save(OWN_KEY, leagues);
+  }
+  ensureLeagueIds();
 
 
   /* =======================================================
@@ -149,12 +156,14 @@
 
   function createCard(league, index) {
     var card = el('article', 'theleagues-card');
+    card.dataset.leagueId = league.id;
     var open = el('button', 'theleagues-card__open');
     open.type = 'button';
     open.dataset.go = 'league';
     open.dataset.leagueJoined = 'true';
     open.dataset.leagueOwn = 'true';
     open.dataset.leagueIndex = String(index);
+    open.dataset.leagueId = league.id;
     open.setAttribute('aria-label', 'Open ' + league.name);
 
     var art = el('span', 'theleagues-card__art');
@@ -201,6 +210,7 @@
     chat.dataset.leagueJoined = 'true';
     chat.dataset.leagueOwn = 'true';
     chat.dataset.leagueIndex = String(index);
+    chat.dataset.leagueId = league.id;
     chat.setAttribute('aria-label', 'Open the chat of ' + league.name);
     chat.appendChild(el('i', 'theleagues-card__unread'));
 
@@ -210,11 +220,13 @@
   }
 
   function renderOwn() {
+    ensureLeagueIds();
     var fragment = document.createDocumentFragment();
     leagues.forEach(function (league, index) {
       fragment.appendChild(createCard(league, index));
     });
     listWrap.replaceChildren(fragment);
+    document.dispatchEvent(new CustomEvent('the90:league-cards'));
 
     var has = leagues.length > 0;
     empty.hidden = has;
@@ -858,6 +870,11 @@
      other. */
   if (viewing.own && leagues[viewing.index]) viewing.league = leagues[viewing.index];
 
+  // Earlier saved views did not carry an ID for the seeded joined league.
+  if (!viewing.own && (!viewing.league || !viewing.league.id)) {
+    viewing.league = Object.assign({ name: 'Office League', privacy: 'open' }, viewing.league, { id: 'office-league' });
+  }
+
   function rememberViewing() {
     save(VIEWING_KEY, viewing);
   }
@@ -871,7 +888,8 @@
     var own = card.dataset.leagueOwn === 'true';
     var index = card.dataset.leagueIndex === undefined ? -1 : Number(card.dataset.leagueIndex);
     var record = own && leagues[index] ? leagues[index] : {
-      name: (card.getAttribute('aria-label') || '').replace(/^Open\s+/, '') || 'League',
+      id: card.dataset.leagueId,
+      name: card.dataset.leagueName || (card.getAttribute('aria-label') || '').replace(/^Open(?: the chat of)?\s+/, '') || 'League',
       privacy: card.dataset.leaguePrivacy === 'open' ? 'open' : 'private',
       premium: card.dataset.leaguePremium === 'true'
     };

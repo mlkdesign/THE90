@@ -205,50 +205,96 @@
   }
 
 
-  /* =======================================================
-     Parallax
+  // The new hero scrolls naturally: parallax would overlap the rewards buttons.
 
-     The top three sit on a block that only travels half as
-     far as the page does, so it appears to rise slowly while
-     the leaderboard climbs over it. The shade that covers the
-     podium belongs to the list, not to the hero, so it arrives
-     with the ranks rather than staying put (see rankings.css).
-
-     Written straight from the scroll handler rather than from a
-     frame callback: a parallax that lags the scroll by a frame
-     is exactly the wobble it is supposed to avoid.
-     ======================================================= */
-
-  var hero = document.querySelector('.rankings-hero');
-  var RATE = .5;
-  var still = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-  function parallax() {
-    if (!hero) return;
-    var drift = still.matches ? 0 : Math.max(0, scroll.scrollTop) * RATE;
-    hero.style.transform = drift ? 'translate3d(0,' + drift.toFixed(2) + 'px,0)' : '';
+  // Fixed demo deadline, pending the official season date. Never reset on entry.
+  var seasonEndsAt = new Date('2026-11-03T00:00:00+01:00').getTime();
+  screen.querySelector('[data-rankings-participants]').textContent = PLAYER_COUNT + ' Participants';
+  function updateSeason() {
+    var remaining = Math.max(0, seasonEndsAt - Date.now());
+    var minutes = Math.floor(remaining / 60000);
+    screen.querySelector('[data-season-label]').textContent = remaining > 0 ? 'Season ends in' : 'Season ended';
+    screen.querySelector('[data-season-days]').textContent = Math.floor(minutes / 1440);
+    screen.querySelector('[data-season-hours]').textContent = Math.floor(minutes / 60) % 24;
+    screen.querySelector('[data-season-mins]').textContent = minutes % 60;
   }
+  updateSeason();
+  window.setInterval(updateSeason, 60000);
+
+  var prizes = screen.querySelector('[data-rankings-prize-sheet]');
+  var prizeCards = prizes.querySelector('[data-rankings-prize-cards]');
+  document.querySelectorAll('[data-tournament-panel="prizes"] .arena-prize').forEach(function (card) {
+    prizeCards.appendChild(card.cloneNode(true));
+  });
+  var prizeOpener = null;
+  var previousOverflow = '';
+  // Native dialogs live in the top layer, outside the scaled phone mockup.
+  function positionPrizes() {
+    var app = screen.closest('.app');
+    var bounds = app.getBoundingClientRect();
+    var scale = bounds.width / app.offsetWidth;
+    prizes.style.left = bounds.left + 'px';
+    prizes.style.right = 'auto';
+    prizes.style.bottom = (window.innerHeight - bounds.bottom) + 'px';
+    prizes.style.margin = '0';
+    prizes.style.width = app.offsetWidth + 'px';
+    prizes.style.maxWidth = 'none';
+    prizes.style.maxHeight = (app.offsetHeight - 32) + 'px';
+    prizes.style.transformOrigin = 'bottom left';
+    prizes.style.transform = 'scale(' + scale + ')';
+  }
+  window.addEventListener('resize', function () {
+    if (prizes.open) requestAnimationFrame(function () { requestAnimationFrame(positionPrizes); });
+  });
+  function closePrizes() { if (prizes.open) prizes.close(); }
+  screen.querySelectorAll('[data-rankings-prizes]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      if (prizes.open) return;
+      prizeOpener = button;
+      previousOverflow = scroll.style.overflowY;
+      scroll.style.overflowY = 'hidden';
+      positionPrizes();
+      prizes.showModal();
+      prizes.querySelector('button').focus({ preventScroll: true });
+    });
+  });
+  prizes.querySelector('[data-rankings-prizes-close]').addEventListener('click', closePrizes);
+  prizes.addEventListener('click', function (event) {
+    var rect = prizes.getBoundingClientRect();
+    if (event.target === prizes && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) closePrizes();
+  });
+  prizes.addEventListener('close', function () {
+    scroll.style.overflowY = previousOverflow;
+    if (prizeOpener && screen.classList.contains('is-active')) prizeOpener.focus({ preventScroll: true });
+  });
+  // Native modal dialog makes the background inert; explicitly wrap Tab as well.
+  prizes.addEventListener('keydown', function (event) {
+    if (event.key !== 'Tab') return;
+    var focusable = prizes.querySelectorAll('button, a[href], input, [tabindex="0"]');
+    var first = focusable[0], last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  });
+  window.addEventListener('the90:screen', function (event) {
+    if (event.detail !== 'rankings') closePrizes();
+    else updateSeason();
+  });
 
   scroll.addEventListener('scroll', function () {
-    parallax();
     schedulePinUpdate();
   }, { passive: true });
   window.addEventListener('resize', function () {
-    parallax();
     schedulePinUpdate();
   });
-  if (still.addEventListener) still.addEventListener('change', parallax);
   window.addEventListener('the90:screen', function (event) {
     if (event.detail !== 'rankings') return;
     // Top Leaders always opens on the podium, however far the list was scrolled
     // last time — otherwise the section reappears somewhere in the middle.
     scroll.scrollTop = 0;
-    parallax();
     pin.classList.remove('is-row-visible');
     schedulePinUpdate();
     playPodium();
   });
-  parallax();
   schedulePinUpdate();
   if (screen.classList.contains('is-active')) playPodium();
 })();

@@ -464,40 +464,58 @@
      last looked in. Looking in is what clears it.
      ======================================================= */
 
-  var UNREAD_KEY = 'the90.leagueUnread.v1';
-
-  function unreadCount() {
-    try {
-      var saved = localStorage.getItem(UNREAD_KEY);
-      if (saved !== null) return Math.max(0, Number(saved) || 0);
-    } catch (error) { /* storage may be unavailable */ }
-    // the room has been busy while you were away
-    return 3;
+  var UNREAD_KEY = 'the90.leagueUnread.v2';
+  var unread = {};
+  var activeLeagueId = 'office-league';
+  try {
+    var savedUnread = JSON.parse(localStorage.getItem(UNREAD_KEY));
+    if (savedUnread && typeof savedUnread === 'object' && !Array.isArray(savedUnread)) unread = savedUnread;
+  } catch (error) { /* storage may be unavailable */ }
+  var legacyUnread = 3;
+  try {
+    var legacy = localStorage.getItem('the90.leagueUnread.v1');
+    if (legacy !== null) legacyUnread = Math.max(0, Math.floor(Number(legacy) || 0));
+    var previousView = JSON.parse(localStorage.getItem('the90.viewingLeague.v1'));
+    if (previousView && previousView.league && previousView.league.id) activeLeagueId = previousView.league.id;
+  } catch (error) { /* storage may be unavailable */ }
+  // Seed only once. Preserve a previously read legacy chat instead of resurrecting it.
+  if (!Object.prototype.hasOwnProperty.call(unread, 'office-league')) unread['office-league'] = legacyUnread === 0 ? 0 : 120;
+  function saveUnread() {
+    try { localStorage.setItem(UNREAD_KEY, JSON.stringify(unread)); } catch (error) { /* storage may be unavailable */ }
   }
-
-  /* The league page has one of these and every card on the leagues screen
-     has another; they are all the same number. */
+  function countFor(id) {
+    if (!Object.prototype.hasOwnProperty.call(unread, id)) unread[id] = legacyUnread;
+    var count = Number(unread[id]);
+    return Number.isFinite(count) ? Math.max(0, Math.floor(count)) : 0;
+  }
   function paintUnread() {
-    var count = unreadCount();
-    var label = count > 9 ? '9+' : String(count);
-    Array.prototype.forEach.call(
-      document.querySelectorAll('[data-chat-unread], .theleagues-card__unread'),
-      function (dot) {
-        dot.textContent = label;
-        dot.hidden = count < 1;
-      });
+    document.querySelectorAll('[data-chat-unread], .theleagues-card__unread').forEach(function (dot) {
+      var card = dot.closest('[data-league-id]');
+      var id = card ? card.dataset.leagueId : activeLeagueId;
+      var count = countFor(id);
+      dot.textContent = count > 99 ? '99+' : String(count);
+      dot.hidden = count < 1;
+      dot.setAttribute('aria-label', count + ' unread messages');
+    });
+    saveUnread();
   }
-
-  function seen() {
-    try { localStorage.setItem(UNREAD_KEY, '0'); } catch (error) { /* storage may be unavailable */ }
-    paintUnread();
-  }
-
-  paintUnread();
-  document.addEventListener('the90:league-membership', paintUnread);
-  window.addEventListener('the90:screen', function (event) {
-    if (event.detail === 'leagues') paintUnread();
+  function seen() { unread[activeLeagueId] = 0; paintUnread(); }
+  // Capture before the router opens a chat, including direct card entry.
+  document.addEventListener('click', function (event) {
+    var entry = event.target.closest('[data-league-joined][data-league-id]');
+    if (entry) activeLeagueId = entry.dataset.leagueId;
+  }, true);
+  document.addEventListener('the90:league-membership', function (event) {
+    var league = (event.detail || {}).league;
+    if (league && league.id) activeLeagueId = league.id;
+    if (screen.classList.contains('is-active')) seen();
+    else paintUnread();
   });
+  document.addEventListener('the90:league-cards', paintUnread);
+  window.addEventListener('the90:screen', function (event) {
+    if (event.detail === 'leagues' || event.detail === 'league') paintUnread();
+  });
+  paintUnread();
 
 
   /* =======================================================
