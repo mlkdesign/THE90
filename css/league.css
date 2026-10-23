@@ -302,49 +302,81 @@
 .league-newround:active { transform: scale(.98); }
 .league-newround[hidden] { display: none; }
 
-/* THE90 Creator — compact activation button from the supplied reference. */
-.creator-card img {
-  display: block;
+/* THE90 Creator — proportional banner content scales to the card itself. */
+.creator-card {
+  box-sizing: border-box;
   width: 100%;
-  height: auto;
-  object-fit: contain;
-  pointer-events: none;
+  aspect-ratio: 1050 / 365;
+  margin-bottom: 2px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(213, 171, 74, .5);
+  border-radius: 7.5% / 21.6%;
+  background-color: #17100B;
+  background-image: url("../assets/league/the90-creator-bg.png");
+  background-position: center;
+  background-size: cover;
+  color: #fff;
+  container-type: inline-size;
+  text-align: left;
+  transition: filter .18s ease;
 }
 .creator-card[hidden] { display: none; }
-.creator-card:hover { border-color: rgba(247, 250, 248, .82); background: #171717; }
-.creator-card:active { transform: scale(.985); }
+.creator-card:hover { filter: brightness(1.05); }
+.creator-card:active { filter: brightness(.96); }
 .creator-card:focus-visible { outline: 2px solid var(--brand-primary); outline-offset: 3px; }
-.creator-card::before,
-.creator-card::after {
-  content: '';
-  position: absolute;
-  z-index: 0;
-  left: -54px;
-  width: 86px;
-  border: 4px solid rgba(218, 35, 42, .72);
-  border-radius: 50%;
-  pointer-events: none;
+.creator-card__content {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  padding: 4.9cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
-.creator-card::before {
-  top: -25px;
-  height: 61px;
-  transform: rotate(22deg);
-}
-.creator-card::after {
-  top: 8px;
-  height: 45px;
-  transform: rotate(-14deg);
-}
-.creator-card__label {
-  position: relative;
-  z-index: 1;
-  font-size: 18px;
+.creator-card__heading {
+  display: flex;
+  align-items: center;
+  gap: .95cqw;
+  font-size: 3.89cqw;
   font-weight: 800;
-  line-height: 22px;
-  letter-spacing: -.35px;
+  line-height: 1.15;
   white-space: nowrap;
 }
-.creator-card__label em { color: var(--brand-primary); font-style: normal; }
+.creator-card__crown {
+  display: block;
+  flex: none;
+  width: 3cqw;
+  height: 3cqw;
+  color: #FFCB4D;
+}
+.creator-card__name { color: #13F500; }
+.creator-card__title { color: #FFCB4D; }
+.creator-card__description {
+  max-width: 58cqw;
+  margin-top: 1.36cqw;
+  color: #fff;
+  font-size: 3.34cqw;
+  font-weight: 400;
+  line-height: 1.19;
+}
+.creator-card__cta {
+  box-sizing: border-box;
+  width: 40cqw;
+  height: 9cqw;
+  margin-top: 1.9cqw;
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3.53cqw;
+  background: #fff;
+  color: #000;
+  font-size: 3.04cqw;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+}
 .creator-brand {
   display: flex;
   align-items: center;

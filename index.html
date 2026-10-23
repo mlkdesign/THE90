@@ -966,8 +966,7 @@
                 </button>
               </div>
 
-              <!-- Creator unlocks custom rounds. The button appears only once
-                   Creator is active; before that the owner sees the banner. -->
+              <!-- Creator unlocks custom rounds. -->
               <button class="league-newround" type="button" data-league-new-round hidden>Create round</button>
 
               <button
@@ -977,13 +976,19 @@
                 data-settings-sheet="creator"
                 aria-haspopup="dialog"
                 aria-controls="creator-modal"
-                aria-label="THE90 CREATOR"
+                aria-label="Become a Creator"
               >
-                <img
-                  src="assets/league/The90 Creator.png"
-                  alt=""
-                  style="display:block; width:100%; height:auto;"
-                />
+                <span class="creator-card__content">
+                  <span class="creator-card__heading">
+                    <svg class="creator-card__crown" viewBox="0 0 16 16" aria-hidden="true">
+                      <path d="M2 12.5 1 5l3.5 2.5L8 2l3.5 5.5L15 5l-1 7.5H2Zm.5 1h11v1h-11v-1Z" fill="currentColor"/>
+                    </svg>
+                    <span class="creator-card__name">THE90</span>
+                    <span class="creator-card__title">CREATOR</span>
+                  </span>
+                  <span class="creator-card__description">Exclusive status. More opportunities. More recognition.</span>
+                  <span class="creator-card__cta">Become a Creator</span>
+                </span>
               </button>
 
 
