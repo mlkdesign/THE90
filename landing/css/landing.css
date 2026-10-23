@@ -183,7 +183,7 @@ ul{margin:0;padding:0;list-style:none}
    the 1440 grid below */
 .hero__bg{
   position:absolute;top:-1.43%;left:0;
-  width:100%;height:101.43%;object-fit:cover;object-position:center;opacity:.3;
+  width:100%;height:101.43%;object-fit:cover;object-position:center;opacity: 1;
 }
 .hero__fade{position:absolute;left:0;width:100%;pointer-events:none}
 .hero__fade--top{top:0;height:429px;background:linear-gradient(180deg,var(--bg) 0%,rgba(14,14,14,0) 100%)}

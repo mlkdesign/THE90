@@ -303,22 +303,12 @@
 .league-newround[hidden] { display: none; }
 
 /* THE90 Creator — compact activation button from the supplied reference. */
-.creator-card {
-  position: relative;
-  width: 358px;
-  height: 48px;
-  padding: 0 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: visible;
-  border: 2px solid rgba(247, 250, 248, .55);
-  border-radius: 24px;
-  background: #111;
-  color: #fff;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .06);
-  isolation: isolate;
-  transition: border-color .18s ease, background .18s ease, transform .12s ease;
+.creator-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  pointer-events: none;
 }
 .creator-card[hidden] { display: none; }
 .creator-card:hover { border-color: rgba(247, 250, 248, .82); background: #171717; }
