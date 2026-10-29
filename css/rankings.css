@@ -1,4 +1,6 @@
-/* Rankings – Global Top Leaders, adapted from Figma node 515:11492 */
+/* Rankings – Global Top Leaders, adapted from Figma node 1267:8160.
+   The podium, row and pin rules further down are still shared with the
+   tournament board and the league participants list. */
 .screen--rankings {
   overflow: hidden;
   background: var(--bg-primary);
@@ -40,18 +42,6 @@
   pointer-events: none;
 }
 
-.rankings-hero {
-  position: relative;
-  width: 390px;
-  height: 400px;
-  overflow: hidden;
-  background:
-    linear-gradient(180deg, rgba(36, 255, 0, .2) 0%, rgba(22, 153, 0, 0) 100%),
-    var(--bg-primary);
-  /* js/rankings.js drives translateY on scroll — the block drifts up at half
-     the speed of the list, so the leaderboard climbs over it */
-  will-change: transform;
-}
 /* Figma › Global – Top Leaders › Top 3 leaders — the pitch sits under the wash */
 .rankings-hero__bg {
   position: absolute;
@@ -68,33 +58,6 @@
    belongs to the list (.rankings-list::before) so that it travels with it.
    Standing still in the hero it would drift away from the list on scroll and
    leave the steps cut off in mid-air. */
-
-.rankings-heading {
-  position: absolute;
-  z-index: 3;
-  top: 64px;
-  left: 69px;
-  width: 252px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  text-align: center;
-}
-.rankings-heading h1 {
-  margin: 0;
-  color: #fff;
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 25px;
-  letter-spacing: -.2px;
-}
-.rankings-heading p {
-  margin: 0;
-  color: var(--text-dim);
-  font-size: 12px;
-  line-height: 18px;
-}
 
 .rankings-podium {
   position: absolute;
@@ -353,6 +316,448 @@
 .rankings-pin .rankings-score { height: 32px; flex: none; }
 .shell-footer.is-rankings .rankings-pin { display: flex; }
 .shell-footer.is-rankings .rankings-pin.is-row-visible { display: none; }
+
+
+
+/* =========================================================
+   Global Ranking — Figma › 02 · Rankings › Global – Top Leaders
+   ========================================================= */
+
+/* The hero: the cup and ball on the right, swallowed by the background on
+   the left, top and bottom so the copy reads over it. It scrolls away with
+   the rest of the page. */
+.leaders-hero {
+  position: relative;
+  width: 390px;
+  height: 262px;
+}
+.leaders-hero__art {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.leaders-hero__art img {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 464px;
+  height: 290px;
+  object-fit: cover;
+}
+.leaders-hero__art::before,
+.leaders-hero__art::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 390px;
+}
+/* top and bottom fades, painted as one layer each */
+.leaders-hero__art::before {
+  top: 0;
+  height: 108px;
+  background: linear-gradient(180deg, #0e0e0e, rgba(14, 14, 14, 0));
+}
+.leaders-hero__art::after {
+  bottom: 0;
+  height: 87px;
+  background: linear-gradient(180deg, rgba(14, 14, 14, 0), #0e0e0e);
+}
+/* the left fade, as a mask so the copy sits on the plain background */
+.leaders-hero__art > img {
+  -webkit-mask-image: linear-gradient(90deg, transparent 74px, #000 361px);
+  mask-image: linear-gradient(90deg, transparent 74px, #000 361px);
+}
+
+.leaders-hero__content {
+  position: absolute;
+  z-index: 1;
+  top: 77px;
+  left: 0;
+  width: 390px;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.leaders-timer {
+  position: relative;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+  border: 1px solid var(--brand-primary);
+  border-radius: 16px;
+  background:
+    linear-gradient(270deg, rgba(36, 255, 0, 0) 0%, rgba(36, 255, 0, .2) 100%),
+    #101a15;
+  box-shadow: inset 0 0 10px rgba(36, 255, 0, .4);
+}
+.leaders-timer__label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-primary);
+  font-size: 10px;
+  font-weight: 300;
+  line-height: 13px;
+}
+.leaders-timer__clock {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+.leaders-timer__clock i {
+  color: rgba(255, 255, 255, .5);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 300;
+  line-height: 15px;
+}
+.leaders-timer__unit {
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .1);
+}
+.leaders-timer__unit b {
+  min-width: 15px;
+  color: #fff;
+  font-family: 'Inter', 'Sora', system-ui, sans-serif;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  line-height: 15px;
+  text-align: center;
+}
+.leaders-timer__unit small {
+  color: var(--text-primary);
+  font-size: 8px;
+  font-weight: 300;
+  line-height: 10px;
+  opacity: .5;
+}
+
+.leaders-heading {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+.leaders-heading h1 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 34px;
+  letter-spacing: -.32px;
+}
+.leaders-heading h1 span { color: var(--brand-primary); }
+.leaders-season {
+  margin: 0;
+  padding: 3px 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 11px;
+  background: var(--brand-primary);
+  color: var(--bg-primary);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .5px;
+  line-height: 20px;
+}
+.leaders-season i {
+  width: 4px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--bg-primary);
+}
+
+.leaders-prizes {
+  position: absolute;
+  right: 16px;
+  bottom: 0;
+  height: 34px;
+  padding: 8px 6px 8px 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid rgba(255, 201, 74, .3);
+  border-radius: 31px;
+  background: rgba(255, 201, 74, .1);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  color: #ffc94a;
+  font: inherit;
+  font-size: 14px;
+  line-height: 18px;
+  cursor: pointer;
+  transition: background-color .18s ease, transform .18s ease;
+}
+.leaders-prizes img { transform: rotate(-90deg); }
+.leaders-prizes:hover { background: rgba(255, 201, 74, .18); }
+.leaders-prizes:active { transform: scale(.96); }
+.leaders-prizes:focus-visible { outline: 2px solid #ffc94a; outline-offset: 2px; }
+
+/* The list follows the hero straight on. */
+.leaders-list {
+  position: relative;
+  z-index: 4;
+  width: 390px;
+  /* clears the pinned card and the navbar */
+  padding-bottom: 170px;
+  background: var(--bg-primary);
+}
+
+/* Top gainers — a running feed */
+.leaders-gainers {
+  position: relative;
+  padding: 8px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+}
+.leaders-gainers::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 82px;
+  height: 77px;
+  background: linear-gradient(90deg, rgba(14, 14, 14, 0), #0e0e0e);
+  pointer-events: none;
+}
+.leaders-gainers__title {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 10px;
+  line-height: 13px;
+  opacity: .5;
+}
+.leaders-gainers__track {
+  height: 44px;
+  display: flex;
+  gap: 8px;
+  will-change: transform;
+}
+.leaders-gainer {
+  flex: none;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 12px;
+  background: var(--bg-surface);
+}
+.leaders-gainer.is-new { animation: leaders-gainer-in .5s cubic-bezier(.2, .8, .3, 1) both; }
+@keyframes leaders-gainer-in {
+  from { opacity: 0; transform: scale(.85); }
+}
+.leaders-gainer__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+.leaders-gainer__copy strong {
+  max-width: 72px;
+  overflow: hidden;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.leaders-gainer__stats {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.leaders-gainer__points {
+  padding: 2px 2px 2px 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, .1);
+  color: #fff;
+  font-size: 8px;
+  font-weight: 600;
+  line-height: 10px;
+  white-space: nowrap;
+}
+.leaders-gainer__rise {
+  display: inline-flex;
+  align-items: center;
+  color: var(--brand-primary);
+  font-size: 8px;
+  line-height: 10px;
+  white-space: nowrap;
+}
+.leaders-gainer__rise img { transform: scaleY(-1); }
+
+/* Avatars: a yellow disc with the portrait cropped a touch low */
+.leaders-avatar {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #fe0;
+  box-shadow: 0 1.6px 12.8px rgba(0, 0, 0, .15);
+}
+.leaders-avatar img {
+  position: absolute;
+  top: calc(50% + 2px);
+  left: 0;
+  width: 32px;
+  height: 42.4px;
+  object-fit: cover;
+  transform: translateY(-50%);
+}
+
+/* Rows */
+.leaders-row {
+  width: 390px;
+  padding: 0 16px;
+  color: #fff;
+}
+.leaders-row__inner {
+  height: 49px;
+  padding: 8px 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 56px 100px;
+  column-gap: 8px;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, .1);
+}
+.leaders-row--gold   { background: linear-gradient(180deg, rgba(255, 191, 0, 0), rgba(255, 191, 0, .1)); }
+.leaders-row--silver { background: linear-gradient(180deg, rgba(202, 202, 202, 0), rgba(202, 202, 202, .1)); }
+.leaders-row--bronze { background: linear-gradient(180deg, rgba(255, 183, 111, 0), rgba(255, 183, 111, .1)); }
+
+.leaders-row__who {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.leaders-row__who strong {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.leaders-rank {
+  min-width: 20px;
+  height: 20px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 99px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  line-height: 18px;
+}
+.leaders-rank--gold {
+  background: linear-gradient(90deg, #ffd626, #d9a621 50%, #ffc208);
+  color: #000;
+  filter: drop-shadow(0 4px 13px rgba(238, 217, 97, .5));
+}
+.leaders-rank--silver {
+  background: #949494;
+  filter: drop-shadow(0 4px 13px rgba(202, 202, 202, .6));
+}
+.leaders-rank--bronze { background: var(--text-primary); color: #000; }
+
+.leaders-trend {
+  justify-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  line-height: 15px;
+  white-space: nowrap;
+}
+.leaders-trend--up   { color: var(--brand-primary); }
+.leaders-trend--up img { transform: scaleY(-1); }
+.leaders-trend--down { color: #f05d5d; }
+.leaders-trend--flat { color: #fff; opacity: .3; }
+
+.leaders-score {
+  width: 100px;
+  height: 32px;
+  padding: 8px 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, .1);
+  color: #fff;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  line-height: 15px;
+  white-space: nowrap;
+}
+.leaders-score img { flex: none; }
+
+/* Your own row — in the list and on the plate at the bottom */
+.leaders-row--you { padding: 8px 16px; }
+.leaders-row--you .leaders-row__inner,
+.rankings-pin--leaders .leaders-row__inner {
+  height: 64px;
+  padding: 12px 16px;
+  border: 1px solid var(--brand-primary);
+  border-radius: 24px;
+  background: #101a15;
+  box-shadow: inset 0 0 30px rgba(36, 255, 0, .3);
+}
+.leaders-row--you .leaders-avatar img,
+.rankings-pin--leaders .leaders-avatar img {
+  border: 1px solid #cca13b;
+  box-shadow: 0 4px 16px -8px rgba(255, 141, 40, .4);
+}
+
+/* The plate is a bare shell here: the global pin carries a leaders row. */
+.rankings-pin.rankings-pin--leaders {
+  height: auto;
+  flex: none;
+  padding: 0;
+  border: 0;
+  border-radius: 24px;
+  background: none;
+  box-shadow: none;
+  overflow: visible;
+}
+.rankings-pin--leaders .leaders-row { width: 358px; padding: 0; }
+
+.leaders-rows .rankings-neighbours { gap: 0; }
+.leaders-rows .rankings-neighbours__hint { padding: 16px; }
+
+.leaders-sheet__note {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 20px;
+  text-align: center;
+}
 
 
 

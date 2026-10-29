@@ -15,10 +15,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- the countdown digits on Rankings -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="css/style.css?v=8">
 <link rel="stylesheet" href="css/main.css?v=64">
-<link rel="stylesheet" href="css/rankings.css?v=15">
+<link rel="stylesheet" href="css/rankings.css?v=17">
 <link rel="stylesheet" href="css/leagues.css?v=61">
 <link rel="stylesheet" href="css/arena.css?v=67">
 <link rel="stylesheet" href="css/live.css?v=5">
@@ -435,37 +437,42 @@
         <!-- ============ SCREEN: RANKINGS ============ -->
         <section class="screen screen--rankings" data-screen="rankings">
           <div class="rankings-scroll" data-rankings-scroll>
-            <div class="rankings-hero">
-              <img class="rankings-hero__bg" src="assets/rankings/podium-bg.jpg" alt="">
-              <header class="rankings-heading">
-                <h1>Top Leaders</h1>
-                <p>Season 2026/27</p>
-              </header>
+            <!-- Figma › 02 · Rankings › Global – Top Leaders (1267:8160) -->
+            <div class="leaders-hero">
+              <div class="leaders-hero__art" aria-hidden="true">
+                <img src="assets/rankings/v2/hero.jpg" alt="">
+              </div>
 
-              <div class="rankings-podium" aria-label="Top three leaders">
-                <article class="rankings-podium__user rankings-podium__user--second">
-                  <img src="assets/invite/avatar-zara.png" alt="Alex Rivera">
-                  <strong>Alex Rivera</strong>
-                  <span>2 454 <img src="assets/notifications/crown.svg" alt="" width="14" height="12"></span>
-                </article>
-                <article class="rankings-podium__user rankings-podium__user--first">
-                  <img src="assets/invite/avatar-kai.png" alt="Mika Chen">
-                  <strong>Mika Chen</strong>
-                  <span>2 480 <img src="assets/notifications/crown.svg" alt="" width="14" height="12"></span>
-                </article>
-                <article class="rankings-podium__user rankings-podium__user--third">
-                  <img src="assets/support/banner-person.png" alt="Leo Hart">
-                  <strong>Leo Hart</strong>
-                  <span>2 428 <img src="assets/notifications/crown.svg" alt="" width="14" height="12"></span>
-                </article>
+              <div class="leaders-hero__content">
+                <div class="leaders-timer" role="timer" aria-label="Season ends in" data-leaders-timer>
+                  <span class="leaders-timer__label"><img src="assets/rankings/v2/timer.svg" alt="" width="12" height="12">Ends in</span>
+                  <span class="leaders-timer__clock">
+                    <span class="leaders-timer__unit"><b data-leaders-timer-part="d">10</b><small>d</small></span><i>:</i>
+                    <span class="leaders-timer__unit"><b data-leaders-timer-part="h">15</b><small>h</small></span><i>:</i>
+                    <span class="leaders-timer__unit"><b data-leaders-timer-part="m">39</b><small>m</small></span><i>:</i>
+                    <span class="leaders-timer__unit"><b data-leaders-timer-part="s">39</b><small>s</small></span>
+                  </span>
+                </div>
 
-                <img class="rankings-podium__stand rankings-podium__stand--second" src="assets/rankings/podium-2.png" alt="">
-                <img class="rankings-podium__stand rankings-podium__stand--first" src="assets/rankings/podium-1.png" alt="">
-                <img class="rankings-podium__stand rankings-podium__stand--third" src="assets/rankings/podium-3.png" alt="">
+                <header class="leaders-heading">
+                  <h1>Global<br><span>Ranking</span></h1>
+                  <p class="leaders-season"><i></i>Season 2026/27</p>
+                </header>
+
+                <button class="leaders-prizes" type="button" data-leaders-prizes aria-haspopup="dialog">
+                  Prizes <img src="assets/rankings/v2/chevron.svg" alt="" width="16" height="16">
+                </button>
               </div>
             </div>
 
-            <div class="rankings-list" aria-label="Global leaderboard" data-rankings-list></div>
+            <div class="leaders-list" data-leaders-list>
+              <!-- a running feed: a new gainer slides in every couple of seconds -->
+              <section class="leaders-gainers" aria-label="Top gainers">
+                <p class="leaders-gainers__title">Top gainers:</p>
+                <div class="leaders-gainers__track" aria-live="off" data-leaders-gainers></div>
+              </section>
+              <div class="leaders-rows" aria-label="Global leaderboard" data-rankings-list></div>
+            </div>
           </div>
 
           <!-- everything scrolling up dissolves into the status bar -->
@@ -1889,6 +1896,19 @@
           </div>
         </section>
 
+        <!-- ============ RANKINGS: PRIZES SHEET ============ -->
+        <!-- Placeholder: the prizes design comes later. Opens from the bottom. -->
+        <div class="settings-sheet leaders-sheet" role="dialog" aria-modal="true" aria-label="Prizes" data-leaders-sheet hidden>
+          <section class="settings-sheet__panel">
+            <i class="settings-sheet__handle"></i>
+            <div class="settings-sheet__content">
+              <h2>Prizes</h2>
+              <p class="leaders-sheet__note">Season prizes are coming soon.</p>
+              <button class="btn btn--primary" type="button" data-leaders-sheet-close>Got it</button>
+            </div>
+          </section>
+        </div>
+
         <!-- ============ SETTINGS: BOTTOM SHEETS ============ -->
         <div class="settings-sheet" data-settings-overlay hidden>
           <section class="settings-sheet__panel" data-settings-panel="email" hidden>
@@ -1981,12 +2001,7 @@
               </p>
             </div>
           </div>
-          <div class="rankings-pin" data-rankings-pin>
-            <span class="rankings-pin__rank">47</span>
-            <span class="rankings-pin__avatar"><img src="assets/my-zone/avatar.png" alt="Your profile photo"></span>
-            <span class="rankings-pin__copy"><strong>Your Name</strong><small>@yournickname</small></span>
-            <span class="rankings-score">2 <img src="assets/notifications/crown.svg" alt="" width="14" height="12"></span>
-          </div>
+          <div class="rankings-pin rankings-pin--leaders" data-rankings-pin></div>
           <button class="league-join" type="button" data-league-join>Join league</button>
           <form class="league-chat-input" data-league-chat-form>
             <label><img src="assets/league/chat-attachment.svg" alt="" width="16" height="16"><textarea rows="1" placeholder="Type a message..." autocomplete="off" data-league-chat-input></textarea></label>
@@ -2117,7 +2132,7 @@
 <script src="js/main.js?v=30"></script>
 <script src="js/news.js?v=1"></script>
 <script src="js/live.js?v=3"></script>
-<script src="js/rankings.js?v=10"></script>
+<script src="js/rankings.js?v=12"></script>
 <script src="js/thearena.js?v=8"></script>
 <script src="js/tournament.js?v=60"></script>
 <script src="js/arena-join.js?v=3"></script>
