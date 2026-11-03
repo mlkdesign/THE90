@@ -225,7 +225,7 @@
       { home: 'man-united',  away: 'arsenal',    kick: '16:00' }
     ];
     var N = MATCHES.length;
-    var POINTS = 40;           // a complete daily pick is worth 40, as in js/data.js
+    var POINTS = 40;           // a complete pick: 10 for the result + 30 for the exact score
     var MAX_GOALS = 20;
 
     var picks = MATCHES.map(function () { return { outcome: null, score: { home: null, away: null } }; });
@@ -310,7 +310,7 @@
           '<div class="mcard__block">' +
             '<div class="mcard__labelrow">' +
               '<span class="mcard__label" data-i18n="dc.mscore">Exact score</span>' +
-              '<span class="mcard__hint">(<span data-i18n="dc.escore">exact score</span>&nbsp;+40&nbsp;' + BALL + ')</span>' +
+              '<span class="mcard__hint">(<span data-i18n="dc.escore">exact score</span>&nbsp;+30&nbsp;' + BALL + ')</span>' +
             '</div>' +
             '<div class="scores">' + drum('home', h) + drum('away', a) + '</div>' +
           '</div>' +
@@ -333,7 +333,7 @@
             '<path d="M50 71l13 13 27-29" stroke="#06120D" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
           '</div>' +
           '<p class="donecard__title" data-i18n="dc.done">All picks accepted</p>' +
-          '<p class="donecard__win"><span data-i18n="dc.rating">Rating reward:</span><b>+ 5 ' + BALL + '</b></p>' +
+          '<p class="donecard__win"><span data-i18n="dc.rating">Rating reward:</span><b>+ 50 ' + BALL + '</b></p>' +
         '</div>' +
       '</article>');
     rail.appendChild(doneCard);
@@ -726,9 +726,10 @@
   })();
 
   /* ---------------- stats ----------------
-     Each locale formats its own figures: 128,000 / 128 000 / 128.000, and
-     2.4M / 2,4 млн / 240万 / 24 लाख. */
-  var statEls = $$('.stat b');
+     Only figures marked data-count are counted up and formatted per locale
+     (128,000 / 128 000 / 128.000, 2.4M / 2,4 млн / 240万). Before launch the
+     stats are plain text. */
+  var statEls = $$('.stat b[data-count]');
 
   function fmtStat(el, v) {
     try {
