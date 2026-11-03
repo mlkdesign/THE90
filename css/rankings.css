@@ -954,8 +954,9 @@
 
 /* Your own row — in the list and on the plate at the bottom. In the list it
    is an empty slot until the plate docks into it (js/rankings.js). */
-.leaders-row--you { padding: 8px 16px; visibility: hidden; }
-.leaders-row--you.is-docked { visibility: visible; }
+.leaders-row--you { padding: 8px 16px; }
+.leaders-rows .leaders-row--you { visibility: hidden; }
+.leaders-rows .leaders-row--you.is-docked { visibility: visible; }
 /* no divider right above your slot */
 .leaders-row:has(+ .leaders-row--you) .leaders-row__inner { border-bottom: 0; }
 .leaders-row--you .leaders-row__inner,
