@@ -36,6 +36,7 @@
   /* What the ... offers depends on whose league it is. Running one and being
      in one are two different jobs, and the menu is where that shows. */
   var viewing = { own: false, league: null };
+  try { viewing = JSON.parse(localStorage.getItem('the90.viewingLeague.v1')) || viewing; } catch (error) { /* storage may be unavailable */ }
 
   document.addEventListener('the90:league-membership', function (event) {
     viewing = event.detail || viewing;
@@ -62,8 +63,8 @@
     };
 
     if (!viewing.own) {
-      // a member of a private league has nobody to invite
-      return isOpen() ? [share, leave] : [leave];
+      var report = { label: 'Report league', run: reportLeague };
+      return isOpen() ? [share, report, leave] : [report, leave];
     }
 
     /* Running rounds is what Premium buys, so the way in to it is only on the
@@ -91,6 +92,35 @@
     }
     return items;
   }
+
+  var reportDialog = document.createElement('dialog');
+  reportDialog.className = 'league-report';
+  reportDialog.setAttribute('aria-modal', 'true');
+  reportDialog.setAttribute('aria-labelledby', 'league-report-title');
+  reportDialog.innerHTML = '<h2 id="league-report-title">Report this league?</h2><p data-report-name></p><div class="league-report__actions"><button type="button" data-report-cancel>Cancel</button><button type="button" data-report-confirm>Report league</button></div>';
+  screen.appendChild(reportDialog);
+  var reported = false;
+  function reportLeague() {
+    close();
+    reported = false;
+    reportDialog.querySelector('h2').textContent = 'Report this league?';
+    reportDialog.querySelector('[data-report-name]').textContent = leagueName();
+    reportDialog.querySelector('[data-report-confirm]').hidden = false;
+    reportDialog.querySelector('[data-report-cancel]').textContent = 'Cancel';
+    reportDialog.showModal();
+    reportDialog.querySelector('[data-report-cancel]').focus();
+  }
+  reportDialog.querySelector('[data-report-cancel]').addEventListener('click', function () { reportDialog.close(); });
+  reportDialog.querySelector('[data-report-confirm]').addEventListener('click', function () {
+    if (reported) return;
+    reported = true;
+    reportDialog.querySelector('h2').textContent = 'Report recorded in this prototype.';
+    reportDialog.querySelector('[data-report-confirm]').hidden = true;
+    reportDialog.querySelector('[data-report-cancel]').textContent = 'Close';
+    reportDialog.querySelector('[data-report-cancel]').focus();
+  });
+  reportDialog.addEventListener('close', function () { if (screen.classList.contains('is-active')) trigger.focus(); });
+  window.addEventListener('the90:screen', function () { if (reportDialog.open) reportDialog.close(); });
 
   function build() {
     var box = document.createElement('div');

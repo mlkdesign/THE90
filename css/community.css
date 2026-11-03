@@ -94,17 +94,18 @@
 .invite-banner {
   position: relative;
   width: 358px;
-  height: 160px;
-  flex: 0 0 160px;
+  height: auto;
+  aspect-ratio: 1918 / 820;
+  flex: none;
   display: block;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, .1);
-  border-radius: 24px;
+  border: 0;
+  border-radius: 0;
+  background: #000;
   color: #fff;
   text-align: left;
   isolation: isolate;
 }
-.invite-banner::after,
 .support-banner::after {
   content: '';
   position: absolute;
@@ -113,7 +114,6 @@
   background: linear-gradient(90deg, rgba(10, 10, 10, .78) 0%, rgba(10, 10, 10, .2) 54%, rgba(10, 10, 10, .04) 100%);
   pointer-events: none;
 }
-.invite-banner__bg,
 .support-banner__bg {
   position: absolute;
   z-index: -2;
@@ -125,46 +125,11 @@
   transform: scaleX(-1);
   opacity: .95;
 }
-.invite-banner__copy {
-  position: absolute;
-  z-index: 2;
-  top: 31px;
-  left: 16px;
-  width: 200px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.invite-banner__copy strong {
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 24px;
-  letter-spacing: -.2px;
-}
-.invite-banner__copy > span {
-  font-size: 13px;
-  font-weight: 400;
-  line-height: 18px;
-}
-.invite-banner__copy b {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  color: #ffc94a;
-  font-size: 14px;
-  font-weight: 600;
-}
-.invite-banner__copy b img { width: 16px; height: 16px; }
-.invite-banner__person {
-  position: absolute;
-  z-index: 1;
-  top: -24px;
-  right: 8px;
-  width: 166px;
-  height: 249px;
+.invite-banner__art {
+  display: block;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
-  object-position: center top;
-  pointer-events: none;
 }
 .mz-invite-banner { flex: none; }
 .mz-invite-banner:active { transform: scale(.985); }

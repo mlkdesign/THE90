@@ -397,6 +397,17 @@
   var selectedClubs = [];
   var clubGrid = $('[data-club-grid]');
 
+  function restoreFollowedClubs() {
+    selectedClubs = PROFILE_CLUBS.filter(function (club) {
+      return club[0] && window.THE90.follows.isClub(club[0]);
+    }).map(function (club) { return club[1]; });
+    renderProfileClubs();
+  }
+  window.addEventListener('the90:screen', function (event) {
+    if (event.detail === 'teams') restoreFollowedClubs();
+  });
+  restoreFollowedClubs();
+
   function initials(name) {
     return name.split(/\s+/).map(function (part) { return part[0]; }).join('').slice(0, 3).toUpperCase();
   }
@@ -439,7 +450,12 @@
       e.currentTarget.hidden = true;
       renderProfileClubs();
     });
-    $('[data-team-continue]').addEventListener('click', function () { showScreen('main'); });
+    $('[data-team-continue]').addEventListener('click', function () {
+      window.THE90.follows.setClubs(PROFILE_CLUBS.filter(function (club) {
+        return club[0] && selectedClubs.indexOf(club[1]) !== -1;
+      }).map(function (club) { return club[0]; }));
+      showScreen('main');
+    });
   }
 
 

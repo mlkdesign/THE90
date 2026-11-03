@@ -1,6 +1,6 @@
 name: Deploy to GitHub Pages
 
-# Publish the current prototype from main, with the landing at /landing/.
+# Publish the complete prototype and the separate /landing/ page from main.
 on:
   push:
     branches: [main]
