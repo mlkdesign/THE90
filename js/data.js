@@ -28,6 +28,58 @@ window.THE90 = (function () {
     'bayern': 'BUN', 'dortmund': 'BUN'
   };
 
+  var COMPETITIONS = {
+    UCL: { id: 'UCL', name: 'UEFA Champions League', short: 'UCL', country: 'Europe', order: 1, rounds: 8 },
+    APL: { id: 'APL', name: 'Premier League', short: 'APL', country: 'England', order: 2, rounds: 38 },
+    LAL: { id: 'LAL', name: 'LaLiga', short: 'LAL', country: 'Spain', order: 3, rounds: 38 },
+    BUN: { id: 'BUN', name: 'Bundesliga', short: 'BUN', country: 'Germany', order: 4, rounds: 34 }
+  };
+  function competition(id) { return COMPETITIONS[id]; }
+  function competitionLogo(id) { return 'assets/competitions/' + id.toLowerCase() + '.png'; }
+
+  function matchday(dayKey, id) {
+    var parts = dayKey.split('-').map(Number);
+    var season = parts[1] < 8 ? parts[0] - 1 : parts[0];
+    var weeks = Math.floor((Date.UTC(parts[0], parts[1] - 1, parts[2]) - Date.UTC(season, 7, 1)) / 604800000);
+    return 1 + (weeks % competition(id).rounds);
+  }
+
+  function finalScore(m) {
+    var g = grid(m), total = 0, h, a;
+    for (h = 0; h <= MAX_GOALS; h++) for (a = 0; a <= MAX_GOALS; a++) total += g[h][a];
+    var draw = seeded(m.id)() * total;
+    for (h = 0; h <= MAX_GOALS; h++) {
+      for (a = 0; a <= MAX_GOALS; a++) {
+        draw -= g[h][a];
+        if (draw <= 0) return { home: h, away: a };
+      }
+    }
+    return { home: MAX_GOALS, away: MAX_GOALS };
+  }
+
+  function mergeLive(list, dayKey) {
+    var result = list.slice();
+    LIVE_MATCHES.forEach(function (live) {
+      var item = {};
+      Object.keys(live).forEach(function (key) { item[key] = live[key]; });
+      item.status = 'live';
+      item.matchday = matchday(dayKey, live.competition);
+      item.score = { home: live.scoreHome, away: live.scoreAway };
+      var index = -1;
+      result.some(function (m, i) {
+        if ((m.home === live.home && m.away === live.away) || (m.home === live.away && m.away === live.home)) {
+          index = i;
+          return true;
+        }
+        return false;
+      });
+      item.kickoff = index < 0 ? '15:00' : result[index].kickoff;
+      if (index < 0) result.push(item);
+      else result[index] = item;
+    });
+    return result;
+  }
+
   function club(slug) { return CLUBS[slug]; }
   function logo(slug) { return 'assets/clubs/' + slug + '.png'; }
   function bg(slug)   { return 'assets/clubs/bg-' + slug + '.jpg'; }
@@ -133,7 +185,7 @@ window.THE90 = (function () {
   var SLUGS = Object.keys(CLUBS);
 
   // 10 fixtures per day, no pairing repeated within a day
-  function buildDay(dayKey) {
+  function buildDay(dayKey, isPast) {
     var r = seeded('the90-' + dayKey), used = {}, list = [], guard = 0;
 
     while (list.length < 10 && guard++ < 500) {
@@ -153,10 +205,15 @@ window.THE90 = (function () {
         id: dayKey + '-' + list.length,
         home: home,
         away: away,
-        league: LEAGUE_OF[home] === LEAGUE_OF[away] ? LEAGUE_OF[home] : 'UCL',
+        competition: LEAGUE_OF[home] === LEAGUE_OF[away] ? LEAGUE_OF[home] : 'UCL',
         kickoff: hour + ':' + min
       });
     }
+    list.forEach(function (m) {
+      m.matchday = matchday(dayKey, m.competition);
+      m.status = isPast ? 'finished' : 'upcoming';
+      m.score = isPast ? finalScore(m) : null;
+    });
     return list;
   }
 
@@ -173,6 +230,7 @@ window.THE90 = (function () {
     for (var i = -1; i <= 5; i++) {
       var d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
       var key = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+      var fixtures = buildDay(key, i < 0);
       days.push({
         key: key,
         month: MONTHS[d.getMonth()],
@@ -181,7 +239,8 @@ window.THE90 = (function () {
         weekday: i === 0 ? 'Today' : WDAYS[d.getDay()],
         isToday: i === 0,
         isPast: i < 0,
-        matches: buildDay(key)
+        picks: fixtures,
+        matches: i === 0 ? mergeLive(fixtures, key) : fixtures
       });
     }
     return days;
@@ -268,10 +327,15 @@ window.THE90 = (function () {
     }
   ];
 
+  LIVE_MATCHES.forEach(function (m) { m.competition = LEAGUE_OF[m.home]; });
+
   // Kept so anything still expecting a single fixture keeps working.
   var LIVE = LIVE_MATCHES[0];
 
   return {
+    COMPETITIONS: COMPETITIONS,
+    competition: competition,
+    competitionLogo: competitionLogo,
     CLUBS: CLUBS,
     club: club,
     logo: logo,

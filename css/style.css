@@ -1170,3 +1170,8 @@ button.pill-tag:hover { border-color: rgba(255, 255, 255, .45); }
     scroll-behavior: auto !important;
   }
 }
+
+/* Registration now has four fields; let the complete form scroll above a keyboard. */
+[data-screen="create"] .content--form { height: calc(100% - 62px); overflow-y: auto; overscroll-behavior: contain; gap: 24px; padding-bottom: 32px; scrollbar-width: none; }
+[data-screen="create"] .content--form > * { flex-shrink: 0; }
+[data-screen="create"] [data-validate="username"].is-valid .field__msg { color: var(--input-border-focused); }

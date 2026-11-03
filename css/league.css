@@ -302,6 +302,96 @@
 .league-newround:active { transform: scale(.98); }
 .league-newround[hidden] { display: none; }
 
+/* THE90 Creator — proportional banner content scales to the card itself. */
+.creator-card {
+  box-sizing: border-box;
+  width: 100%;
+  aspect-ratio: 1050 / 365;
+  margin-bottom: 2px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(213, 171, 74, .5);
+  border-radius: 7.5% / 21.6%;
+  background-color: #17100B;
+  background-image: url("../assets/league/the90-creator-bg.png");
+  background-position: center;
+  background-size: cover;
+  color: #fff;
+  container-type: inline-size;
+  text-align: left;
+  transition: filter .18s ease;
+}
+.creator-card[hidden] { display: none; }
+.creator-card:hover { filter: brightness(1.05); }
+.creator-card:active { filter: brightness(.96); }
+.creator-card:focus-visible { outline: 2px solid var(--brand-primary); outline-offset: 3px; }
+.creator-card__content {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  padding: 4.9cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.creator-card__heading {
+  display: flex;
+  align-items: center;
+  gap: .95cqw;
+  font-size: 3.89cqw;
+  font-weight: 800;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+.creator-card__crown {
+  display: block;
+  flex: none;
+  width: 3cqw;
+  height: 3cqw;
+  color: #FFCB4D;
+}
+.creator-card__name { color: #13F500; }
+.creator-card__title { color: #FFCB4D; }
+.creator-card__description {
+  max-width: 58cqw;
+  margin-top: 1.36cqw;
+  color: #fff;
+  font-size: 3.34cqw;
+  font-weight: 400;
+  line-height: 1.19;
+}
+.creator-card__cta {
+  box-sizing: border-box;
+  width: 40cqw;
+  height: 9cqw;
+  margin-top: 1.9cqw;
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3.53cqw;
+  background: #fff;
+  color: #000;
+  font-size: 3.04cqw;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+}
+.creator-brand {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+.creator-brand img { display: block; flex: none; }
+.creator-brand strong {
+  color: #ffc94a;
+  font-size: 14px;
+  font-weight: 700;
+  font-style: normal;
+  line-height: 16px;
+}
+.creator-brand em { color: var(--brand-primary); font-style: normal; }
 /* ---------------------------------------------------------
    Tabs, the same control the tournament uses
    --------------------------------------------------------- */
@@ -1234,3 +1324,14 @@
   display: flex;
 }
 .league-pin[hidden] { display: none; }
+
+.league-actions__unread { flex-shrink: 0; white-space: nowrap; }
+.league-actions__unread[hidden] { display: none; }
+.league-report { position: fixed; inset: 0; width: min(358px,calc(100% - 32px)); margin: auto; padding: 24px; border: 1px solid rgba(255,255,255,.15); border-radius: 24px; background: var(--bg-primary); color: var(--text-primary); }
+.league-report::backdrop { background: rgba(0,0,0,.7); }
+.league-report h2 { font-size: 20px; margin-bottom: 12px; }
+.league-report p { font-size: 14px; line-height: 20px; margin-bottom: 20px; overflow-wrap: anywhere; }
+.league-report__actions { display: flex; gap: 12px; }
+.league-report button { min-height: 44px; padding: 8px 16px; border-radius: 12px; background: rgba(255,255,255,.1); color: var(--text-primary); }
+.league-report [data-report-confirm] { background: var(--brand-primary); color: var(--text-on-brand); }
+.league-report button:focus-visible { outline: 2px solid var(--brand-primary); outline-offset: 2px; }
