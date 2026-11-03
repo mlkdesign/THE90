@@ -468,63 +468,37 @@ button.settings-row:hover { background: rgba(255,255,255,.035); }
 .creator-modal__close:hover { opacity: 1; }
 .creator-modal__close:focus-visible { outline: 2px solid #ffc94a; outline-offset: 1px; }
 .creator-modal__close img { display: block; width: 16px; height: 16px; }
-.creator-modal__cover {
-  position: relative;
-  width: 390px;
-  height: 150px;
-  flex: none;
-  overflow: hidden;
-}
-.creator-modal__bg,
-.creator-modal__shade {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-.creator-modal__bg {
-  object-fit: cover;
-  object-position: center;
-}
-.creator-modal__shade {
+/* Figma › creater modal · join › THE90 CREATOR (1125:13272) */
+.settings-sheet__panel--creator {
+  height: auto;
   background:
-    linear-gradient(180deg, rgba(26,26,26,0) 21%, #1a1a1a 100%),
-    linear-gradient(90deg, rgba(0,0,0,.08), rgba(0,0,0,.36));
+    linear-gradient(180deg, rgba(36, 255, 0, .1) 0%, rgba(22, 153, 0, 0) 100%),
+    var(--bg-surface);
 }
-.creator-modal__intro {
-  position: absolute;
-  z-index: 3;
-  top: 50%;
-  left: 15px;
-  width: 206px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  color: #fff;
-  font-size: 12px;
-  line-height: 15px;
-  transform: translateY(-50%);
-}
-.creator-brand--modal strong { font-size: 20px; line-height: 20px; }
 .creator-modal__content {
-  height: 430px;
-  padding: 0 16px 24px;
+  padding: 24px 16px;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
+.creator-modal__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.creator-modal__intro p { margin: 0; color: #fff; font-size: 12px; line-height: 15px; }
+.creator-brand--modal { padding-right: 32px; }
+.creator-brand--modal strong { color: #fff; font-size: 20px; line-height: 16px; text-transform: uppercase; }
 .creator-features {
-  height: 194px;
   padding: 12px 16px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  border: 1px solid rgba(255, 201, 74, .1);
+  gap: 12px;
+  border: 1px solid rgba(255, 255, 255, .1);
   border-radius: 24px;
-  background: rgba(255, 201, 74, .1);
+  background: rgba(255, 255, 255, .1);
 }
 .creator-feature {
-  min-height: 30px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -536,7 +510,7 @@ button.settings-row:hover { background: rgba(255,255,255,.035); }
   display: grid;
   place-items: center;
   border-radius: 10px;
-  background: #ffc94a;
+  background: var(--brand-primary);
 }
 .creator-feature > span img { display: block; width: 12px; height: 12px; }
 .creator-feature p {
@@ -549,26 +523,44 @@ button.settings-row:hover { background: rgba(255,255,255,.035); }
 }
 .creator-feature strong { color: #fff; font-size: 12px; font-weight: 600; line-height: 18px; }
 .creator-feature small { color: var(--text-primary); font-size: 10px; line-height: 12.5px; }
-.creator-pricing { height: 99px; display: flex; gap: 8px; }
+.creator-video {
+  height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .05);
+}
+.creator-video span {
+  color: rgba(255, 255, 255, .5);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .96px;
+  text-transform: uppercase;
+}
+.creator-pricing { display: flex; gap: 8px; }
 .creator-price {
   min-width: 0;
-  height: 99px;
   padding: 12px;
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;
-  border: 1px solid rgba(255,255,255,.1);
+  border: 1px solid rgba(255, 255, 255, .1);
   border-radius: 16px;
-  background: rgba(255,255,255,.1);
+  background: rgba(255, 255, 255, .05);
   color: #fff;
   text-align: left;
+  transition: border-color .18s ease, background .18s ease;
 }
 .creator-price.is-selected {
   border-color: var(--brand-primary);
   background:
-    linear-gradient(270deg, rgba(36,255,0,0), rgba(36,255,0,.2)),
+    linear-gradient(270deg, rgba(36, 255, 0, 0), rgba(36, 255, 0, .2)),
     #101a15;
 }
 .creator-price__top {
@@ -580,7 +572,7 @@ button.settings-row:hover { background: rgba(255,255,255,.035); }
 }
 .creator-price__top b {
   height: 20px;
-  padding: 0 8px;
+  padding: 2px 8px;
   display: flex;
   align-items: center;
   border-radius: 12px;
@@ -588,19 +580,34 @@ button.settings-row:hover { background: rgba(255,255,255,.035); }
   color: #fff;
   font-size: 10px;
   font-weight: 600;
-  line-height: 13px;
   white-space: nowrap;
 }
-.creator-price.is-selected .creator-price__top b { background: var(--brand-primary); color: var(--text-on-brand); }
+.creator-price[data-creator-plan="monthly"] .creator-price__top b { background: var(--brand-primary); color: var(--text-on-brand); }
+/* the radio: an empty disc, or a green ring with a dot when chosen */
 .creator-price__top i {
+  position: relative;
   width: 20px;
   height: 20px;
-  border: 1.5px solid rgba(255,255,255,.1);
+  border: 1.5px solid rgba(255, 255, 255, .1);
   border-radius: 50%;
-  background: rgba(255,255,255,.1);
+  background: rgba(255, 255, 255, .1);
 }
-.creator-price > strong { font-size: 18px; font-weight: 700; line-height: 22.5px; white-space: nowrap; }
-.creator-price > strong small { color: var(--text-primary); font-family: Inter, sans-serif; font-size: 12px; font-weight: 400; }
+.creator-price.is-selected .creator-price__top i {
+  border: 1px solid var(--brand-primary);
+  background: none;
+}
+.creator-price.is-selected .creator-price__top i::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 8px;
+  height: 8px;
+  margin: auto;
+  border-radius: 50%;
+  background: var(--brand-primary);
+}
+.creator-price > strong { font-size: 18px; font-weight: 700; letter-spacing: -.18px; line-height: 22.5px; white-space: nowrap; }
+.creator-price > strong small { color: var(--text-primary); font-family: Inter, sans-serif; font-size: 12px; font-weight: 400; letter-spacing: 0; }
 .creator-price > em { margin-top: -4px; color: var(--brand-primary); font-size: 12px; font-weight: 600; font-style: normal; line-height: 18px; }
-.creator-modal__cta { height: 52px; flex: none; font-size: 16px; }
+.creator-modal__cta { height: 52px; flex: none; border-radius: 16px; font-size: 16px; }
 .creator-modal__note { margin: 0; color: var(--text-primary); font-size: 10px; line-height: 12.5px; text-align: center; opacity: .5; }
