@@ -1,0 +1,7 @@
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<defs><clipPath id="round"><circle cx="8" cy="8" r="8"/></clipPath></defs>
+<g clip-path="url(#round)">
+<rect width="16" height="16" fill="#DA251D"/>
+<path d="M8.000 4.100 L8.943 7.002 L11.994 7.002 L9.526 8.796 L10.469 11.698 L8.000 9.904 L5.531 11.698 L6.474 8.796 L4.006 7.002 L7.057 7.002Z" fill="#FFFF00"/>
+</g>
+</svg>

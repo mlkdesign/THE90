@@ -1,0 +1,14 @@
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<defs><clipPath id="round"><circle cx="8" cy="8" r="8"/></clipPath></defs>
+<g clip-path="url(#round)">
+<rect width="16" height="16" fill="#FFFFFF"/>
+<g transform="rotate(33.69 8 8)">
+<circle cx="8" cy="8" r="3.2" fill="#0047A0"/>
+<path d="M4.8 8A3.2 3.2 0 0 1 11.2 8A1.6 1.6 0 0 0 8 8A1.6 1.6 0 0 1 4.8 8Z" fill="#CD2E3A"/>
+</g>
+<g transform="translate(3.632 5.088) rotate(213.69)" fill="#000000"><rect x="-1.04" y="-1.25" width=".52" height="2.5"/><rect x="-0.26" y="-1.25" width=".52" height="2.5"/><rect x="0.52" y="-1.25" width=".52" height="2.5"/></g>
+<g transform="translate(12.368 5.088) rotate(-33.69)" fill="#000000"><rect x="-1.04" y="-1.25" width=".52" height="1.05"/><rect x="-1.04" y=".2" width=".52" height="1.05"/><rect x="-0.26" y="-1.25" width=".52" height="2.5"/><rect x="0.52" y="-1.25" width=".52" height="1.05"/><rect x="0.52" y=".2" width=".52" height="1.05"/></g>
+<g transform="translate(3.632 10.912) rotate(146.31)" fill="#000000"><rect x="-1.04" y="-1.25" width=".52" height="2.5"/><rect x="-0.26" y="-1.25" width=".52" height="1.05"/><rect x="-0.26" y=".2" width=".52" height="1.05"/><rect x="0.52" y="-1.25" width=".52" height="2.5"/></g>
+<g transform="translate(12.368 10.912) rotate(33.69)" fill="#000000"><rect x="-1.04" y="-1.25" width=".52" height="1.05"/><rect x="-1.04" y=".2" width=".52" height="1.05"/><rect x="-0.26" y="-1.25" width=".52" height="1.05"/><rect x="-0.26" y=".2" width=".52" height="1.05"/><rect x="0.52" y="-1.25" width=".52" height="1.05"/><rect x="0.52" y=".2" width=".52" height="1.05"/></g>
+</g>
+</svg>

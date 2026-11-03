@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>THE90 — Free football prediction game</title>
+<meta name="description" content="Call the results of real matches, lock your slip before kick-off and climb the global table. No stakes, no deposits — just football and bragging rights.">
+<meta property="og:title" content="THE90 — Free football prediction game">
+<meta property="og:description" content="Ten picks a day. One shot at the top.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0e0e0e">
+
+<script>
+/* Settled before first paint: the language (one picked on this site wins,
+   then the browser's own preference list, then English), the face for its
+   script, and the loading state the preloader clears.
+   Keep CODES in step with js/i18n.js. */
+(function () {
+  var CODES = ['en','es','pt','fr','de','it','nl','pl','tr','ru','uk','ar','hi','id','vi','ja','ko','zh'];
+  var FONTS = { ar:'Noto+Sans+Arabic', hi:'Noto+Sans+Devanagari', ja:'Noto+Sans+JP', ko:'Noto+Sans+KR', zh:'Noto+Sans+SC' };
+  var code = null;
+  try { code = localStorage.getItem('the90.landing.lang.choice'); } catch (e) {}
+  if (CODES.indexOf(code) < 0) {
+    code = 'en';
+    var list = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ''];
+    for (var i = 0; i < list.length; i++) {
+      var base = String(list[i]).toLowerCase().split('-')[0];
+      if (CODES.indexOf(base) > -1) { code = base; break; }
+    }
+  }
+  var root = document.documentElement;
+  root.lang = code;
+  root.dir = code === 'ar' ? 'rtl' : 'ltr';
+  root.className += ' js is-loading';
+  window.THE90_LANG = code;
+  /* Sora and Inter cover Latin, Cyrillic and Vietnamese; any other script
+     fetches its own face only once that language is on screen. */
+  window.THE90_FONT = function (c) {
+    if (!FONTS[c] || document.getElementById('font-' + c)) return;
+    var l = document.createElement('link');
+    l.id = 'font-' + c;
+    l.rel = 'stylesheet';
+    l.href = 'https://fonts.googleapis.com/css2?family=' + FONTS[c] + ':wght@400..800&display=swap';
+    document.head.appendChild(l);
+  };
+  window.THE90_FONT(code);
+})();
+</script>
+<style>
+/* preloader — inline, so it paints before any stylesheet has arrived */
+html{background:#0e0e0e;color-scheme:dark}
+.pl{display:none}
+.js .pl{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:#0e0e0e;
+  transition:opacity .7s cubic-bezier(.22,.8,.3,1),visibility 0s .7s}
+.pl__logo{position:relative;width:151.2px;height:35px;transition:transform .8s cubic-bezier(.22,.8,.3,1)}
+.pl__logo img{position:absolute;left:0;top:0;display:block;width:151.2px;height:35px;max-width:none}
+.pl__dim{filter:brightness(0) invert(1);opacity:.14}
+.pl__fill{clip-path:inset(0 100% 0 0)}
+.pl__txt{position:absolute;left:0;right:0;bottom:calc(100px + env(safe-area-inset-bottom,0px));margin:0;text-align:center;
+  font:500 13px/1.4 'Sora',system-ui,-apple-system,'Segoe UI',sans-serif;letter-spacing:.06em;color:rgba(255,255,255,.5)}
+.pl__txt b{margin-inline-start:6px;color:#f7faf8;font-weight:600;font-variant-numeric:tabular-nums}
+.pl.is-done{opacity:0;visibility:hidden}
+.pl.is-done .pl__logo{transform:scale(1.08)}
+html.is-loading{overflow:hidden}
+html.is-loading .line,html.is-loading .hero__phones,html.is-loading .chip{animation-play-state:paused}
+@media (prefers-reduced-motion:reduce){.js .pl,.pl__logo{transition-duration:.01s}}
+</style>
+
+<link rel="icon" href="assets/icons/logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" href="assets/icons/logo.svg" as="image">
+<link data-css rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400..800&family=Inter:wght@400..800&display=swap" media="print" onload="this.media='all'">
+<link data-css rel="stylesheet" href="css/landing.css" media="print" onload="this.media='all'">
+<noscript>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400..800&family=Inter:wght@400..800&display=swap">
+  <link rel="stylesheet" href="css/landing.css">
+</noscript>
+</head>
+<body>
+<div class="pl" id="pl" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+  <div class="pl__logo">
+    <img class="pl__dim" src="assets/icons/logo.svg" alt="" width="108" height="25">
+    <img class="pl__fill" src="assets/icons/logo.svg" alt="THE90" width="108" height="25">
+  </div>
+  <p class="pl__txt"><span data-pl-word>Loading</span><b data-pl-pct>0%</b></p>
+</div>
+<script>
+/* The fill is real progress, never ahead of it. Every <img> on the page is
+   weighed by its pixel area (a fair stand-in for its size, and known before
+   it downloads), alongside the stylesheets, the parsed document and the web
+   fonts. The figure on screen eases toward that total. */
+(function () {
+  var pl = document.getElementById('pl');
+  var root = document.documentElement;
+  if (!pl || !/\bis-loading\b/.test(root.className)) return;
+
+  var WORDS = { en:'Loading', es:'Cargando', pt:'Carregando', fr:'Chargement', de:'Wird geladen',
+    it:'Caricamento', nl:'Laden', pl:'\u0141adowanie', tr:'Y\u00fckleniyor', ru:'\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430',
+    uk:'\u0417\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0435\u043d\u043d\u044f', ar:'\u062c\u0627\u0631\u064d \u0627\u0644\u062a\u062d\u0645\u064a\u0644',
+    hi:'\u0932\u094b\u0921 \u0939\u094b \u0930\u0939\u093e \u0939\u0948', id:'Memuat', vi:'\u0110ang t\u1ea3i',
+    ja:'\u8aad\u307f\u8fbc\u307f\u4e2d', ko:'\ub85c\ub529 \uc911', zh:'\u52a0\u8f7d\u4e2d' };
+  var word = WORDS[root.lang] || WORDS.en;
+  pl.querySelector('[data-pl-word]').textContent = word;
+  pl.setAttribute('aria-label', word);
+
+  var fill = pl.querySelector('.pl__fill');
+  var pct = pl.querySelector('[data-pl-pct]');
+  var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var W = { dom: 6, css: 6, img: 80, font: 8 };
+  var dom = 0, css = 0, font = 0, imgAll = 0, imgDone = 0, loaded = false;
+  var target = 0, shown = 0, closing = false;
+
+  function recompute() {
+    var p = W.dom * dom + W.css * css + W.font * font + (imgAll ? W.img * imgDone / imgAll : 0);
+    if (!loaded) p = Math.min(p, 96);           /* the last stretch belongs to `load` */
+    if (p > target) target = p;
+  }
+
+  function watchCss() {
+    var links = document.querySelectorAll('link[data-css]');
+    var left = links.length;
+    if (!left) { css = 1; return; }
+    [].forEach.call(links, function (l) {
+      var once = false;
+      var ok = function () { if (once) return; once = true; left--; css = 1 - left / links.length; recompute(); };
+      if (l.sheet) ok(); else { l.addEventListener('load', ok); l.addEventListener('error', ok); }
+    });
+  }
+
+  function watchImages() {
+    [].forEach.call(document.images, function (img) {
+      if (pl.contains(img)) return;
+      var w = Math.max((+img.getAttribute('width') || 40) * (+img.getAttribute('height') || 40), 1600);
+      imgAll += w;
+      if (img.complete) { imgDone += w; return; }
+      var settle = function () {
+        img.removeEventListener('load', settle);
+        img.removeEventListener('error', settle);
+        imgDone += w;
+        recompute();
+      };
+      img.addEventListener('load', settle);
+      img.addEventListener('error', settle);
+    });
+  }
+
+  function paint() {
+    var v = Math.min(100, Math.round(shown));
+    fill.style.clipPath = 'inset(0 ' + (100 - shown).toFixed(2) + '% 0 0)';
+    pct.textContent = v + '%';
+    pl.setAttribute('aria-valuenow', v);
+  }
+
+  function frame() {
+    if (closing) return;
+    var gap = target - shown;
+    /* a hidden tab gets no animation frames, so it simply catches up */
+    if (gap > 0) shown = (still || document.hidden) ? target : Math.min(target, shown + Math.max(gap * .09, .35));
+    paint();
+    if (shown >= 100) { closing = true; setTimeout(finish, still ? 0 : 240); return; }
+    if (document.hidden) setTimeout(frame, 60); else requestAnimationFrame(frame);
+  }
+
+  function finish() {
+    pl.classList.add('is-done');
+    root.classList.remove('is-loading');
+    window.THE90_READY = true;
+    window.dispatchEvent(new Event('the90:ready'));
+    setTimeout(function () { if (pl.parentNode) pl.parentNode.removeChild(pl); }, 900);
+  }
+
+  watchCss();
+  document.addEventListener('DOMContentLoaded', function () {
+    dom = 1;
+    watchImages();
+    recompute();
+  });
+  window.addEventListener('load', function () {
+    loaded = true;
+    css = 1;
+    imgDone = imgAll;                         /* anything still pending is lazy by design */
+    var fonts = document.fonts && document.fonts.ready;
+    if (fonts) fonts.then(function () { font = 1; recompute(); });
+    else font = 1;
+    recompute();
+  });
+  /* never hold the page hostage to one stalled request */
+  setTimeout(function () { loaded = true; dom = css = font = 1; imgDone = imgAll; if (!imgAll) imgAll = imgDone = 1; recompute(); }, 15000);
+
+  if (document.hidden) setTimeout(frame, 60); else requestAnimationFrame(frame);
+})();
+</script>
+<a class="skip" href="#main" data-i18n="skip">Skip to content</a>
+
+<!-- ============================ HEADER ============================ -->
+<header class="hdr" data-hdr>
+  <div class="shell hdr__in">
+    <a class="hdr__logo" href="#top" aria-label="THE90">
+      <img src="assets/icons/logo.svg" alt="THE90" width="108" height="25">
+    </a>
+
+    <nav class="nav" aria-label="Main">
+      <a href="#how"      data-i18n="nav.how">How it works</a>
+      <a href="#features" data-i18n="nav.features">Features</a>
+      <a href="#scoring"  data-i18n="nav.scoring">Scoring</a>
+      <a href="#leagues"  data-i18n="nav.leagues">Leagues</a>
+      <a href="#faq"      data-i18n="nav.faq">FAQ</a>
+    </nav>
+
+    <span class="hdr__spacer"></span>
+
+    <div class="hdr__right">
+      <div class="lang" data-lang>
+        <button class="lang__btn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language" data-i18n-aria="lang.label" data-lang-toggle>
+          <img class="lang__globe" src="assets/icons/globe.svg" alt="" width="15" height="15">
+          <span data-lang-current>EN</span>
+          <img class="lang__caret" src="assets/icons/caret.svg" alt="" width="9" height="6">
+        </button>
+        <ul class="lang__menu" role="listbox" data-lang-menu hidden></ul>
+      </div>
+      <a class="btn btn--primary btn--sm" href="#cta" data-i18n="nav.play">Play free</a>
+
+      <button class="burger" type="button" aria-label="Menu" data-i18n-aria="nav.menu" aria-expanded="false"
+              aria-controls="m-nav" data-burger>
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- mobile drawer -->
+  <nav class="mnav" id="m-nav" aria-label="Mobile" data-mnav hidden>
+    <a href="#how"      data-i18n="nav.how">How it works</a>
+    <a href="#features" data-i18n="nav.features">Features</a>
+    <a href="#scoring"  data-i18n="nav.scoring">Scoring</a>
+    <a href="#leagues"  data-i18n="nav.leagues">Leagues</a>
+    <a href="#faq"      data-i18n="nav.faq">FAQ</a>
+    <a class="btn btn--primary mnav__cta" href="#cta" data-i18n="nav.play">Play free</a>
+  </nav>
+</header>
+
+<main id="main">
+
+  <!-- ============================ HERO ============================ -->
+  <section class="hero" id="top">
+    <img class="hero__bg" src="assets/img/hero-bg.jpg" alt="" width="1672" height="941">
+    <span class="glow glow--hero" aria-hidden="true"></span>
+    <span class="hero__fade hero__fade--top" aria-hidden="true"></span>
+    <span class="hero__fade hero__fade--bottom" aria-hidden="true"></span>
+
+    <div class="hero__in">
+      <div class="hero__copy">
+        <h1 class="hero__title">
+          <span class="line" data-i18n="hero.t1">Ten picks a day.</span>
+          <span class="line" data-i18n="hero.t2">One shot at the top.</span>
+        </h1>
+        <p class="hero__sub line" data-i18n="hero.sub">Call the results of real matches, lock your slip before kick-off and climb the global table. No stakes, no deposits — just football and bragging rights.</p>
+
+        <div class="dl line" data-dl>
+          <a class="btn btn--primary dl__now" href="#cta" data-i18n="dl.now">Download Now</a>
+          <a class="store store--ios" href="#" data-dl-ios aria-label="Download on the App Store">
+            <img src="assets/icons/apple.svg" alt="" width="22.5" height="27">
+            <span><i data-i18n="cta.s1">Download on the</i><b>App Store</b></span>
+          </a>
+          <a class="store store--and" href="#" data-dl-and aria-label="Get it on Google Play">
+            <img src="assets/icons/playstore.svg" alt="" width="23.625" height="27">
+            <span><i data-i18n="cta.s2">GET IT ON</i>
+              <img class="store__word" src="assets/icons/google-play-word.svg" alt="Google Play" width="83.25" height="16.875"></span>
+          </a>
+        </div>
+
+        <ul class="stats line">
+          <li class="stat"><b data-count="128000">128,000</b><span data-i18n="hero.s1">active predictors</span></li>
+          <li class="stat"><b data-count="2400000" data-compact>2.4M</b><span data-i18n="hero.s2">picks submitted</span></li>
+          <li class="stat"><b data-count="12">12</b><span data-i18n="hero.s3">leagues covered</span></li>
+        </ul>
+      </div>
+
+      <div class="hero__art" data-tilt>
+        <img class="hero__phones" src="assets/img/hero-phones.png" alt="THE90 app screens" width="1400" height="1374">
+        <div class="chip">
+          <span class="chip__k" data-i18n="hero.chip">Exact score</span>
+          <span class="chip__v">+40</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- clubs -->
+    <div class="clubs">
+      <p class="clubs__label" data-i18n="clubs.label">Covering the clubs you actually watch</p>
+      <div class="clubs__viewport">
+        <div class="clubs__track" data-clubs></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ HOW IT WORKS ============================ -->
+  <section class="sec how" id="how">
+    <header class="sec-head">
+      <h2 class="sec-title" data-i18n="how.title">Three minutes a day. That’s the whole game.</h2>
+      <p class="sec-sub" data-i18n="how.sub">Every morning you get ten fixtures. Call them, confirm the slip, then watch the table move as the results land.</p>
+    </header>
+
+    <div class="shell steps">
+      <article class="step" data-reveal>
+        <span class="step__art"><img src="assets/img/step-1.png" alt="" width="760" height="760"></span>
+        <span class="glow glow--step" aria-hidden="true"></span>
+        <h3 class="step__t" data-i18n="how.s1t">Make your ten picks</h3>
+        <p class="step__d" data-i18n="how.s1d">Pick a winner, add an exact score if you’re feeling brave, and answer “both teams to score”. The score fills the rest in for you.</p>
+      </article>
+      <article class="step" data-reveal>
+        <span class="step__art step__art--2"><img src="assets/img/step-2.png" alt="" width="700" height="700"></span>
+        <span class="glow glow--step" aria-hidden="true"></span>
+        <h3 class="step__t" data-i18n="how.s2t">Lock the slip</h3>
+        <p class="step__d" data-i18n="how.s2d">Accept unlocks at 10 of 10. Your projected points are shown before you commit, so you always know what’s on the line.</p>
+      </article>
+      <article class="step" data-reveal>
+        <span class="step__art step__art--3"><img src="assets/img/step-3.png" alt="" width="680" height="680"></span>
+        <span class="glow glow--step" aria-hidden="true"></span>
+        <h3 class="step__t" data-i18n="how.s3t">Climb the table</h3>
+        <p class="step__d" data-i18n="how.s3d">Points land as matches finish. Track your rank globally, inside your private leagues, and against everyone who backed the other side.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============================ FEATURES ============================ -->
+  <section class="sec features" id="features">
+    <header class="sec-head">
+      <h2 class="sec-title" data-i18n="feat.title">Built for people who argue about football</h2>
+    </header>
+
+    <div class="shell features__shell">
+      <!-- Daily challenges: the app's pick rail, playable on the page -->
+      <article class="fcard fcard--wide dc" data-reveal data-dc>
+        <div class="dc__copy">
+          <h3 class="fcard__t" data-i18n="feat.f1t">Daily challenges</h3>
+          <p class="fcard__d" data-i18n="feat.f1d">Five of today’s fixtures, playable right here. Swipe or drag through the cards, pick a result and set the exact score, then lock each one in with Accept pick. Clear all five to finish the round.</p>
+
+          <div class="picksbar">
+            <div class="picksbar__row">
+              <span class="picksbar__label" data-i18n="dc.selected">Picks selected</span>
+              <span class="picksbar__count"><b data-dc-done>0</b><small>/5</small></span>
+            </div>
+            <div class="picksbar__meter"><i data-dc-meter></i></div>
+          </div>
+
+          <!-- the confirmation bar: inline here on wide screens, a bottom sheet on phones -->
+          <div class="winbar-slot" data-winbar-slot>
+            <div class="winbar" data-winbar>
+              <div class="winbar__card">
+                <div class="winbar__row">
+                  <span class="winbar__points">
+                    <span data-i18n="dc.win">Potential win:</span>
+                    <b><span data-win-points>+0</span><img src="assets/icons/soccer-ball.svg" alt="" width="16" height="16"></b>
+                  </span>
+                  <button class="winbar__close" type="button" aria-label="Close" data-i18n-aria="dc.close" data-win-close>
+                    <img src="assets/icons/cross-sm.svg" alt="" width="10" height="10">
+                  </button>
+                </div>
+                <button class="winbar__cta" type="button" aria-disabled="true" data-win-cta>Accept pick</button>
+                <p class="winbar__reward">
+                  <span data-i18n="dc.reward">Complete all 5 picks and get reward:</span>
+                  <b>+ 5 <img src="assets/icons/soccer-ball.svg" alt="" width="16" height="16"></b>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dc__stage">
+          <div class="dc__rail" dir="ltr" tabindex="0" role="region" aria-roledescription="carousel"
+               aria-label="Today’s matches" data-i18n-aria="dc.carousel" data-dc-rail></div>
+          <button class="dc__arrow dc__arrow--prev is-off" type="button" aria-label="Previous match" data-i18n-aria="dc.prev" data-dc-prev>
+            <svg viewBox="0 0 9 6" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M0.9 1.2L4.5 4.8L8.1 1.2" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="dc__arrow dc__arrow--next" type="button" aria-label="Next match" data-i18n-aria="dc.next" data-dc-next>
+            <svg viewBox="0 0 9 6" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M0.9 1.2L4.5 4.8L8.1 1.2" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </article>
+
+      <!-- three small cards — glows sit where Figma › row/3 puts them -->
+      <div class="frow">
+        <article class="fcard fcard--sm" data-reveal>
+          <span class="fglow fglow--1" aria-hidden="true"><span><img src="assets/icons/glow-card-1.svg" alt="" width="946" height="942"></span></span>
+          <span class="fcard__n">01</span>
+          <h3 class="fcard__t" data-i18n="feat.f2t">Exact-score bonus</h3>
+          <p class="fcard__d" data-i18n="feat.f2d">Calling the winner is worth points. Calling 2–1 is worth a lot more. Odds come from a real Poisson model, so the long shots pay like long shots.</p>
+        </article>
+        <article class="fcard fcard--sm" data-reveal>
+          <span class="fglow fglow--2" aria-hidden="true"><span><img src="assets/icons/glow-card-2.svg" alt="" width="942" height="942"></span></span>
+          <span class="fcard__n">02</span>
+          <h3 class="fcard__t" data-i18n="feat.f3t">Private leagues</h3>
+          <p class="fcard__d" data-i18n="feat.f3d">Spin up a league for the group chat or the office, set your own rounds and rules, and talk trash in the built-in chat.</p>
+        </article>
+        <article class="fcard fcard--sm" data-reveal>
+          <span class="fglow fglow--3" aria-hidden="true"><span><img src="assets/icons/glow-card-3.svg" alt="" width="942" height="942"></span></span>
+          <span class="fcard__n">03</span>
+          <h3 class="fcard__t" data-i18n="feat.f4t">Ranks &amp; achievements</h3>
+          <p class="fcard__d" data-i18n="feat.f4d">Climb from Rookie to Master, collect badges for perfect rounds and derby calls, and keep a public accuracy record you can point to.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ APP SCREENS ============================ -->
+  <section class="app-carousel" id="app-screens" aria-labelledby="app-carousel-title" data-app-carousel>
+    <h2 class="sec-title app-carousel__title" id="app-carousel-title" data-i18n="carousel.title">The whole game, in your hands</h2>
+    <div class="app-carousel__stage" aria-roledescription="carousel" aria-label="THE90 app screens" data-carousel-stage>
+      <div class="app-carousel__slides" data-carousel-slides></div>
+      <img class="app-carousel__phone" src="assets/img/carousel/iphone-frame.png" alt="" width="252" height="513" aria-hidden="true">
+    </div>
+    <div class="app-carousel__copy" aria-live="polite" aria-atomic="true">
+      <h3 class="app-carousel__caption" data-carousel-caption data-i18n="carousel.s1t">Join the game</h3>
+      <p class="app-carousel__description" data-carousel-description data-i18n="carousel.s1d">Create your account and get ready for your first picks.</p>
+    </div>
+    <div class="dl app-carousel__actions" data-dl>
+      <a class="btn btn--primary dl__now" href="#cta" data-i18n="nav.play">Play free</a>
+      <a class="store store--ios" href="#" data-dl-ios aria-label="Download on the App Store">
+        <img src="assets/icons/apple.svg" alt="" width="22.5" height="27">
+        <span><i data-i18n="cta.s1">Download on the</i><b>App Store</b></span>
+      </a>
+      <a class="store store--and" href="#" data-dl-and aria-label="Get it on Google Play">
+        <img src="assets/icons/playstore.svg" alt="" width="23.625" height="27">
+        <span><i data-i18n="cta.s2">GET IT ON</i>
+          <img class="store__word" src="assets/icons/google-play-word.svg" alt="Google Play" width="83.25" height="16.875"></span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============================ LIVE / LEAGUES ============================ -->
+  <section class="live" id="leagues">
+    <img class="live__bg" src="assets/img/stadium.jpg" alt="" width="1122" height="1402">
+    <span class="hero__fade hero__fade--top" aria-hidden="true"></span>
+
+    <div class="live__in">
+      <div class="live__copy" data-reveal>
+        <h2 class="sec-title" data-i18n="live.title">Live matches, live table</h2>
+        <p class="live__sub" data-i18n="live.sub">Follow the games your slip depends on, with the minute ticking and the leaderboard updating as goals go in.</p>
+        <div class="dl" data-dl>
+          <a class="btn btn--primary dl__now" href="#cta" data-i18n="dl.now">Download Now</a>
+          <a class="store store--ios" href="#" data-dl-ios aria-label="Download on the App Store">
+            <img src="assets/icons/apple.svg" alt="" width="22.5" height="27">
+            <span><i data-i18n="cta.s1">Download on the</i><b>App Store</b></span>
+          </a>
+          <a class="store store--and" href="#" data-dl-and aria-label="Get it on Google Play">
+            <img src="assets/icons/playstore.svg" alt="" width="23.625" height="27">
+            <span><i data-i18n="cta.s2">GET IT ON</i>
+              <img class="store__word" src="assets/icons/google-play-word.svg" alt="Google Play" width="83.25" height="16.875"></span>
+          </a>
+        </div>
+      </div>
+      <div class="live__art">
+        <img src="assets/img/phone-leaders.png" alt="THE90 rankings screen" width="434" height="887">
+      </div>
+    </div>
+    <!-- above the photo and the phone, below the copy — the frame's z-order -->
+    <span class="live__fadeB" aria-hidden="true"></span>
+  </section>
+
+  <!-- ============================ FAQ + CTA ============================ -->
+  <section class="sec faq" id="faq">
+    <div class="faq__in">
+      <div class="faq__left">
+        <h2 class="sec-title sec-title--left" data-i18n="faq.title">Questions, answered</h2>
+        <div class="faq__list" data-faq></div>
+      </div>
+
+      <aside class="faq__right" id="scoring">
+        <div class="faq__phone" data-float>
+          <img src="assets/img/phone-faq.png" alt="THE90 live match screen" width="400" height="818">
+        </div>
+        <div class="faq__cta" id="cta">
+          <h2 class="sec-title" data-i18n="cta.title">Get THE90 on your phone</h2>
+          <p class="live__sub" data-i18n="cta.sub">Free to download, free to play. Your ten picks, the live table and every ticking minute — in your pocket on iOS and Android.</p>
+          <div class="stores">
+            <a class="store" href="#" aria-label="Download on the App Store">
+              <img src="assets/icons/apple.svg" alt="" width="22.5" height="27">
+              <span><i data-i18n="cta.s1">Download on the</i><b>App Store</b></span>
+            </a>
+            <a class="store" href="#" aria-label="Get it on Google Play">
+              <img src="assets/icons/playstore.svg" alt="" width="23.625" height="27">
+              <span><i data-i18n="cta.s2">GET IT ON</i>
+                <img class="store__word" src="assets/icons/google-play-word.svg" alt="Google Play" width="83.25" height="16.875"></span>
+            </a>
+          </div>
+          <p class="fine" data-i18n="cta.fine">18+. Play for points, not money.</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================ FOOTER ============================ -->
+<footer class="ftr">
+  <div class="shell ftr__in">
+    <div class="ftr__brand">
+      <img src="assets/icons/logo-footer.svg" alt="THE90" width="96" height="22">
+      <p data-i18n="ftr.tagline">The football prediction game for people who never stop arguing about football.</p>
+    </div>
+    <nav class="ftr__cols" aria-label="Footer">
+      <div class="ftr__col">
+        <h4 data-i18n="ftr.c1">PRODUCT</h4>
+        <a href="#how" data-i18n="nav.how">How it works</a>
+        <a href="#features" data-i18n="nav.features">Features</a>
+        <a href="#scoring" data-i18n="nav.scoring">Scoring</a>
+        <a href="#leagues" data-i18n="nav.leagues">Leagues</a>
+      </div>
+      <div class="ftr__col">
+        <h4 data-i18n="ftr.c3">LEGAL</h4>
+        <a href="#" data-i18n="ftr.terms">Terms &amp; Conditions</a>
+        <a href="#" data-i18n="ftr.privacy">Privacy policy</a>
+        <a href="#" data-i18n="ftr.play">Responsible play</a>
+      </div>
+    </nav>
+  </div>
+  <div class="shell ftr__bottom">
+    <span data-i18n="ftr.rights">© 2026 THE90. All rights reserved.</span>
+    <span data-i18n="cta.fine">18+. Play for points, not money.</span>
+  </div>
+</footer>
+
+<script src="js/i18n.js"></script>
+<script src="js/landing.js"></script>
+</body>
+</html>
