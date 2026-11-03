@@ -131,7 +131,7 @@
   height: 100%;
   object-fit: contain;
 }
-.mz-invite-banner { flex: none; }
+.mz-invite-banner { flex: none; border-radius: 24px; }
 .mz-invite-banner:active { transform: scale(.985); }
 
 .invite-link-card {

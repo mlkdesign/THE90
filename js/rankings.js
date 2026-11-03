@@ -336,27 +336,40 @@
      Your plate
      ======================================================= */
 
+  /* Your place in the list is an empty slot while the plate is pinned at the
+     bottom, so the same row never shows twice. When the slot scrolls up to
+     the plate, the plate drops into it and rides with the list; a slot that
+     stops just short of it is pulled in, like a magnet. */
   var currentRow = list.querySelector('[data-current-rank]');
+  var slot = currentRow && currentRow.querySelector('.leaders-row__inner');
   var updateQueued = false;
   var pinTopOffset;
+  var MAGNET = 56;            // px, in the phone's own units
 
-  function updatePin() {
-    updateQueued = false;
-    if (!currentRow || !screen.classList.contains('is-active')) {
-      pin.classList.remove('is-row-visible');
-      return;
-    }
-    var rowRect = currentRow.getBoundingClientRect();
+  // the phone frame is scaled to fit the window; rects come back scaled
+  function frameScale() {
+    return scroll.getBoundingClientRect().height / scroll.offsetHeight || 1;
+  }
+
+  // How far the slot sits below the plate, in the phone's own px.
+  function slotOffset() {
     var scrollRect = scroll.getBoundingClientRect();
     if (!pin.classList.contains('is-row-visible')) {
       pinTopOffset = scrollRect.bottom - pin.getBoundingClientRect().top;
     }
-
-    // Once the current row reaches the fixed card, keep the card hidden below it.
-    // It reappears only when the user scrolls back up and the row moves below it.
     var pinTop = scrollRect.bottom - pinTopOffset;
-    var rowHasReachedPin = rowRect.top <= pinTop;
-    pin.classList.toggle('is-row-visible', rowHasReachedPin);
+    return (slot.getBoundingClientRect().top - pinTop) / frameScale();
+  }
+
+  function updatePin() {
+    updateQueued = false;
+    if (!slot || !screen.classList.contains('is-active')) {
+      pin.classList.remove('is-row-visible');
+      return;
+    }
+    var docked = slotOffset() <= .5;
+    pin.classList.toggle('is-row-visible', docked);
+    currentRow.classList.toggle('is-docked', docked);
   }
 
   function schedulePinUpdate() {
@@ -365,9 +378,24 @@
     requestAnimationFrame(updatePin);
   }
 
+  var magnetTimer = null;
+  function magnet() {
+    if (!slot || !screen.classList.contains('is-active')) return;
+    var offset = slotOffset();
+    if (Math.abs(offset) < .5 || Math.abs(offset) > MAGNET) return;
+    scroll.scrollTo({ top: scroll.scrollTop + offset, behavior: still.matches ? 'auto' : 'smooth' });
+  }
+  function scheduleMagnet() {
+    clearTimeout(magnetTimer);
+    magnetTimer = setTimeout(magnet, 140);
+  }
+
 
   // The whole page scrolls as one: the hero goes up with the list.
-  scroll.addEventListener('scroll', schedulePinUpdate, { passive: true });
+  scroll.addEventListener('scroll', function () {
+    schedulePinUpdate();
+    scheduleMagnet();
+  }, { passive: true });
   window.addEventListener('resize', schedulePinUpdate);
   window.addEventListener('the90:screen', function (event) {
     if (event.detail !== 'rankings') {
