@@ -99,8 +99,8 @@
   flex: none;
   display: block;
   overflow: hidden;
-  border: 0;
-  border-radius: 0;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 24px;
   background: #000;
   color: #fff;
   text-align: left;
@@ -131,7 +131,7 @@
   height: 100%;
   object-fit: contain;
 }
-.mz-invite-banner { flex: none; border-radius: 24px; }
+.mz-invite-banner { flex: none; }
 .mz-invite-banner:active { transform: scale(.985); }
 
 .invite-link-card {
