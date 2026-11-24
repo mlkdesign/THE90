@@ -8,7 +8,7 @@ window.THE90_I18N = (function () {
   var LOCALES = [
     { code:'en', label:'English',          short:'EN', flag:'gb' },
     { code:'es', label:'Español',          short:'ES', flag:'es' },
-    { code:'pt', label:'Português',        short:'PT', flag:'br' },
+    { code:'pt', label:'Português',        short:'PT', flag:'pt' },
     { code:'fr', label:'Français',         short:'FR', flag:'fr' },
     { code:'de', label:'Deutsch',          short:'DE', flag:'de' },
     { code:'it', label:'Italiano',         short:'IT', flag:'it' },
@@ -18,18 +18,14 @@ window.THE90_I18N = (function () {
     { code:'ru', label:'Русский',          short:'RU', flag:'ru' },
     { code:'uk', label:'Українська',       short:'UA', flag:'ua' },
     { code:'ar', label:'العربية',          short:'AR', flag:'sa' },
-    { code:'hi', label:'हिन्दी',            short:'HI', flag:'in' },
-    { code:'id', label:'Bahasa Indonesia', short:'ID', flag:'id' },
-    { code:'vi', label:'Tiếng Việt',       short:'VI', flag:'vn' },
-    { code:'ja', label:'日本語',            short:'JA', flag:'jp' },
-    { code:'ko', label:'한국어',            short:'KO', flag:'kr' },
+    { code:'cs', label:'Čeština', short:'CS', flag:'cz' },
     { code:'zh', label:'简体中文',          short:'ZH', flag:'cn' }
   ];
 
   /* Number formatting locale per language: Brazilian Portuguese, Simplified
      Chinese, and Western digits for Arabic and Hindi to match the rest of
      the page (scores, kick-off times). */
-  var INTL = { pt:'pt-BR', zh:'zh-CN', ar:'ar-u-nu-latn', hi:'hi-u-nu-latn' };
+  var INTL = { pt:'pt-PT', zh:'zh-CN', ar:'ar-u-nu-latn', hi:'hi-u-nu-latn' };
 
   var DICT = {
     en:{
@@ -1148,5 +1144,10 @@ window.THE90_I18N = (function () {
     }
   });
 
+  DICT.cs = Object.assign({}, DICT.en, {
+    'lang.label':'Jazyk', 'nav.how':'Jak to funguje', 'nav.features':'Funkce',
+    'nav.leagues':'Ligy', 'nav.play':'Hrát zdarma', 'nav.menu':'Nabídka',
+    'cta.s1':'Stáhnout v', 'cta.s2':'STÁHNOUT Z', 'faq.title':'Časté otázky'
+  });
   return { LOCALES:LOCALES, DICT:DICT, INTL:INTL, DEFAULT:'en' };
 })();

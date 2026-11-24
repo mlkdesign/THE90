@@ -16,7 +16,7 @@
    script, and the loading state the preloader clears.
    Keep CODES in step with js/i18n.js. */
 (function () {
-  var CODES = ['en','es','pt','fr','de','it','nl','pl','tr','ru','uk','ar','hi','id','vi','ja','ko','zh'];
+  var CODES = ['en','es','pt','fr','de','it','nl','pl','tr','ru','uk','ar','cs','zh'];
   var FONTS = { ar:'Noto+Sans+Arabic', hi:'Noto+Sans+Devanagari', ja:'Noto+Sans+JP', ko:'Noto+Sans+KR', zh:'Noto+Sans+SC' };
   var code = null;
   try { code = localStorage.getItem('the90.landing.lang.choice'); } catch (e) {}
@@ -95,7 +95,7 @@ html.is-loading .line,html.is-loading .hero__phones,html.is-loading .chip{animat
   var root = document.documentElement;
   if (!pl || !/\bis-loading\b/.test(root.className)) return;
 
-  var WORDS = { en:'Loading', es:'Cargando', pt:'Carregando', fr:'Chargement', de:'Wird geladen',
+  var WORDS = { en:'Loading', cs:'Načítání', es:'Cargando', pt:'A carregar', fr:'Chargement', de:'Wird geladen',
     it:'Caricamento', nl:'Laden', pl:'\u0141adowanie', tr:'Y\u00fckleniyor', ru:'\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430',
     uk:'\u0417\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0435\u043d\u043d\u044f', ar:'\u062c\u0627\u0631\u064d \u0627\u0644\u062a\u062d\u0645\u064a\u0644',
     hi:'\u0932\u094b\u0921 \u0939\u094b \u0930\u0939\u093e \u0939\u0948', id:'Memuat', vi:'\u0110ang t\u1ea3i',
@@ -201,7 +201,7 @@ html.is-loading .line,html.is-loading .hero__phones,html.is-loading .chip{animat
       <img src="assets/icons/logo.svg" alt="THE90" width="108" height="25">
     </a>
 
-    <nav class="nav" aria-label="Main">
+    <nav class="nav" aria-label="Main" data-i18n-aria="nav.menu">
       <a href="#how"      data-i18n="nav.how">How it works</a>
       <a href="#features" data-i18n="nav.features">Features</a>
       <a href="#scoring"  data-i18n="nav.scoring">Scoring</a>
@@ -220,7 +220,7 @@ html.is-loading .line,html.is-loading .hero__phones,html.is-loading .chip{animat
         </button>
         <ul class="lang__menu" role="listbox" data-lang-menu hidden></ul>
       </div>
-      <a class="btn btn--primary btn--sm" href="#cta" data-i18n="nav.play">Play free</a>
+      <a class="btn btn--primary btn--sm" href="#cta" data-i18n="nav.play">Play</a>
 
       <button class="burger" type="button" aria-label="Menu" data-i18n-aria="nav.menu" aria-expanded="false"
               aria-controls="m-nav" data-burger>
@@ -230,13 +230,13 @@ html.is-loading .line,html.is-loading .hero__phones,html.is-loading .chip{animat
   </div>
 
   <!-- mobile drawer -->
-  <nav class="mnav" id="m-nav" aria-label="Mobile" data-mnav hidden>
+  <nav class="mnav" id="m-nav" aria-label="Mobile" data-i18n-aria="nav.menu" data-mnav hidden>
     <a href="#how"      data-i18n="nav.how">How it works</a>
     <a href="#features" data-i18n="nav.features">Features</a>
     <a href="#scoring"  data-i18n="nav.scoring">Scoring</a>
     <a href="#leagues"  data-i18n="nav.leagues">Leagues</a>
     <a href="#faq"      data-i18n="nav.faq">FAQ</a>
-    <a class="btn btn--primary mnav__cta" href="#cta" data-i18n="nav.play">Play free</a>
+    <a class="btn btn--primary mnav__cta" href="#cta" data-i18n="nav.play">Play</a>
   </nav>
 </header>
 
@@ -252,13 +252,11 @@ html.is-loading .line,html.is-loading .hero__phones,html.is-loading .chip{animat
     <div class="hero__in">
       <div class="hero__copy">
         <h1 class="hero__title">
-          <span class="line" data-i18n="hero.t1">Five picks a day.</span>
-          <span class="line" data-i18n="hero.t2">One shot at the top.</span>
+          <span class="line" data-i18n="hero.t1">IF YOU LOVE FOOTBALL</span>
         </h1>
-        <p class="hero__sub line" data-i18n="hero.sub">Call the results of real matches, lock in your picks before kick-off and climb the global table. No stakes, no deposits — just football and bragging rights.</p>
+        <p class="hero__sub line" data-i18n="hero.sub">you belong here</p>
 
-        <div class="dl line" data-dl>
-          <a class="btn btn--primary dl__now" href="#cta" data-i18n="dl.now">Download Now</a>
+        <div class="dl line hero__stores">
           <a class="store store--ios" href="#" data-dl-ios aria-label="Download on the App Store">
             <img src="assets/icons/apple.svg" alt="" width="22.5" height="27">
             <span><i data-i18n="cta.s1">Download on the</i><b>App Store</b></span>
@@ -269,29 +267,14 @@ html.is-loading .line,html.is-loading .hero__phones,html.is-loading .chip{animat
               <img class="store__word" src="assets/icons/google-play-word.svg" alt="Google Play" width="83.25" height="16.875"></span>
           </a>
         </div>
-
-        <ul class="stats line">
-          <!-- pre-launch: what is already true; real player counts come back after release -->
-          <li class="stat"><b>100%</b><span data-i18n="hero.s1">free to play</span></li>
-          <li class="stat"><b>0</b><span data-i18n="hero.s2">stakes or deposits</span></li>
-          <li class="stat"><b data-i18n="hero.v3">Top</b><span data-i18n="hero.s3">European leagues</span></li>
-        </ul>
       </div>
 
       <div class="hero__art" data-tilt>
-        <img class="hero__phones" src="assets/img/hero-phones.png" alt="THE90 app screens" width="1400" height="1374">
+        <img class="hero__phones" src="assets/img/hero-phones.png" alt="THE90 app screens" data-i18n-alt="carousel.title" width="1400" height="1374">
         <div class="chip">
           <span class="chip__k" data-i18n="hero.chip">Exact score</span>
           <span class="chip__v">+30</span>
         </div>
-      </div>
-    </div>
-
-    <!-- clubs -->
-    <div class="clubs">
-      <p class="clubs__label" data-i18n="clubs.label">Covering the clubs you actually watch</p>
-      <div class="clubs__viewport">
-        <div class="clubs__track" data-clubs></div>
       </div>
     </div>
   </section>
@@ -299,44 +282,14 @@ html.is-loading .line,html.is-loading .hero__phones,html.is-loading .chip{animat
   <!-- ============================ HOW IT WORKS ============================ -->
   <section class="sec how" id="how">
     <header class="sec-head">
-      <h2 class="sec-title" data-i18n="how.title">Three minutes a day. That’s the whole game.</h2>
-      <p class="sec-sub" data-i18n="how.sub">Five new cards land in Daily Challenge every midnight. Call them, accept each pick, then watch the table move as the results land.</p>
-    </header>
-
-    <div class="shell steps">
-      <article class="step" data-reveal>
-        <span class="step__art"><img src="assets/img/step-1.png" alt="" width="760" height="760"></span>
-        <span class="glow glow--step" aria-hidden="true"></span>
-        <h3 class="step__t" data-i18n="how.s1t">Make your five picks</h3>
-        <p class="step__d" data-i18n="how.s1d">Pick the result and add the exact score if you’re feeling brave. Picks on any other match are made separately, whenever you like.</p>
-      </article>
-      <article class="step" data-reveal>
-        <span class="step__art step__art--2"><img src="assets/img/step-2.png" alt="" width="700" height="700"></span>
-        <span class="glow glow--step" aria-hidden="true"></span>
-        <h3 class="step__t" data-i18n="how.s2t">Lock in your picks</h3>
-        <p class="step__d" data-i18n="how.s2d">Every card has its own Accept button. Your projected points are shown before you commit, so you always know what’s on the line.</p>
-      </article>
-      <article class="step" data-reveal>
-        <span class="step__art step__art--3"><img src="assets/img/step-3.png" alt="" width="680" height="680"></span>
-        <span class="glow glow--step" aria-hidden="true"></span>
-        <h3 class="step__t" data-i18n="how.s3t">Climb the table</h3>
-        <p class="step__d" data-i18n="how.s3d">Points land as matches finish. Track your rank globally, inside your private leagues, and against everyone who backed the other side.</p>
-      </article>
-    </div>
-  </section>
-
-  <!-- ============================ FEATURES ============================ -->
-  <section class="sec features" id="features">
-    <header class="sec-head">
-      <h2 class="sec-title" data-i18n="feat.title">Built for people who argue about football</h2>
+      <h2 class="sec-title" data-i18n="how.title">PLAY FOR PRIDE</h2>
+      <p class="sec-sub" data-i18n="how.sub">Five new cards land in Daily Challenge every day. Pick the match result and exact score on all five cards. Every pick brings you closer to the top.</p>
     </header>
 
     <div class="shell features__shell">
       <!-- Daily challenges: the app's pick rail, playable on the page -->
       <article class="fcard fcard--wide dc" data-reveal data-dc>
         <div class="dc__copy">
-          <h3 class="fcard__t" data-i18n="feat.f1t">Daily challenges</h3>
-          <p class="fcard__d" data-i18n="feat.f1d">Five of today’s fixtures, playable right here. Swipe or drag through the cards, pick a result and set the exact score, then lock each one in with Accept pick. Clear all five to finish the round.</p>
 
           <div class="picksbar">
             <div class="picksbar__row">
@@ -381,34 +334,30 @@ html.is-loading .line,html.is-loading .hero__phones,html.is-loading .chip{animat
         </div>
       </article>
 
-      <!-- three small cards — glows sit where Figma › row/3 puts them -->
-      <div class="frow">
-        <article class="fcard fcard--sm" data-reveal>
-          <span class="fglow fglow--1" aria-hidden="true"><span><img src="assets/icons/glow-card-1.svg" alt="" width="946" height="942"></span></span>
-          <span class="fcard__n">01</span>
-          <h3 class="fcard__t" data-i18n="feat.f2t">Exact-score bonus</h3>
-          <p class="fcard__d" data-i18n="feat.f2d">The right result is worth 10 points, the exact score 30. Points are fixed — no odds, no multipliers, the same for everyone.</p>
-        </article>
-        <article class="fcard fcard--sm" data-reveal>
-          <span class="fglow fglow--2" aria-hidden="true"><span><img src="assets/icons/glow-card-2.svg" alt="" width="942" height="942"></span></span>
-          <span class="fcard__n">02</span>
-          <h3 class="fcard__t" data-i18n="feat.f3t">Private leagues</h3>
-          <p class="fcard__d" data-i18n="feat.f3d">Spin up a league for the group chat or the office, set your own rounds and rules, and talk trash in the built-in chat.</p>
-        </article>
-        <article class="fcard fcard--sm" data-reveal>
-          <span class="fglow fglow--3" aria-hidden="true"><span><img src="assets/icons/glow-card-3.svg" alt="" width="942" height="942"></span></span>
-          <span class="fcard__n">03</span>
-          <h3 class="fcard__t" data-i18n="feat.f4t">Ranks &amp; achievements</h3>
-          <p class="fcard__d" data-i18n="feat.f4d">Climb eight ranks from Bronze to Legend, collect badges for perfect rounds and derby calls, and keep a public accuracy record you can point to.</p>
-        </article>
+      <div class="frow challenge-summary" id="features">
+        <article><h3 class="fcard__t" data-i18n="feat.f2t">How Points Work</h3><p class="fcard__d" data-i18n="feat.f2d">The right result earns 10 points. An exact score earns 30. The same points for everyone.</p></article>
+        <article><h3 class="fcard__t" data-i18n="global.title">Climb the Global leaderboard</h3><p class="fcard__d" data-i18n="global.sub">Fight for the title of THE90 Global Champion.</p></article>
       </div>
+    </div>
+  </section>
+
+
+  <section class="sec private-leagues" id="private-leagues" aria-labelledby="private-title">
+    <div class="shell private-leagues__in">
+      <div><h2 class="sec-title" id="private-title" data-i18n="private.title">Private leagues</h2>
+        <p class="sec-sub" data-i18n="private.sub">Create your league. Invite your people. Play for pride.</p>
+        <h3 class="fcard__t" data-i18n="private.creator">Be the creator</h3><p class="fcard__d" data-i18n="private.description">Set up your league and bring your group together on your own leaderboard.</p></div>
+      <figure class="private-leagues__media">
+        <img class="private-leagues__screen" src="assets/img/carousel/7.png" alt="THE90 private league screen" data-i18n-alt="private.title" width="228" height="500" loading="lazy">
+        <img class="private-leagues__frame" src="assets/img/carousel/iphone-frame.png" alt="" width="252" height="513" loading="lazy" aria-hidden="true">
+      </figure>
     </div>
   </section>
 
   <!-- ============================ APP SCREENS ============================ -->
   <section class="app-carousel" id="app-screens" aria-labelledby="app-carousel-title" data-app-carousel>
     <h2 class="sec-title app-carousel__title" id="app-carousel-title" data-i18n="carousel.title">The whole game, in your hands</h2>
-    <div class="app-carousel__stage" aria-roledescription="carousel" aria-label="THE90 app screens" data-carousel-stage>
+    <div class="app-carousel__stage" aria-roledescription="carousel" aria-label="THE90 app screens" data-i18n-aria="carousel.title" data-carousel-stage>
       <div class="app-carousel__slides" data-carousel-slides></div>
       <img class="app-carousel__phone" src="assets/img/carousel/iphone-frame.png" alt="" width="252" height="513" aria-hidden="true">
     </div>
@@ -417,7 +366,7 @@ html.is-loading .line,html.is-loading .hero__phones,html.is-loading .chip{animat
       <p class="app-carousel__description" data-carousel-description data-i18n="carousel.s1d">Create your account and get ready for your first picks.</p>
     </div>
     <div class="dl app-carousel__actions" data-dl>
-      <a class="btn btn--primary dl__now" href="#cta" data-i18n="nav.play">Play free</a>
+      <a class="btn btn--primary dl__now" href="#cta" data-i18n="nav.play">Play</a>
       <a class="store store--ios" href="#" data-dl-ios aria-label="Download on the App Store">
         <img src="assets/icons/apple.svg" alt="" width="22.5" height="27">
         <span><i data-i18n="cta.s1">Download on the</i><b>App Store</b></span>
@@ -437,8 +386,7 @@ html.is-loading .line,html.is-loading .hero__phones,html.is-loading .chip{animat
 
     <div class="live__in">
       <div class="live__copy" data-reveal>
-        <h2 class="sec-title" data-i18n="live.title">Live matches, live table</h2>
-        <p class="live__sub" data-i18n="live.sub">Follow the games your picks depend on, with the minute ticking and the leaderboard updating as goals go in.</p>
+        <h2 class="sec-title" data-i18n="live.title">Play for pride. Earn your place in the Hall of Fame.</h2>
         <div class="dl" data-dl>
           <a class="btn btn--primary dl__now" href="#cta" data-i18n="dl.now">Download Now</a>
           <a class="store store--ios" href="#" data-dl-ios aria-label="Download on the App Store">
@@ -453,7 +401,7 @@ html.is-loading .line,html.is-loading .hero__phones,html.is-loading .chip{animat
         </div>
       </div>
       <div class="live__art">
-        <img src="assets/img/phone-leaders.png" alt="THE90 rankings screen" width="434" height="887">
+        <img src="assets/img/phone-leaders.png" alt="THE90 rankings screen" data-i18n-alt="global.title" width="434" height="887">
       </div>
     </div>
     <!-- above the photo and the phone, below the copy — the frame's z-order -->
@@ -470,7 +418,7 @@ html.is-loading .line,html.is-loading .hero__phones,html.is-loading .chip{animat
 
       <aside class="faq__right" id="scoring">
         <div class="faq__phone" data-float>
-          <img src="assets/img/phone-faq.png" alt="THE90 live match screen" width="400" height="818">
+          <img src="assets/img/phone-faq.png" alt="THE90 live match screen" data-i18n-alt="carousel.s4t" width="400" height="818">
         </div>
         <div class="faq__cta" id="cta">
           <h2 class="sec-title" data-i18n="cta.title">Get THE90 on your phone</h2>
@@ -499,9 +447,8 @@ html.is-loading .line,html.is-loading .hero__phones,html.is-loading .chip{animat
   <div class="shell ftr__in">
     <div class="ftr__brand">
       <img src="assets/icons/logo-footer.svg" alt="THE90" width="96" height="22">
-      <p data-i18n="ftr.tagline">The football prediction game for people who never stop arguing about football.</p>
     </div>
-    <nav class="ftr__cols" aria-label="Footer">
+    <nav class="ftr__cols" aria-label="Footer" data-i18n-aria="nav.menu">
       <div class="ftr__col">
         <h4 data-i18n="ftr.c1">PRODUCT</h4>
         <a href="#how" data-i18n="nav.how">How it works</a>
@@ -524,6 +471,7 @@ html.is-loading .line,html.is-loading .hero__phones,html.is-loading .chip{animat
 </footer>
 
 <script src="js/i18n.js"></script>
+<script src="js/copy.js"></script>
 <script src="js/landing.js"></script>
 </body>
 </html>

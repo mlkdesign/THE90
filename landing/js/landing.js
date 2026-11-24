@@ -35,6 +35,7 @@
   /* ---------------- clubs marquee ---------------- */
   var CLUBS = ['c1','c2','c3','c4','c5','c6'];
   (function clubs() {
+    if (!$('[data-clubs]')) return;
     var row = '';
     for (var i = 0; i < 3; i++) {
       CLUBS.forEach(function (c) {
@@ -787,6 +788,13 @@
 
     $$('[data-i18n]').forEach(function (el) { el.textContent = t(el.dataset.i18n); });
     $$('[data-i18n-aria]').forEach(function (el) { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
+    $$('[data-i18n-alt]').forEach(function (el) { el.setAttribute('alt', t(el.dataset.i18nAlt)); });
+    $$('[data-dl-ios], .stores .store:first-child').forEach(function (el) {
+      el.setAttribute('aria-label', t('cta.s1') + ' App Store');
+    });
+    $$('[data-dl-and], .stores .store:last-child').forEach(function (el) {
+      el.setAttribute('aria-label', t('cta.s2') + ' Google Play');
+    });
     document.title = t('meta.title');
     var desc = $('meta[name="description"]');
     if (desc) desc.setAttribute('content', t('meta.desc'));
