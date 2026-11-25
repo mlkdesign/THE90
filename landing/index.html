@@ -277,10 +277,16 @@ html.is-loading .line,html.is-loading .hero__phones,html.is-loading .chip{animat
         </div>
       </div>
     </div>
+    <div class="clubs" aria-hidden="true">
+      <div class="clubs__viewport">
+        <div class="clubs__track" data-clubs></div>
+      </div>
+    </div>
   </section>
 
   <!-- ============================ HOW IT WORKS ============================ -->
   <section class="sec how" id="how">
+    <span id="features"></span>
     <header class="sec-head">
       <h2 class="sec-title" data-i18n="how.title">PLAY FOR PRIDE</h2>
       <p class="sec-sub" data-i18n="how.sub">Five new cards land in Daily Challenge every day. Pick the match result and exact score on all five cards. Every pick brings you closer to the top.</p>
@@ -333,24 +339,17 @@ html.is-loading .line,html.is-loading .hero__phones,html.is-loading .chip{animat
           </button>
         </div>
       </article>
-
-      <div class="frow challenge-summary" id="features">
-        <article><h3 class="fcard__t" data-i18n="feat.f2t">How Points Work</h3><p class="fcard__d" data-i18n="feat.f2d">The right result earns 10 points. An exact score earns 30. The same points for everyone.</p></article>
-        <article><h3 class="fcard__t" data-i18n="global.title">Climb the Global leaderboard</h3><p class="fcard__d" data-i18n="global.sub">Fight for the title of THE90 Global Champion.</p></article>
-      </div>
     </div>
   </section>
 
 
   <section class="sec private-leagues" id="private-leagues" aria-labelledby="private-title">
     <div class="shell private-leagues__in">
-      <div><h2 class="sec-title" id="private-title" data-i18n="private.title">Private leagues</h2>
-        <p class="sec-sub" data-i18n="private.sub">Create your league. Invite your people. Play for pride.</p>
-        <h3 class="fcard__t" data-i18n="private.creator">Be the creator</h3><p class="fcard__d" data-i18n="private.description">Set up your league and bring your group together on your own leaderboard.</p></div>
       <figure class="private-leagues__media">
         <img class="private-leagues__screen" src="assets/img/carousel/7.png" alt="THE90 private league screen" data-i18n-alt="private.title" width="228" height="500" loading="lazy">
         <img class="private-leagues__frame" src="assets/img/carousel/iphone-frame.png" alt="" width="252" height="513" loading="lazy" aria-hidden="true">
       </figure>
+      <h2 class="sec-title" id="private-title" data-i18n="private.title">Create Your Own League. Invite Your Friends.</h2>
     </div>
   </section>
 
@@ -422,7 +421,6 @@ html.is-loading .line,html.is-loading .hero__phones,html.is-loading .chip{animat
         </div>
         <div class="faq__cta" id="cta">
           <h2 class="sec-title" data-i18n="cta.title">Get THE90 on your phone</h2>
-          <p class="live__sub" data-i18n="cta.sub">Free to download, free to play. Your daily picks, the live table and every ticking minute — in your pocket on iOS and Android.</p>
           <div class="stores">
             <a class="store" href="#" aria-label="Download on the App Store">
               <img src="assets/icons/apple.svg" alt="" width="22.5" height="27">
@@ -434,7 +432,6 @@ html.is-loading .line,html.is-loading .hero__phones,html.is-loading .chip{animat
                 <img class="store__word" src="assets/icons/google-play-word.svg" alt="Google Play" width="83.25" height="16.875"></span>
             </a>
           </div>
-          <p class="fine" data-i18n="cta.fine">18+. Play for points, not money.</p>
         </div>
       </aside>
     </div>
@@ -466,12 +463,12 @@ html.is-loading .line,html.is-loading .hero__phones,html.is-loading .chip{animat
   </div>
   <div class="shell ftr__bottom">
     <span data-i18n="ftr.rights">© 2026 THE90. All rights reserved.</span>
-    <span data-i18n="cta.fine">18+. Play for points, not money.</span>
   </div>
 </footer>
 
 <script src="js/i18n.js"></script>
 <script src="js/copy.js"></script>
+<script src="js/faq.js"></script>
 <script src="js/landing.js"></script>
 </body>
 </html>

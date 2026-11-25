@@ -49,7 +49,7 @@
   })();
 
   /* ---------------- FAQ ---------------- */
-  var FAQ = ['q1','q2','q3','q4','q5','q6'];
+  var FAQ = ['q1','q2','q3','q4','q5','q6','q7'];
   (function faq() {
     $('[data-faq]').innerHTML = FAQ.map(function (q, i) {
       return '<div class="faq-item' + (i === 0 ? ' is-open' : '') + '">' +
@@ -338,6 +338,9 @@
         '</div>' +
       '</article>');
     rail.appendChild(doneCard);
+    var stores = $('.hero__stores').cloneNode(true);
+    stores.className = 'stores donecard__stores';
+    $('.donecard', doneCard).appendChild(stores);
 
     /* ---- rendering ---- */
 
@@ -789,6 +792,7 @@
     $$('[data-i18n]').forEach(function (el) { el.textContent = t(el.dataset.i18n); });
     $$('[data-i18n-aria]').forEach(function (el) { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
     $$('[data-i18n-alt]').forEach(function (el) { el.setAttribute('alt', t(el.dataset.i18nAlt)); });
+    $$('[data-i18n-title]').forEach(function (el) { el.setAttribute('title', t(el.dataset.i18nTitle)); });
     $$('[data-dl-ios], .stores .store:first-child').forEach(function (el) {
       el.setAttribute('aria-label', t('cta.s1') + ' App Store');
     });
