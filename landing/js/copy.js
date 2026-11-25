@@ -45,7 +45,15 @@
   };
   Object.assign(window.THE90_I18N.DICT.cs, czech);
   var play = { en:'Play', es:'Jugar', pt:'Jogar', fr:'Jouer', de:'Spielen', it:'Gioca', nl:'Spelen', pl:'Graj', tr:'Oyna', ru:'Играть', uk:'Грати', ar:'العب', cs:'Hrát', zh:'开始游戏' };
+  var downloadTitle = {
+    en:'Get THE90\non your phone', es:'Descarga THE90\nen tu móvil', pt:'Instala o THE90\nno teu telemóvel',
+    fr:'Télécharge THE90\nsur ton téléphone', de:'Hol dir THE90\nauf dein Smartphone', it:'Scarica THE90\nsul tuo telefono',
+    nl:'Download THE90\nop je telefoon', pl:'Pobierz THE90\nna swój telefon', tr:'THE90’ı indir\ntelefonunda oyna',
+    ru:'Скачай THE90\nна свой телефон', uk:'Завантаж THE90\nна свій телефон', ar:'حمّل THE90\nعلى هاتفك',
+    cs:'Stáhni si THE90\ndo telefonu', zh:'下载THE90\n到你的手机'
+  };
   window.THE90_I18N.LOCALES.forEach(function (locale) {
+    window.THE90_I18N.DICT[locale.code]['cta.title'] = downloadTitle[locale.code];
     window.THE90_I18N.DICT[locale.code]['nav.play'] = play[locale.code];
     keys.forEach(function (key, index) { window.THE90_I18N.DICT[locale.code][key] = copy[locale.code][index]; });
   });

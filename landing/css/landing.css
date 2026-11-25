@@ -729,6 +729,8 @@ html[dir="rtl"] .dc__copy{direction:rtl}
 .ftr{background:var(--bg-deep);border-top:1px solid var(--line-soft);padding:72px var(--pad) 0}
 .ftr__in{display:flex;gap:80px;padding-bottom:56px}
 .ftr__brand{width:340px}
+.ftr__tagline{text-transform:lowercase}
+.faq__cta .sec-title{white-space:pre-line}
 .ftr__brand p{width:280px;margin-top:20px;font-size:14.5px;line-height:22px;color:rgba(255,255,255,.5)}
 .ftr__cols{flex:1;display:flex;gap:40px}
 .ftr__col{flex:1;display:flex;flex-direction:column;gap:12px}
