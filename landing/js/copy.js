@@ -52,7 +52,18 @@
     ru:'Скачай THE90\nна свой телефон', uk:'Завантаж THE90\nна свій телефон', ar:'حمّل THE90\nعلى هاتفك',
     cs:'Stáhni si THE90\ndo telefonu', zh:'下载THE90\n到你的手机'
   };
+  var navigation = {
+    en:['App','Hall of Fame'], es:['Aplicación','Salón de la Fama'], pt:['Aplicação','Salão da Fama'],
+    fr:['Application','Panthéon'], de:['App','Ruhmeshalle'], it:['App','Hall of Fame'],
+    nl:['App','Eregalerij'], pl:['Aplikacja','Galeria Sław'], tr:['Uygulama','Şöhretler Salonu'],
+    ru:['Приложение','Зал славы'], uk:['Застосунок','Зала слави'], ar:['التطبيق','قاعة المشاهير'],
+    cs:['Aplikace','Síň slávy'], zh:['应用','名人堂']
+  };
+  var contact = { en:'Contact', es:'Contacto', pt:'Contacto', fr:'Contact', de:'Kontakt', it:'Contatti', nl:'Contact', pl:'Kontakt', tr:'İletişim', ru:'Контакты', uk:'Контакти', ar:'اتصل بنا', cs:'Kontakt', zh:'联系我们' };
   window.THE90_I18N.LOCALES.forEach(function (locale) {
+    window.THE90_I18N.DICT[locale.code]['ftr.contact'] = contact[locale.code];
+    window.THE90_I18N.DICT[locale.code]['nav.screens'] = navigation[locale.code][0];
+    window.THE90_I18N.DICT[locale.code]['nav.hall'] = navigation[locale.code][1];
     window.THE90_I18N.DICT[locale.code]['cta.title'] = downloadTitle[locale.code];
     window.THE90_I18N.DICT[locale.code]['nav.play'] = play[locale.code];
     keys.forEach(function (key, index) { window.THE90_I18N.DICT[locale.code][key] = copy[locale.code][index]; });

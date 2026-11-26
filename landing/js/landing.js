@@ -331,7 +331,7 @@
         '<div class="donecard">' +
           '<div class="donecard__art" aria-hidden="true" data-done-art>' +
             '<svg class="donecard__static" viewBox="0 0 140 140" fill="none"><circle cx="70" cy="70" r="46" fill="#24FF00"/>' +
-            '<path d="M50 71l13 13 27-29" stroke="#06120D" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+            '<path d="M50 71l13 13 27-29" stroke="#000000" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
           '</div>' +
           '<p class="donecard__title" data-i18n="dc.done">All picks accepted</p>' +
           '<p class="donecard__win"><span data-i18n="dc.rating">Rating reward:</span><b>+ 50 ' + BALL + '</b></p>' +

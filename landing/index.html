@@ -58,7 +58,7 @@ html{background:#0e0e0e;color-scheme:dark}
 .pl__fill{clip-path:inset(0 100% 0 0)}
 .pl__txt{position:absolute;left:0;right:0;bottom:calc(100px + env(safe-area-inset-bottom,0px));margin:0;text-align:center;
   font:500 13px/1.4 'Sora',system-ui,-apple-system,'Segoe UI',sans-serif;letter-spacing:.06em;color:rgba(255,255,255,.5)}
-.pl__txt b{margin-inline-start:6px;color:#f7faf8;font-weight:600;font-variant-numeric:tabular-nums}
+.pl__txt b{margin-inline-start:6px;color:#ffffff;font-weight:600;font-variant-numeric:tabular-nums}
 .pl.is-done{opacity:0;visibility:hidden}
 .pl.is-done .pl__logo{transform:scale(1.08)}
 html.is-loading{overflow:hidden}
@@ -70,18 +70,18 @@ html.is-loading .line,html.is-loading .hero__phones,html.is-loading .chip{animat
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="assets/icons/logo.svg" as="image">
-<link data-css rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400..800&family=Inter:wght@400..800&display=swap" media="print" onload="this.media='all'">
+<link data-css rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400..800&family=Inter:wght@400..800&family=Rubik+One&display=swap" media="print" onload="this.media='all'">
 <link data-css rel="stylesheet" href="css/landing.css" media="print" onload="this.media='all'">
 <noscript>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400..800&family=Inter:wght@400..800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400..800&family=Inter:wght@400..800&family=Rubik+One&display=swap">
   <link rel="stylesheet" href="css/landing.css">
 </noscript>
 </head>
 <body>
 <div class="pl" id="pl" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
   <div class="pl__logo">
-    <img class="pl__dim" src="assets/icons/logo.svg" alt="" width="108" height="25">
-    <img class="pl__fill" src="assets/icons/logo.svg" alt="THE90" width="108" height="25">
+    <img class="pl__dim" src="assets/icons/logo-white.svg" alt="" width="108" height="25">
+    <img class="pl__fill" src="assets/icons/logo-white.svg" alt="THE90" width="108" height="25">
   </div>
   <p class="pl__txt"><span data-pl-word>Loading</span><b data-pl-pct>0%</b></p>
 </div>
@@ -198,14 +198,14 @@ html.is-loading .line,html.is-loading .hero__phones,html.is-loading .chip{animat
 <header class="hdr" data-hdr>
   <div class="shell hdr__in">
     <a class="hdr__logo" href="#top" aria-label="THE90">
-      <img src="assets/icons/logo.svg" alt="THE90" width="108" height="25">
+      <img src="assets/icons/logo-white.svg" alt="THE90" width="108" height="25">
     </a>
 
     <nav class="nav" aria-label="Main" data-i18n-aria="nav.menu">
       <a href="#how"      data-i18n="nav.how">How it works</a>
-      <a href="#features" data-i18n="nav.features">Features</a>
-      <a href="#scoring"  data-i18n="nav.scoring">Scoring</a>
-      <a href="#leagues"  data-i18n="nav.leagues">Leagues</a>
+      <a href="#private-leagues" data-i18n="nav.leagues">Leagues</a>
+      <a href="#app-screens" data-i18n="nav.screens">App</a>
+      <a href="#hall-of-fame" data-i18n="nav.hall">Hall of Fame</a>
       <a href="#faq"      data-i18n="nav.faq">FAQ</a>
     </nav>
 
@@ -232,9 +232,9 @@ html.is-loading .line,html.is-loading .hero__phones,html.is-loading .chip{animat
   <!-- mobile drawer -->
   <nav class="mnav" id="m-nav" aria-label="Mobile" data-i18n-aria="nav.menu" data-mnav hidden>
     <a href="#how"      data-i18n="nav.how">How it works</a>
-    <a href="#features" data-i18n="nav.features">Features</a>
-    <a href="#scoring"  data-i18n="nav.scoring">Scoring</a>
-    <a href="#leagues"  data-i18n="nav.leagues">Leagues</a>
+    <a href="#private-leagues" data-i18n="nav.leagues">Leagues</a>
+    <a href="#app-screens" data-i18n="nav.screens">App</a>
+    <a href="#hall-of-fame" data-i18n="nav.hall">Hall of Fame</a>
     <a href="#faq"      data-i18n="nav.faq">FAQ</a>
     <a class="btn btn--primary mnav__cta" href="#cta" data-i18n="nav.play">Play</a>
   </nav>
@@ -286,7 +286,6 @@ html.is-loading .line,html.is-loading .hero__phones,html.is-loading .chip{animat
 
   <!-- ============================ HOW IT WORKS ============================ -->
   <section class="sec how" id="how">
-    <span id="features"></span>
     <header class="sec-head">
       <h2 class="sec-title" data-i18n="how.title">PLAY FOR PRIDE</h2>
       <p class="sec-sub" data-i18n="how.sub">Five new cards land in Daily Challenge every day. Pick the match result and exact score on all five cards. Every pick brings you closer to the top.</p>
@@ -379,7 +378,7 @@ html.is-loading .line,html.is-loading .hero__phones,html.is-loading .chip{animat
   </section>
 
   <!-- ============================ LIVE / LEAGUES ============================ -->
-  <section class="live" id="leagues">
+  <section class="live" id="hall-of-fame">
     <img class="live__bg" src="assets/img/stadium.jpg" alt="" width="1122" height="1402">
     <span class="hero__fade hero__fade--top" aria-hidden="true"></span>
 
@@ -444,16 +443,17 @@ on your phone</h2>
 <footer class="ftr">
   <div class="shell ftr__in">
     <div class="ftr__brand">
-      <img src="assets/icons/logo-footer.svg" alt="THE90" width="96" height="22">
+      <img src="assets/icons/logo-white.svg" alt="THE90" width="96" height="22">
       <p class="ftr__tagline" data-i18n="hero.t1">if you love football</p>
     </div>
     <nav class="ftr__cols" aria-label="Footer" data-i18n-aria="nav.menu">
       <div class="ftr__col">
         <h4 data-i18n="ftr.c1">PRODUCT</h4>
         <a href="#how" data-i18n="nav.how">How it works</a>
-        <a href="#features" data-i18n="nav.features">Features</a>
-        <a href="#scoring" data-i18n="nav.scoring">Scoring</a>
-        <a href="#leagues" data-i18n="nav.leagues">Leagues</a>
+        <a href="#private-leagues" data-i18n="nav.leagues">Leagues</a>
+        <a href="#app-screens" data-i18n="nav.screens">App</a>
+        <a href="#hall-of-fame" data-i18n="nav.hall">Hall of Fame</a>
+        <a href="#faq" data-i18n="nav.faq">FAQ</a>
       </div>
       <div class="ftr__col">
         <h4 data-i18n="ftr.c3">LEGAL</h4>
@@ -463,6 +463,15 @@ on your phone</h2>
       </div>
     </nav>
   </div>
+  <section class="shell ftr__company" aria-labelledby="footer-contact">
+    <h2 id="footer-contact" data-i18n="ftr.contact">Contact</h2>
+    <address class="ftr__address" dir="ltr">
+      <strong>Park The Bus s.r.o.</strong>
+      <span>Sokolská 1883/8, Nové Město, 120 00 Praha 2</span>
+      <span>IČO: 300 47 862</span>
+    </address>
+    <a class="ftr__email" href="mailto:support@the90.eu" dir="ltr">support@the90.eu</a>
+  </section>
   <div class="shell ftr__bottom">
     <span data-i18n="ftr.rights">© 2026 THE90. All rights reserved.</span>
   </div>
